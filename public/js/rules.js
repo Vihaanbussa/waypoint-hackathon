@@ -6,6 +6,8 @@
 //   kind          'date'    due = profile[anchor] (+ offsetYears, + offsetDays)
 //                 'counter' a number of days used against a limit
 //   requires      profile fields that must be present for the rule to apply
+//   opens         the date is when a window opens, not a deadline: once past it the
+//                 clock reads "open now" at openRisk, and ends at the closesAt field's date
 //   unless        a profile flag that closes the clock when true
 //   capField      a profile date the due date may not pass (whichever is shorter)
 //   thresholds    { act, watch } in days left; defaults below
@@ -229,6 +231,9 @@ export const PACKS = {
         id: 'i751_window_opens',
         name: 'Window to remove conditions opens',
         kind: 'date',
+        opens: true,
+        openRisk: 'watch',
+        closesAt: 'conditional_end',
         anchor: 'conditional_end',
         offsetDays: -90,
         requires: ['conditional_end'],
@@ -248,6 +253,8 @@ export const PACKS = {
         id: 'n400_early',
         name: 'Earliest day to file for naturalization',
         kind: 'date',
+        opens: true,
+        openRisk: 'clear',
         anchor: 'residence_complete',
         offsetDays: -90,
         requires: ['residence_complete'],

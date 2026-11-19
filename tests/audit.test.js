@@ -199,3 +199,51 @@ test('S6: days are counted from the person\'s own time zone', async () => {
   assert.equal(west, expect('Pacific/Pago_Pago'));
   assert.notEqual(east, west);
 });
+
+// ---- second pass ----
+
+test('N1: saving a profile never sends the webhook key back to the browser', async () => {
+  const a = await newAccount('n1');
+  const mine = { visa_type: 'h1b', name: 'N One' };
+  assert.equal((await call('POST', '/api/profile', mine, { cookie: a.cookie })).status, 200);
+  await call('POST', '/api/connect/webhook', { url: 'https://example.com/hook', key: 'SECRET-WEBHOOK-KEY' }, { cookie: a.cookie });
+  const saved = await call('POST', '/api/profile', mine, { cookie: a.cookie });
+  assert.ok(!JSON.stringify(saved.json).includes('SECRET-WEBHOOK-KEY'), 'profile response leaked the key');
+  const id = saved.json.profile.id;
+  const settings = await call('POST', `/api/profiles/${id}/settings`, { channels: { sms: true } }, { cookie: a.cookie });
+  assert.ok(!JSON.stringify(settings.json).includes('SECRET-WEBHOOK-KEY'), 'settings response leaked the key');
+});
+
+test('N2: signups at the same moment all succeed', async () => {
+  const results = await Promise.all(
+    Array.from({ length: 6 }, (_, i) => call('POST', '/api/auth/signup', { name: `P ${i}`, email: `parallel${i}@example.com`, password: 'correct-horse-9' }, { headers: { 'X-Forwarded-For': `10.9.0.${i}` } })),
+  );
+  assert.deepEqual(results.map((r) => r.status), [200, 200, 200, 200, 200, 200]);
+});
+
+test('N3: a window that has opened reads "open now", not "overdue"', async () => {
+  const { buildClocks, countLabel, overall } = await import('../public/js/clocks.js');
+  const profile = { id: 'x', visa_type: 'green_card', residence_complete: '2027-01-01', conditional_end: '2027-06-01' };
+  const clocks = buildClocks(profile, {}, '2026-12-20');
+  const n400 = clocks.find((c) => c.id === 'n400_early');
+  assert.equal(countLabel(n400), 'open now');
+  assert.equal(n400.risk, 'clear');
+  assert.equal(overall(clocks).overdue, 0);
+  const open = buildClocks(profile, {}, '2027-03-10').find((c) => c.id === 'i751_window_opens');
+  assert.equal(countLabel(open), 'open now');
+  assert.equal(open.risk, 'watch');
+  const after = buildClocks(profile, {}, '2027-06-10');
+  assert.equal(after.find((c) => c.id === 'i751_window_opens'), undefined, 'window gone once the card has expired');
+  assert.equal(countLabel(after.find((c) => c.id === 'conditional_end')), '9 days overdue');
+});
+
+test('N4: texts fired at the same moment still stop at the daily limit', async () => {
+  const { createTexts } = await import('../lib/texts.js');
+  const store = { notifications: [] };
+  const sms = { ready: true, missing: [], send: async () => (await new Promise((r) => setTimeout(r, 20)), { id: 'SM1' }) };
+  const appendRow = (table, row) => (store[table].push(row), row);
+  const { sendText } = createTexts({ store, sms, appendRow, save: async () => {} });
+  const profile = { id: 'p', name: 'P', owner: 'o', phone: '4155550142' };
+  const results = await Promise.allSettled(Array.from({ length: 10 }, (_, i) => sendText(profile, `Waypoint: note ${i}`)));
+  assert.equal(results.filter((r) => r.status === 'fulfilled').length, 6);
+});

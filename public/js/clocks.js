@@ -84,6 +84,7 @@ export function countLabel(clock) {
   if (clock.kind === 'counter') return `${clock.count.left} left`;
   const n = clock.daysLeft;
   if (n == null) return '';
+  if (clock.opened) return 'open now';
   if (n < 0) return `${-n} ${n === -1 ? 'day' : 'days'} overdue`;
   if (n === 0) return 'today';
   if (n > 730) return `over ${Math.floor(n / 365)} years`;
@@ -151,6 +152,8 @@ function fromRule(rule, packId, profile, today) {
   if (capped) due = toIso(cap);
 
   const daysLeft = daysBetween(today, due);
+  const opened = Boolean(rule.opens) && daysLeft < 0;
+  if (opened && rule.closesAt && parseDay(profile[rule.closesAt]) != null && daysBetween(today, toIso(parseDay(profile[rule.closesAt]))) < 0) return null;
   const variant = (rule.variants ?? []).find((v) => isSet(profile[v.when]));
   const values = {
     due: formatDate(due, today),
@@ -162,7 +165,8 @@ function fromRule(rule, packId, profile, today) {
     due,
     daysLeft,
     capped,
-    risk: riskFor(daysLeft, rule.thresholds, rule.floor),
+    opened,
+    risk: opened ? rule.openRisk ?? 'clear' : riskFor(daysLeft, rule.thresholds, rule.floor),
     reason: fill((variant ?? rule).reason, profile, today, values),
   };
 }
@@ -318,7 +322,7 @@ export function overall(clocks) {
   const risk = clocks.reduce((worst, c) => (RISK_ORDER[c.risk] < RISK_ORDER[worst] ? c.risk : worst), 'clear');
   const dated = clocks.filter((c) => c.kind === 'date' && c.daysLeft != null && c.daysLeft >= 0);
   const next = dated.length ? Math.min(...dated.map((c) => c.daysLeft)) : null;
-  const overdue = clocks.filter((c) => c.kind === 'date' && c.daysLeft < 0).length;
+  const overdue = clocks.filter((c) => c.kind === 'date' && !c.opened && c.daysLeft < 0).length;
   return { risk, nextDays: next, overdue };
 }
 
