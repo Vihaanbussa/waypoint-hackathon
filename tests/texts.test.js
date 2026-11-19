@@ -2,7 +2,7 @@
 
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { composeText, sayDate, sayDays, TEXT_KINDS } from '../lib/texts.js';
+import { composeText, sayDate, sayDays, TEXT_KINDS } from '../lib/text-kinds.js';
 
 const today = '2026-11-19';
 const link = 'https://waypoint.example/';

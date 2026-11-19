@@ -17,7 +17,8 @@ export function parseDay(value) {
   const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(value.trim());
   if (!m) return null;
   const t = Date.UTC(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
-  return Number.isNaN(t) ? null : t;
+  // Reject a day the calendar would roll over (2026-02-31 becomes March 3).
+  return Number.isNaN(t) || new Date(t).getUTCDate() !== Number(m[3]) ? null : t;
 }
 
 export const toIso = (t) => new Date(t).toISOString().slice(0, 10);
@@ -83,6 +84,7 @@ export function countLabel(clock) {
   if (clock.kind === 'counter') return `${clock.count.left} left`;
   const n = clock.daysLeft;
   if (n == null) return '';
+  if (clock.opened) return 'open now';
   if (n < 0) return `${-n} ${n === -1 ? 'day' : 'days'} overdue`;
   if (n === 0) return 'today';
   if (n > 730) return `over ${Math.floor(n / 365)} years`;
@@ -150,6 +152,8 @@ function fromRule(rule, packId, profile, today) {
   if (capped) due = toIso(cap);
 
   const daysLeft = daysBetween(today, due);
+  const opened = Boolean(rule.opens) && daysLeft < 0;
+  if (opened && rule.closesAt && parseDay(profile[rule.closesAt]) != null && daysBetween(today, toIso(parseDay(profile[rule.closesAt]))) < 0) return null;
   const variant = (rule.variants ?? []).find((v) => isSet(profile[v.when]));
   const values = {
     due: formatDate(due, today),
@@ -161,7 +165,8 @@ function fromRule(rule, packId, profile, today) {
     due,
     daysLeft,
     capped,
-    risk: riskFor(daysLeft, rule.thresholds, rule.floor),
+    opened,
+    risk: opened ? rule.openRisk ?? 'clear' : riskFor(daysLeft, rule.thresholds, rule.floor),
     reason: fill((variant ?? rule).reason, profile, today, values),
   };
 }
@@ -317,7 +322,7 @@ export function overall(clocks) {
   const risk = clocks.reduce((worst, c) => (RISK_ORDER[c.risk] < RISK_ORDER[worst] ? c.risk : worst), 'clear');
   const dated = clocks.filter((c) => c.kind === 'date' && c.daysLeft != null && c.daysLeft >= 0);
   const next = dated.length ? Math.min(...dated.map((c) => c.daysLeft)) : null;
-  const overdue = clocks.filter((c) => c.kind === 'date' && c.daysLeft < 0).length;
+  const overdue = clocks.filter((c) => c.kind === 'date' && !c.opened && c.daysLeft < 0).length;
   return { risk, nextDays: next, overdue };
 }
 

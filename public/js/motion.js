@@ -40,7 +40,7 @@ export function arriveOnView(nodes, onArrive) {
         onArrive?.(node);
       }
     }
-  }, 4000);
+  }, 1500);
 }
 
 // Every band's title and content come in once, as the band scrolls into view.
