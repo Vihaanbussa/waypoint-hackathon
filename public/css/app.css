@@ -743,6 +743,23 @@ main {
   overflow-wrap: anywhere;
 }
 
+/* The demo's "send a text" buttons: plain buttons in a row that wraps. */
+.demo-texts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.demo-text-out {
+  min-height: 1.55em;
+  margin: 16px 0 0;
+  max-width: 60ch;
+}
+
+.demo-text-out.is-error {
+  font-weight: 600;
+}
+
 /* A second, quieter line under a run: what Scout searched on X. */
 .log-detail {
   display: block;

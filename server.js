@@ -841,6 +841,28 @@ async function api(req, res, url) {
   }
 
   // "Send a test text" in Settings: one line to the person's own phone.
+  // The demo's buttons: send one text of a given kind for a sample person, to
+  // the phone the host set aside for the demo. Only the demo can use them.
+  if (url.pathname === '/api/demo/text') {
+    const session = requireSession(req);
+    if (!session.demo) throw httpError(403, 'These buttons only work in the demo.');
+    const profile = requireProfile(session, String(data.person || ''));
+    if (profile.owner) throw httpError(403, 'These buttons only work for the sample people.');
+    const kind = String(data.kind || '');
+    if (!Object.hasOwn(TEXT_KINDS, kind)) throw httpError(400, 'Pick one of the kinds of text.');
+    const args = demoTextArgs(profile, kind);
+    if (TEXT_KINDS[kind].needs === 'deadline' && !args.deadline_id) {
+      throw httpError(400, `${profile.name.split(' ')[0]} has no ${DEMO_TEXT_LABELS[kind]} to text about right now.`);
+    }
+    try {
+      const made = await writtenText(profile, args);
+      const { row, to, template } = await sendText(profile, made.text, { ...made, demo: true });
+      return sendJson(res, 200, { ok: true, text: row.text, to: maskNumber(to), trial: Boolean(template) });
+    } catch (err) {
+      throw err.status ? err : httpError(400, err.message);
+    }
+  }
+
   if (parts[1] === 'profiles' && parts[3] === 'test-text' && parts.length === 4) {
     const session = requireSession(req);
     if (session.demo) throw httpError(403, 'Create an account to send a test text to your own phone.');
@@ -962,10 +984,17 @@ const DAY_MS = 24 * 60 * 60 * 1000;
 const TEXTS_A_DAY = 6;
 const TEXTS_A_DAY_ALL = Math.max(1, Number(process.env.SMS_DAILY_CAP) || 60);
 
+// A person's own count leaves out texts sent with the demo's buttons, which have
+// a limit of their own, so a rehearsal cannot use up what the Bots may send.
 const textsSince = (ms, person = null) =>
   (store.notifications ?? []).filter(
-    (n) => n && n.via === 'twilio' && n.state === 'sent' && (!person || n.person === person) && Date.now() - Date.parse(n.at) < ms,
+    (n) => n && n.via === 'twilio' && n.state === 'sent' && (!person || (n.person === person && !n.demo)) && Date.now() - Date.parse(n.at) < ms,
   ).length;
+// The demo's "send a text" buttons: anyone who opens the demo can press them, so
+// they are held to a few a day and one every few seconds.
+const DEMO_TEXTS_A_DAY = Math.max(1, Number(process.env.SMS_DEMO_BUTTON_CAP) || 20);
+const demoTextsSince = (ms) =>
+  (store.notifications ?? []).filter((n) => n && n.via === 'twilio' && n.state === 'sent' && n.demo && Date.now() - Date.parse(n.at) < ms).length;
 
 // Sends one text to a person's own phone and records it, sent or failed, where
 // Activity shows it. The sample people have made-up numbers: their texts go to
@@ -985,16 +1014,29 @@ async function sendText(profile, input, meta = {}) {
         : 'The sample people have made-up phone numbers, so nothing was sent. Set SMS_DEMO_TO on the host to get their texts on a real phone.',
     );
   }
-  if (textsSince(DAY_MS, profile.id) >= TEXTS_A_DAY) throw new Error(`${profile.name} has already had ${TEXTS_A_DAY} texts in the last day. That is the limit.`);
+  if (meta.demo) {
+    if (demoTextsSince(8000)) throw new Error('Give the last text a few seconds to arrive, then press again.');
+    if (demoTextsSince(DAY_MS) >= DEMO_TEXTS_A_DAY) throw new Error(`The demo has sent its ${DEMO_TEXTS_A_DAY} texts for today.`);
+  } else if (textsSince(DAY_MS, profile.id) >= TEXTS_A_DAY) {
+    throw new Error(`${profile.name} has already had ${TEXTS_A_DAY} texts in the last day. That is the limit.`);
+  }
   if (textsSince(DAY_MS) >= TEXTS_A_DAY_ALL) throw new Error('This site has sent its limit of texts for today.');
   // The same news is not texted twice in a day, however often a Bot asks.
-  if (meta.kind) {
+  if (meta.kind && !meta.demo) {
     const again = store.notifications.some(
       (n) => n && n.via === 'twilio' && n.state === 'sent' && n.person === profile.id && n.kind === meta.kind && (n.deadline_id ?? '') === (meta.deadline_id ?? '') && Date.now() - Date.parse(n.at) < 20 * 60 * 60 * 1000,
     );
     if (again) throw new Error(`${profile.name} was already texted about this in the last day, so nothing was sent.`);
   }
-  const row = { person: profile.id, channel: 'sms', text, via: 'twilio', ...(meta.kind ? { kind: meta.kind } : {}), ...(meta.deadline_id ? { deadline_id: meta.deadline_id } : {}) };
+  const row = {
+    person: profile.id,
+    channel: 'sms',
+    text,
+    via: 'twilio',
+    ...(meta.kind ? { kind: meta.kind } : {}),
+    ...(meta.deadline_id ? { deadline_id: meta.deadline_id } : {}),
+    ...(meta.demo ? { demo: true } : {}),
+  };
   try {
     const sent = await sms.send(to, text, { template: meta.template });
     // On a Twilio trial the phone gets Twilio's sample text, not this wording.
@@ -1032,6 +1074,20 @@ async function writtenText(profile, args) {
     bot,
   });
   return { text, kind, deadline_id: clock?.id ?? '', template: TEXT_KINDS[kind].trial };
+}
+
+// What a demo button texts about: the sample person's own most fitting deadline.
+const DEMO_TEXT_LABELS = { act_now: 'deadline to act on', reminder: 'deadline coming up', rule_change: 'rule change', status_change: 'case status', approval: 'email waiting', problem: 'failed check' };
+function demoTextArgs(profile, kind) {
+  const clocks = buildClocks(profile, store, localDay());
+  const pick = (test) => clocks.find(test)?.id;
+  const dated = (c) => c.kind !== 'alert' && c.daysLeft != null;
+  if (kind === 'act_now') return { kind, deadline_id: pick((c) => dated(c) && c.risk === 'act') ?? pick(dated) };
+  if (kind === 'reminder') return { kind, deadline_id: pick((c) => dated(c) && c.risk === 'watch') ?? pick((c) => dated(c) && c.risk !== 'act') };
+  if (kind === 'rule_change') return { kind, deadline_id: pick((c) => c.kind === 'alert') };
+  if (kind === 'status_change') return { kind, deadline_id: pick((c) => String(c.id).startsWith('notice-')) };
+  if (kind === 'problem') return { kind, bot: 'Case Clerk' };
+  return { kind };
 }
 
 function personFor(args, scope) {

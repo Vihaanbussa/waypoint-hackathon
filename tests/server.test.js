@@ -625,6 +625,28 @@ test('texts: off until Twilio is set, then sent to your own phone, recorded, and
     process.env.SMS_DEMO_TO = '+14155550199';
     assert.equal((await callTool(sampleKey, 'send_text', { person: 'priya', text: 'Waypoint: hello' })).value.sent, true);
     assert.equal(got.at(-1).form.get('To'), '+14155550199');
+
+    // The demo's buttons: one press sends that kind of text for a sample person,
+    // worded by Waypoint, to the demo's phone. Only the demo can press them.
+    const before = got.length;
+    const pressed = await postJson('/api/demo/text', { person: 'priya', kind: 'act_now' });
+    assert.equal(pressed.status, 200);
+    const shown = await pressed.json();
+    assert.match(shown.text, /^Waypoint: act now\. /);
+    assert.equal(shown.to, 'the number ending 99');
+    assert.equal(got.length, before + 1);
+    assert.equal(got.at(-1).form.get('To'), '+14155550199');
+    assert.equal(got.at(-1).form.get('Body'), shown.text);
+    // Straight after, a second press is held back, and nothing odd gets through.
+    const again = await postJson('/api/demo/text', { person: 'priya', kind: 'reminder' });
+    assert.equal(again.status, 400);
+    assert.match((await again.json()).error, /few seconds/);
+    assert.equal((await postJson('/api/demo/text', { person: 'priya', kind: 'party' })).status, 400);
+    assert.equal((await gia.postJson('/api/demo/text', { person, kind: 'act_now' })).status, 403);
+    assert.equal(got.length, before + 1);
+    const demoRow = (await getJson('/api/store')).notifications.at(-1);
+    assert.equal(demoRow.demo, true);
+    assert.equal(demoRow.kind, 'act_now');
   } finally {
     for (const name of ['TWILIO_ACCOUNT_SID', 'TWILIO_AUTH_TOKEN', 'TWILIO_FROM_NUMBER', 'TWILIO_API_BASE', 'SMS_DEMO_TO']) delete process.env[name];
     await new Promise((resolve) => twilio.close(resolve));

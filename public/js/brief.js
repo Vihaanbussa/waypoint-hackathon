@@ -713,6 +713,50 @@ function renderBots(ctx) {
   notice.hidden = !messages.length;
 }
 
+// ---- the demo's "send a text" buttons ----
+
+const DEMO_TEXTS = [
+  ['act_now', 'Act now'],
+  ['reminder', 'Reminder'],
+  ['status_change', 'Status change'],
+  ['approval', 'Email waiting'],
+  ['rule_change', 'Rule change'],
+  ['problem', 'Check failed'],
+];
+
+// Only the demo has these, and only when texting is switched on for the site.
+function renderDemoTexts(ctx) {
+  const band = document.getElementById('demo-texts');
+  if (!band) return;
+  band.hidden = !(ctx.me.demo && ctx.live && ctx.store.features?.sms);
+  document.getElementById('demo-texts-intro').textContent =
+    `Each button sends that kind of text for ${ctx.profile.name.split(' ')[0]}, to the phone set up for this demo. Only the demo has these buttons.`;
+  const row = document.getElementById('demo-text-buttons');
+  if (band.hidden || row.dataset.ready) return;
+  row.dataset.ready = 'yes';
+  const status = document.getElementById('demo-text-status');
+  const buttons = DEMO_TEXTS.map(([kind, label]) => {
+    const button = el('button', { class: 'btn', type: 'button', text: label });
+    button.addEventListener('click', async () => {
+      buttons.forEach((b) => (b.disabled = true));
+      status.classList.remove('is-error');
+      status.textContent = 'Sending…';
+      try {
+        // `current` is the page as it is now: the person may have been switched.
+        const sent = await post('/api/demo/text', { person: current.profile.id, kind });
+        status.textContent = `Sent to ${sent.to}: "${sent.text}"${sent.trial ? " The Twilio account is on a trial, so the phone shows Twilio's sample wording." : ''}`;
+        await current.refresh();
+      } catch (err) {
+        status.classList.add('is-error');
+        status.textContent = err.message;
+      }
+      buttons.forEach((b) => (b.disabled = false));
+    });
+    return button;
+  });
+  row.replaceChildren(...buttons);
+}
+
 // ---- page ----
 
 initPage((ctx) => {
@@ -737,6 +781,7 @@ initPage((ctx) => {
   };
   renderGroups(ctx, clocks, actions);
   renderBots(ctx);
+  renderDemoTexts(ctx);
 });
 
 // Help reopens the guide in place instead of reloading the page.
