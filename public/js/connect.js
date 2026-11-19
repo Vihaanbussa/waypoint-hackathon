@@ -14,7 +14,6 @@ let info = null; // { mcp_url, bot_key, demo, local }
 let shown = false; // is the key on screen
 let drawnFor = null;
 
-// Copies text and flashes the button label; falls back to a hint if the clipboard is blocked.
 async function copy(text, button, done = 'Copied') {
   const label = button.textContent;
   try {
@@ -26,10 +25,8 @@ async function copy(text, button, done = 'Copied') {
   setTimeout(() => (button.textContent = label), 1800);
 }
 
-// Hides most of the key until the person chooses to show it.
 const masked = (key) => (key ? `${key.slice(0, 8)}${'•'.repeat(12)}` : 'YOUR-BOT-KEY');
 
-// Draws the address, header and first message; the key stays masked unless shown.
 function drawConnector(profile) {
   const values = { origin: info.origin, mcp: info.mcp_url, key: info.bot_key };
   $('connect-facts').replaceChildren(
@@ -58,7 +55,6 @@ function drawConnector(profile) {
   $('connect-notice').hidden = !notes.length;
 }
 
-// One card per Bot: its first message to paste, with a copy button.
 function drawBriefs() {
   const values = { origin: info.origin, mcp: info.mcp_url };
   $('briefs').replaceChildren(
@@ -83,7 +79,6 @@ function drawBriefs() {
   $('webhook-message').textContent = WEBHOOK_MESSAGE;
 }
 
-// The Check now webhook form; never overwrites a URL the person is typing.
 function drawWebhook(profile, me) {
   const hook = profile.bot_webhook;
   $('webhook-form').hidden = me.demo;
@@ -93,7 +88,6 @@ function drawWebhook(profile, me) {
   if (!$('webhook-status').textContent) $('webhook-status').textContent = hook ? 'Connected. Check now on your Brief wakes the Manager.' : '';
 }
 
-// The page is redrawn on every poll; the one-time setup (key, handlers) runs once per account.
 initPage(async (ctx) => {
   const { profile, me } = ctx;
   document.title = 'Connect your Bots · Waypoint';
@@ -121,7 +115,6 @@ initPage(async (ctx) => {
       }
     };
 
-    // Saves or clears the webhook, then refreshes so the Brief picks it up.
     const save = async (body, message) => {
       $('webhook-error').hidden = true;
       try {

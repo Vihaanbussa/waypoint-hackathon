@@ -63,3 +63,27 @@ test('Twilio refusals come back as something a person can act on', async () => {
   );
   await assert.rejects(createSms({ env }).send('12', 'x'), /not a mobile number/);
 });
+
+test('a Twilio trial refuses our wording, so the text goes out as one of its sample texts', async () => {
+  const bodies = [];
+  const fetchImpl = async (url, init) => {
+    const body = new URLSearchParams(init.body).get('Body');
+    bodies.push(body);
+    if (!body.startsWith('sms_')) {
+      return new Response(JSON.stringify({ message: 'Invalid template name. Trial accounts can only use predefined SMS templates.' }), { status: 400 });
+    }
+    return new Response(JSON.stringify({ sid: 'SMtrial', status: 'queued' }), { status: 201 });
+  };
+  const env = { TWILIO_ACCOUNT_SID: 'ACtest', TWILIO_AUTH_TOKEN: 'tok', TWILIO_FROM_NUMBER: '+15550100100' };
+  const sms = createSms({ env, fetchImpl });
+  assert.deepEqual(await sms.send('+14155550142', 'Waypoint: 12 days left.'), { id: 'SMtrial', status: 'queued', template: 'sms_appointment_reminders' });
+  assert.deepEqual(bodies, ['Waypoint: 12 days left.', 'sms_appointment_reminders']);
+  // Once it knows, it does not waste a request on wording Twilio will refuse.
+  await sms.send('+14155550142', 'Waypoint: 11 days left.');
+  assert.deepEqual(bodies.slice(2), ['sms_appointment_reminders']);
+  // The sample can be chosen, and a made-up name is ignored.
+  const other = createSms({ env: { ...env, TWILIO_TRIAL_TEMPLATE: 'sms_account_alerts' }, fetchImpl });
+  assert.equal((await other.send('+14155550142', 'x')).template, 'sms_account_alerts');
+  const bad = createSms({ env: { ...env, TWILIO_TRIAL_TEMPLATE: 'DROP TABLE' }, fetchImpl });
+  assert.equal((await bad.send('+14155550142', 'x')).template, 'sms_appointment_reminders');
+});

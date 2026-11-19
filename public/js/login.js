@@ -30,7 +30,6 @@ const demos = [...document.querySelectorAll('[data-demo]')];
 
 let mode = new URLSearchParams(location.search).get('mode') === 'signup' ? 'signup' : 'signin';
 
-// Redraws the form for the current mode (sign in or create account).
 function draw() {
   const signup = mode === 'signup';
   title.textContent = signup ? 'Create your account' : 'Sign in';
@@ -44,7 +43,6 @@ function draw() {
   error.hidden = true;
 }
 
-// Shows an error and puts the cursor on the field to fix.
 function fail(message, field) {
   error.textContent = message;
   error.hidden = false;
@@ -57,7 +55,6 @@ switchMode.addEventListener('click', () => {
   (mode === 'signup' ? nameInput : email).focus();
 });
 
-// Checks the form here for quick feedback; the server checks it again.
 form.addEventListener('submit', async (event) => {
   event.preventDefault();
   const signup = mode === 'signup';
@@ -83,7 +80,6 @@ form.addEventListener('submit', async (event) => {
   }
 });
 
-// The demo needs no account: the server starts a session for the sample people.
 async function openDemo() {
   demos.forEach((button) => (button.disabled = true));
   try {

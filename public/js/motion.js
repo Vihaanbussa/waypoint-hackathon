@@ -1,5 +1,5 @@
 // Scroll-triggered arrivals. A node is held back until it scrolls into view,
-// then arrives once (see .is-waiting and .is-arriving in css/app/motion.css). Nothing is
+// then arrives once (see .is-waiting and .is-arriving in app.css). Nothing is
 // hidden unless this script runs, and nothing moves under reduced motion.
 
 const reduced = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;

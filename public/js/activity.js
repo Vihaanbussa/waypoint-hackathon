@@ -6,17 +6,13 @@ import { arriveBands } from './motion.js';
 
 arriveBands();
 
-// Display names for the channel a message went out on.
 const CHANNEL = { sms: 'Text message', calendar: 'Google Calendar', gmail: 'Gmail', slack: 'Slack', chat: 'Grok Bot chat' };
-// Sort comparator: ISO timestamps compare correctly as strings.
 const newestFirst = (a, b) => String(b.at).localeCompare(String(a.at));
 
-// Marks rows that are not real Bot output, so a demo never passes as live.
 function tags(row) {
-  return `${row.simulated ? ' (simulated)' : ''}${row.sample ? ' (sample)' : ''}`;
+  return `${row.simulated ? ' (simulated)' : ''}${row.sample ? ' (sample)' : ''}${row.trial_template ? " (Twilio trial: the phone got Twilio's sample text, not this wording)" : ''}`;
 }
 
-// A Bot's face for a log line; null when the name is not one of ours.
 function avatarFor(name, state, small = true) {
   const bot = botByName(name);
   if (!bot) return null;

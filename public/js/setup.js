@@ -16,12 +16,10 @@ const STEPS = [
 const editing = new URLSearchParams(location.search).get('edit') === '1';
 const today = localToday();
 const $ = (id) => document.getElementById(id);
-// field id -> what the person typed, kept when the visa type changes
-const values = {};
+const values = {}; // field id -> what the person typed, kept when the visa type changes
 let step = 0;
 let visa = 'f1_opt'; // most international students start on F-1, so a new account starts there
 
-// Shows a form-level error.
 function fail(message) {
   $('setup-error').textContent = message;
   $('setup-error').hidden = false;
@@ -29,7 +27,6 @@ function fail(message) {
 
 // ---- step 1: visa type ----
 
-// One radio per supported visa type.
 function drawVisaList() {
   $('visa-list').replaceChildren(
     ...Object.entries(VISA_TYPES).map(([id, type]) => {
@@ -45,7 +42,6 @@ function drawVisaList() {
 
 // ---- step 2: dates, drawn from the rule packs ----
 
-// Only the dates this visa type uses, taken from the rule packs.
 function drawFields() {
   const nodes = [];
   for (const field of fieldsFor(visa)) {
@@ -87,7 +83,6 @@ function drawFields() {
   drawPreview();
 }
 
-// The form so far as a profile, so the preview can count real clocks before saving.
 function draftProfile() {
   const profile = { id: 'draft', name: $('name').value.trim(), visa_type: visa };
   for (const field of fieldsFor(visa)) {
@@ -144,7 +139,6 @@ function drawPreview() {
 
 // ---- steps ----
 
-// Moves to a step and updates the heading, progress and button text.
 function show(next, focus = true) {
   step = next;
   $('setup-error').hidden = true;
