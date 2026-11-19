@@ -5,6 +5,7 @@ import { get, post } from './store.js';
 
 const $ = (id) => document.getElementById(id);
 
+// Preset statuses with the wording the real portal uses.
 const STATUSES = [
   { status: 'Case Was Received', detail: 'We received your Form I-765, Application for Employment Authorization.' },
   { status: 'Request for Evidence Was Sent', detail: 'We sent a request for evidence. Respond by the date on your notice.' },
@@ -12,8 +13,9 @@ const STATUSES = [
   { status: 'Card Is Being Produced', detail: 'Your new card is being produced.' },
 ];
 
-let cases = [];
+let cases = []; // what the portal currently shows, one row per receipt
 
+// Loads the chosen case's current values into the form.
 function fillForm() {
   const record = cases.find((c) => c.receipt === $('receipt').value);
   if (!record) return;
@@ -22,6 +24,7 @@ function fillForm() {
   $('response-due').value = record.response_due || '';
 }
 
+// Fetches the cases and fills the pickers.
 async function load() {
   try {
     ({ cases } = await get('/api/portal/cases'));

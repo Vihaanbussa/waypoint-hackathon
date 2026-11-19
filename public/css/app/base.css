@@ -1,0 +1,266 @@
+/* Waypoint. Black on white with one green, one typeface, the whole width of the window.
+   The only other colour is the five Bots, one pastel each (the last block).
+   The typeface is Atkinson Hyperlegible Next: built so 0/O and 1/l/I are easy
+   to tell apart, which matters for dates and receipt numbers.
+   Flat fills only. No gradients, no shadows, no blur. */
+
+:root {
+  --paper: #FFFFFF;
+  --ink: #0A0A0A;
+  --ink-soft: #2E2E2E;
+  --muted: #5F5F5F;
+  --line: #E4E4E4;
+  --wash: #F5F5F5;
+  --radius: 8px;
+  --font: 'Atkinson Hyperlegible Next', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --bar-h: 57px;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-padding-top: calc(var(--bar-h) + 16px);
+}
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font: 400 16px/1.55 var(--font);
+  text-align: left;
+  -webkit-text-size-adjust: 100%;
+  accent-color: var(--ink);
+  caret-color: var(--ink);
+}
+
+::selection {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+h1,
+h2,
+h3,
+h4 {
+  margin: 0;
+  font-weight: 600;
+  line-height: 1.25;
+  text-wrap: balance;
+}
+
+h1 {
+  font-size: 32px;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+
+h2 {
+  font-size: 20px;
+  margin-top: 56px;
+  margin-bottom: 12px;
+}
+
+h3,
+h4 {
+  font-size: 16px;
+}
+
+p,
+li {
+  text-wrap: pretty;
+}
+
+/* About 75 characters a line in this typeface, whose digits are wide. */
+p {
+  margin: 0;
+  max-width: 54ch;
+}
+
+a {
+  color: var(--ink);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+
+a:hover {
+  text-decoration-thickness: 2px;
+}
+
+:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 3px;
+}
+
+[tabindex='-1']:focus {
+  outline: 2px solid var(--ink);
+  outline-offset: 6px;
+}
+
+/* Moved to by script so a screen reader starts in the right place; no ring needed. */
+main[tabindex='-1']:focus,
+h1[tabindex='-1']:focus {
+  outline: none;
+}
+
+/* The hidden attribute always wins, whatever display a class sets. */
+[hidden] {
+  display: none !important;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.skip {
+  position: absolute;
+  left: 16px;
+  top: -64px;
+  z-index: 30;
+  padding: 10px 14px;
+  background: var(--ink);
+  color: var(--paper);
+  border-radius: var(--radius);
+}
+
+.skip:focus {
+  top: 8px;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+/* ---- top bar: three places, always visible ---- */
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: var(--paper);
+  border-bottom: 1px solid var(--line);
+}
+
+.topbar-inner,
+main {
+  max-width: 760px;
+  margin: 0 auto;
+  padding-left: 24px;
+  padding-right: 24px;
+}
+
+.topbar-inner {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  min-height: 56px;
+}
+
+/* The wordmark: Unbounded, lowercase. Its round letters echo the logo's dots.
+   Only the eight letters of the name are loaded. */
+.wordmark {
+  font-family: 'Unbounded', var(--font);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  text-transform: lowercase;
+  text-decoration: none;
+}
+
+.places {
+  display: flex;
+  gap: 20px;
+  align-self: stretch;
+}
+
+.places a {
+  display: flex;
+  align-items: center;
+  color: var(--muted);
+  text-decoration: none;
+  border-bottom: 2px solid transparent;
+  border-top: 2px solid transparent;
+}
+
+.places a:hover {
+  color: var(--ink);
+}
+
+.places a[aria-current='page'] {
+  color: var(--ink);
+  font-weight: 500;
+  border-bottom-color: var(--ink);
+}
+
+.topbar-tools {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-left: auto;
+  min-width: 0;
+}
+
+.help-link {
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+.profile-switch {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 0 1 auto;
+  min-width: 0;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+select,
+input[type='time'],
+textarea {
+  font: inherit;
+  color: var(--ink);
+  background: var(--paper);
+  border: 1px solid var(--ink);
+  border-radius: var(--radius);
+  padding: 8px 10px;
+}
+
+select {
+  max-width: 100%;
+  min-width: 0;
+  text-overflow: ellipsis;
+  font-size: 14px;
+  padding: 6px 8px;
+  border-color: var(--line);
+}
+
+select:hover {
+  border-color: var(--ink);
+}
+
+main {
+  padding-top: 48px;
+  padding-bottom: 96px;
+}
+
+.lede {
+  margin-top: 12px;
+  color: var(--muted);
+}
+
+.notice {
+  margin-top: 16px;
+  padding: 10px 14px;
+  border: 1px solid var(--ink);
+  border-radius: var(--radius);
+}

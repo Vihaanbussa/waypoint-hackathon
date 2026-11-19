@@ -1,0 +1,483 @@
+/* ==== the signed-in pages: one section at a time, the whole width ====
+   Each page is a stack of bands that run edge to edge. A band holds one thing.
+   Its content sits in a centred column; on a wide screen the band's title is on
+   the left and what it is about on the right, so the eye reads one band, then
+   the next. A band can be white, grey or black. */
+
+:root {
+  --gutter: clamp(20px, 5vw, 80px);
+  --wide: 1320px;
+}
+
+.topbar-inner,
+.site-foot-inner {
+  max-width: calc(var(--wide) + 2 * var(--gutter));
+  margin: 0 auto;
+  padding-left: var(--gutter);
+  padding-right: var(--gutter);
+}
+
+main.bands {
+  max-width: none;
+  margin: 0;
+  padding: 0;
+}
+
+.band {
+  padding: clamp(56px, 7vw, 104px) var(--gutter);
+}
+
+.band + .band {
+  border-top: 1px solid var(--line);
+}
+
+.band-inner {
+  max-width: var(--wide);
+  margin: 0 auto;
+}
+
+.band h2 {
+  margin: 0;
+}
+
+/* The page's opening line, large, with room around it. */
+.band--hero {
+  padding-top: clamp(56px, 8vw, 120px);
+  padding-bottom: clamp(40px, 5vw, 72px);
+}
+
+.band--hero h1 {
+  max-width: 18ch;
+  font-size: clamp(34px, 5vw, 64px);
+  line-height: 1.04;
+  letter-spacing: -0.035em;
+}
+
+.band--hero .lede,
+.band--hero .lead-sub {
+  max-width: 46ch;
+  margin-top: 20px;
+  font-size: clamp(18px, 1.5vw, 22px);
+  line-height: 1.45;
+  color: var(--muted);
+}
+
+.band--hero .lead-action {
+  margin-top: 28px;
+}
+
+.band--wash {
+  background: var(--wash);
+}
+
+/* A black band: the same tokens, turned over, so everything inside follows. */
+.band--ink {
+  --paper: #0A0A0A;
+  --ink: #FFFFFF;
+  --ink-soft: #E4E4E4;
+  --muted: #B4B4B4;
+  --line: #333333;
+  --wash: #1B1B1B;
+  color: var(--ink);
+  background: var(--paper);
+}
+
+.band--wash,
+.band--ink,
+.band--wash + .band,
+.band--ink + .band {
+  border-top: 0;
+}
+
+/* Title on the left, the thing itself on the right. */
+.split-label h2,
+.group-head h2 {
+  font-size: clamp(24px, 2.4vw, 32px);
+  line-height: 1.12;
+  letter-spacing: -0.02em;
+}
+
+.split-label > p {
+  max-width: 36ch;
+  margin-top: 12px;
+  color: var(--muted);
+}
+
+.split-label .check-row {
+  margin-top: 28px;
+}
+
+.split-body {
+  margin-top: 28px;
+}
+
+.split-body > :first-child {
+  margin-top: 0;
+}
+
+@media (min-width: 900px) {
+  .split,
+  #groups .group {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+    align-items: start;
+    gap: 0 clamp(40px, 6vw, 104px);
+  }
+
+  .split-label,
+  #groups .group-head {
+    position: sticky;
+    top: calc(var(--bar-h) + 32px);
+  }
+
+  .split-body {
+    margin-top: 0;
+  }
+}
+
+/* The first-visit guide is a band of its own. */
+.guide-band:has(.guide[hidden]) {
+  display: none;
+}
+
+.guide {
+  margin: 0;
+  padding: 0;
+  background: none;
+  border-radius: 0;
+}
+
+.guide h2 {
+  font-size: clamp(24px, 2.4vw, 32px);
+  letter-spacing: -0.02em;
+}
+
+.guide-steps {
+  gap: clamp(24px, 4vw, 64px);
+  margin-top: 32px;
+  padding-top: 32px;
+  border-top-color: var(--ink);
+}
+
+/* Deadlines: each group under one rule that draws across the page. */
+#groups .group {
+  position: relative;
+  margin-top: 0;
+  padding-top: 32px;
+  border-top: 1px solid var(--line);
+}
+
+#groups .group + .group {
+  margin-top: clamp(48px, 6vw, 88px);
+}
+
+#groups .group::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: -1px;
+  width: 100%;
+  height: 1px;
+  background: var(--ink);
+  transform-origin: 0 50%;
+}
+
+#groups .group.is-waiting::before {
+  transform: scaleX(0);
+}
+
+#groups .group.is-arriving::before {
+  animation: route-grow 800ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+#groups .group-head {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+
+#groups .group-head::after {
+  content: none;
+}
+
+#groups .stops {
+  margin-top: 24px;
+}
+
+#groups .stops > .stop:first-child {
+  padding-top: 0;
+}
+
+@media (min-width: 900px) {
+  #groups .stops,
+  #groups .group > .card {
+    grid-column: 2;
+    margin-top: 0;
+  }
+}
+
+/* The Bots, on black, large. */
+@media (min-width: 900px) {
+  .band--ink .relay {
+    --bot: 64px;
+  }
+}
+
+.band--ink .relay-wrap {
+  margin-top: 0;
+}
+
+.band--ink .relay {
+  --dim: #8A8A8A;
+}
+
+/* Setup: the step's title on the left, its form on the right. */
+.band--setup .split-label h1 {
+  font-size: clamp(30px, 3.4vw, 44px);
+  line-height: 1.08;
+  letter-spacing: -0.03em;
+}
+
+.band--setup .split-label .lede {
+  margin-top: 16px;
+}
+
+.band--setup form {
+  max-width: 720px;
+}
+
+/* A setup step slides in from the right; keep that inside the form, with room
+   left for focus rings. */
+#setup-form {
+  overflow-x: clip;
+  margin: 0 -6px;
+  padding: 0 6px;
+}
+
+.add-own {
+  margin-top: 0;
+}
+
+@media (max-width: 640px) {
+  :root {
+    --gutter: 16px;
+  }
+
+  .band {
+    padding-top: 48px;
+    padding-bottom: 48px;
+  }
+}
+
+/* ==== small motion on the signed-in pages ====
+   A large Bot fronts each page and shows what is going on. Bands arrive as they
+   scroll into view. Hovering a Bot makes it hop. All of it is feedback or a
+   greeting; none of it holds content back for long, and none of it runs under
+   reduced motion. */
+
+.hero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: clamp(24px, 5vw, 80px);
+}
+
+.hero-text {
+  min-width: 0;
+}
+
+.hero-bot {
+  flex: none;
+  padding-right: clamp(0px, 4vw, 64px);
+}
+
+.bot-avatar--hero .bot-glyph {
+  width: clamp(104px, 15vw, 208px);
+  height: clamp(104px, 15vw, 208px);
+}
+
+.bot-avatar--hero[data-state='working']::after {
+  inset: -16px;
+  border-width: 2px;
+}
+
+.bot-avatar--hero[data-state='waiting']::after {
+  top: 6%;
+  right: 6%;
+  width: 22px;
+  height: 22px;
+  border-width: 4px;
+}
+
+.split-label.is-waiting,
+.split-body.is-waiting {
+  opacity: 0;
+}
+
+.log li.is-new {
+  background: var(--wash);
+}
+
+@keyframes hero-pop {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.7);
+  }
+  60% {
+    opacity: 1;
+    transform: translateY(-4px) scale(1.04);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes relay-hop {
+  35% {
+    transform: translateY(-9px) scale(0.96, 1.06);
+  }
+  70% {
+    transform: scale(1.07, 0.93);
+  }
+}
+
+@keyframes log-new {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+    background-color: var(--line);
+  }
+  40% {
+    opacity: 1;
+    transform: none;
+    background-color: var(--line);
+  }
+  to {
+    background-color: transparent;
+  }
+}
+
+@keyframes mark-pulse {
+  0%,
+  70%,
+  100% {
+    transform: scale(1);
+  }
+  85% {
+    transform: scale(1.25);
+  }
+}
+
+@keyframes check-pop {
+  50% {
+    transform: scale(1.18);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* The page opens: its words rise in, then its Bot pops up. */
+  .hero-text > * {
+    animation: rise 620ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  .hero-text > :nth-child(2) {
+    animation-delay: 70ms;
+  }
+
+  .hero-text > :nth-child(n + 3) {
+    animation-delay: 140ms;
+  }
+
+  .hero-bot {
+    animation: hero-pop 700ms cubic-bezier(0.16, 1, 0.3, 1) 180ms both;
+  }
+
+  /* Bands arrive: the title first, what it is about just after. */
+  .split-label.is-arriving {
+    animation: rise 560ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  .split-body.is-arriving {
+    animation: rise 640ms cubic-bezier(0.16, 1, 0.3, 1) 90ms both;
+  }
+
+  /* The Bots say hello in turn, and any Bot hops when you point at it. */
+  .relay-bot.is-greeting .relay-face,
+  .relay:not(.relay--loop) .relay-bot:hover .relay-face,
+  .log li:hover .bot-glyph,
+  .brief-item:hover .brief-head .bot-glyph,
+  .with-bot:hover .bot-glyph,
+  .hero-bot:hover .bot-glyph {
+    animation: relay-hop 560ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  /* A line a Bot has just added drops in and settles. */
+  .log li.is-new {
+    animation: log-new 1600ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  /* The Act now square taps for attention now and then. */
+  .group--act .group-head .mark {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: mark-pulse 3.2s ease-in-out infinite;
+  }
+
+  input[type='checkbox']:checked {
+    animation: check-pop 220ms ease-out;
+  }
+
+  .save-status:not(:empty) {
+    animation: unfold 240ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+}
+
+/* The other places underline as you point at them. */
+@media (hover: hover) and (min-width: 641px) {
+  .places a:not([aria-current='page']):not(.is-section)::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -2px;
+    height: 2px;
+    background: var(--ink);
+    transform: scaleX(0);
+    transform-origin: 0 50%;
+    transition: transform 220ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .places a:not([aria-current='page']):not(.is-section):hover::after {
+    transform: scaleX(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .places a::after {
+    transition: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .hero {
+    align-items: flex-start;
+  }
+
+  .hero-bot {
+    padding-right: 0;
+  }
+
+  .bot-avatar--hero .bot-glyph {
+    width: 72px;
+    height: 72px;
+  }
+}
+
+/* At this size the "waiting" dot read as a stray mark, so the large Bot goes
+   without it; its slow pulse still shows it is waiting. */
+.bot-avatar--hero[data-state='waiting']::after {
+  content: none;
+}

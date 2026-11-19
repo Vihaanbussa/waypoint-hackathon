@@ -1,0 +1,469 @@
+/* ---- forms ---- */
+
+.field {
+  margin-top: 20px;
+}
+
+.field > label:not(.check),
+.field > legend {
+  display: block;
+  padding: 0;
+  font-weight: 500;
+}
+
+.field .hint {
+  display: block;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.field input[type='text'],
+.field input[type='email'],
+.field input[type='password'],
+.field input[type='tel'],
+.field input[type='date'],
+.field input[type='number'],
+.field textarea {
+  display: block;
+  width: 100%;
+  max-width: 420px;
+  min-height: 44px;
+  margin-top: 6px;
+  padding: 10px 12px;
+  font: inherit;
+  color: var(--ink);
+  background: var(--paper);
+  border: 1px solid var(--ink);
+  border-radius: var(--radius);
+}
+
+.field input::placeholder,
+.field textarea::placeholder {
+  color: var(--muted);
+}
+
+.field input[type='date'],
+.field input[type='number'] {
+  max-width: 220px;
+}
+
+.check {
+  display: grid;
+  grid-template-columns: 30px 1fr;
+  align-items: start;
+  margin-top: 16px;
+}
+
+.check input {
+  width: 20px;
+  height: 20px;
+  margin: 2px 0 0;
+}
+
+.form-error {
+  margin-top: 16px;
+  font-weight: 600;
+}
+
+.form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 28px;
+}
+
+fieldset.plain {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  min-width: 0;
+}
+
+fieldset.plain.field {
+  margin-top: 28px;
+}
+
+/* Add a deadline of your own, on the Brief. */
+.add-own {
+  margin-top: 28px;
+}
+
+.add-own summary {
+  width: max-content;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.add-own form {
+  max-width: 460px;
+  padding-bottom: 8px;
+}
+
+.link-button {
+  padding: 0;
+  font: inherit;
+  color: var(--muted);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+.link-button:hover {
+  color: var(--ink);
+  text-decoration-thickness: 2px;
+}
+
+.own-list {
+  margin: 16px 0 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--ink);
+}
+
+.own-list li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 2px 16px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.own-list .muted {
+  font-size: 14px;
+}
+
+.section-action {
+  margin-top: 16px;
+}
+
+code {
+  padding: 1px 6px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 14px;
+  background: var(--wash);
+  border-radius: 4px;
+}
+
+/* ---- sign in ---- */
+
+.auth {
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+.auth-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+  min-height: 100vh;
+  min-height: 100dvh;
+  max-width: none;
+  margin: 0;
+  padding: 0;
+}
+
+.auth-pitch {
+  display: flex;
+  flex-direction: column;
+  padding: 40px 56px 48px;
+  color: var(--paper);
+  background: var(--ink);
+}
+
+.auth-pitch .bot-avatar {
+  --bot-cut: var(--ink);
+}
+
+.auth-pitch .relay {
+  --wire: #4A4A4A;
+  --dim: #7A7A7A;
+  margin-top: 56px;
+}
+
+.auth-pitch .relay-name {
+  color: #C9C9C9;
+}
+
+.auth-pitch-body {
+  margin-top: auto;
+  padding-top: 64px;
+}
+
+.auth-pitch h1 {
+  max-width: 14ch;
+  font-size: 44px;
+}
+
+.auth-pitch-body > p {
+  max-width: 44ch;
+  margin-top: 16px;
+  color: #C9C9C9;
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 48px 32px;
+}
+
+.auth-form h2 {
+  margin: 0;
+  font-size: 28px;
+  letter-spacing: -0.01em;
+}
+
+.auth-form .btn {
+  width: 100%;
+  max-width: 420px;
+}
+
+.auth-switch {
+  margin-top: 8px;
+  color: var(--muted);
+}
+
+.auth-or {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  max-width: 420px;
+  margin: 28px 0 16px;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.auth-or::before,
+.auth-or::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--line);
+}
+
+/* ---- setup: your own details, three steps ---- */
+
+.steps-progress {
+  display: flex;
+  gap: 6px;
+  margin: 0 0 20px;
+  padding: 0;
+  list-style: none;
+}
+
+.steps-progress li {
+  width: 44px;
+  height: 4px;
+  background: var(--line);
+  border-radius: 2px;
+}
+
+.steps-progress li.is-on {
+  background: var(--ink);
+}
+
+.step-count {
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.visa-list {
+  margin-top: 8px;
+  border-top: 1px solid var(--ink);
+}
+
+.visa-option {
+  display: grid;
+  grid-template-columns: 30px 1fr;
+  align-items: start;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--line);
+  cursor: pointer;
+}
+
+.visa-option input {
+  width: 20px;
+  height: 20px;
+  margin: 2px 0 0;
+}
+
+.visa-option strong {
+  display: block;
+  font-weight: 500;
+}
+
+.visa-option span {
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.preview {
+  margin-top: 32px;
+  padding: 20px 24px;
+  background: var(--wash);
+  border-radius: var(--radius);
+}
+
+.preview h3 {
+  font-size: 16px;
+}
+
+.preview ul {
+  margin: 12px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.preview li {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 8px 0;
+  border-top: 1px solid var(--line);
+}
+
+.preview li span:last-child {
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 860px) {
+  .auth-layout {
+    grid-template-columns: 1fr;
+    min-height: 0;
+  }
+
+  .auth-pitch {
+    padding: 24px 20px 32px;
+  }
+
+  .auth-pitch-body {
+    margin-top: 0;
+    padding-top: 28px;
+  }
+
+  .auth-pitch h1 {
+    font-size: 32px;
+  }
+
+  .auth-pitch .relay {
+    margin-top: 32px;
+  }
+
+  .auth-form {
+    justify-content: flex-start;
+    padding: 32px 20px 56px;
+  }
+}
+
+@media (max-width: 640px) {
+  .relay {
+    --bot: 44px;
+  }
+
+  .relay-name,
+  .relay-status {
+    display: none;
+  }
+
+  .account-name {
+    display: none;
+  }
+}
+
+/* ---- connect your Bots ---- */
+
+.log-who {
+  display: flex;
+  align-items: center;
+}
+
+.paste {
+  margin: 16px 0 0;
+  padding: 16px;
+  max-width: min(100%, 76ch);
+  overflow-x: auto;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 14px;
+  line-height: 1.55;
+  background: var(--wash);
+  border-radius: var(--radius);
+}
+
+.brief-item {
+  padding: 20px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.brief-item:first-child {
+  margin-top: 16px;
+  border-top: 1px solid var(--ink);
+}
+
+.brief-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 14px;
+}
+
+.brief-head .bot-avatar {
+  width: 40px;
+  height: 40px;
+}
+
+.brief-head .bot-glyph {
+  width: 36px;
+  height: 36px;
+}
+
+.brief-head h3 {
+  margin-right: auto;
+}
+
+.brief-when {
+  flex-basis: 100%;
+  margin-left: 54px;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.brief-item details {
+  margin-top: 8px;
+  margin-left: 54px;
+}
+
+.brief-item summary {
+  width: max-content;
+  font-size: 14px;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+@media (max-width: 640px) {
+  .brief-when,
+  .brief-item details {
+    margin-left: 0;
+  }
+}
+
+/* The person switcher gives way before it runs under Exit demo. */
+.profile-switch select {
+  flex: 0 1 auto;
+  width: 100%;
+  max-width: 26ch;
+}
+
+.topbar-tools .btn--quiet,
+.topbar-tools .help-link {
+  flex: none;
+}

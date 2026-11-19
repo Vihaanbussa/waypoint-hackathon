@@ -1,6 +1,6 @@
 // The five Bots as characters, and the relay that shows work passing between
 // them: one Manager and four workers. Each is a solid shape in its own pastel (see "the Bots' own colours"
-// in app.css), with dark eyes.
+// in css/app/demo.css), with dark eyes.
 
 const NS = 'http://www.w3.org/2000/svg';
 
@@ -80,7 +80,7 @@ export function botGlyph(id, size = 28) {
 }
 
 // What a Bot is doing, the way a teammate's status reads at a glance. Each state
-// has its own motion (see app.css): asleep breathes with its eyes shut, idle
+// has its own motion (see css/app/bots.css): asleep breathes with its eyes shut, idle
 // floats, blinks and glances, thinking tilts and looks up, working bounces
 // inside a turning ring, waiting pulses with a dot, blocked shakes once, done
 // hops and lands.

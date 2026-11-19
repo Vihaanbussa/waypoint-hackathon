@@ -3,9 +3,11 @@
 
 import { get, post } from './store.js';
 
+// The receipts this sign-in may read, kept for the tab only.
 const SESSION_KEY = 'mockportal.receipts';
 const $ = (id) => document.getElementById(id);
 
+// 2026-03-01 -> March 1, 2026. Done by hand to avoid timezone shifts.
 function longDate(iso) {
   const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(String(iso ?? ''));
   if (!m) return '';
@@ -13,6 +15,7 @@ function longDate(iso) {
   return `${months[Number(m[2]) - 1]} ${Number(m[3])}, ${m[1]}`;
 }
 
+// Receipts from the last sign-in; empty when signed out or storage is blocked.
 function receipts() {
   try {
     return JSON.parse(sessionStorage.getItem(SESSION_KEY)) || [];
@@ -21,6 +24,7 @@ function receipts() {
   }
 }
 
+// Loads the first receipt's status into the fixed-id fields a Bot reads.
 async function showCase() {
   const [receipt] = receipts();
   if (!receipt) return showLogin();

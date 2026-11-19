@@ -32,6 +32,7 @@ const CHANNELS = [
 
 let drawnFor = null; // rebuild the form only when the profile changes
 
+// The facts the person entered, plus the rule packs they put in play.
 function renderProfile(profile, today, me) {
   const facts = [
     ['Name', profile.name],
@@ -55,6 +56,7 @@ function renderProfile(profile, today, me) {
   );
 }
 
+// The person's own deadlines, each with a Remove button.
 function renderOwn(ctx) {
   const { store, profile, today } = ctx;
   const mine = rowsOf(store.own_deadlines)
@@ -86,6 +88,7 @@ function renderOwn(ctx) {
     );
 }
 
+// Bot connection state and the sign-out (or exit-demo) button.
 function renderAccount(ctx) {
   const { me, profile } = ctx;
   const connected = Boolean(profile.bot_webhook?.url);
@@ -143,6 +146,7 @@ function textTest(profile, me, canText) {
   return el('div', { class: 'channel-extra' }, button, status);
 }
 
+// Channel checkboxes and quiet hours; every change saves straight away.
 function renderChannels(profile, live, me, canText) {
   const status = document.getElementById('save-status');
   const from = document.getElementById('quiet-from');
@@ -186,6 +190,7 @@ function renderChannels(profile, live, me, canText) {
   status.textContent = '';
 }
 
+// The rules in use, each linked to the official page it comes from.
 function renderRules(profile) {
   const rules = rulesFor(profile);
   document.getElementById('rules-intro').textContent =
