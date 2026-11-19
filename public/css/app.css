@@ -1304,7 +1304,7 @@ main > .fine {
 
 /* Working: bounces on the spot, eyes scanning, inside a turning ring. */
 .bot-avatar[data-state='working'] .bot-body {
-  animation: bot-squash 620ms cubic-bezier(0.45, 0, 0.55, 1) infinite alternate;
+  animation: bot-bounce 620ms cubic-bezier(0.45, 0, 0.55, 1) infinite alternate;
 }
 
 .bot-avatar[data-state='working'] .bot-eye {
@@ -1320,7 +1320,7 @@ main > .fine {
   animation: bot-ring 5s linear infinite;
 }
 
-@keyframes bot-squash {
+@keyframes bot-bounce {
   from {
     transform: scale(1.08, 0.9);
   }

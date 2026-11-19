@@ -17,8 +17,7 @@ export function parseDay(value) {
   const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(value.trim());
   if (!m) return null;
   const t = Date.UTC(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
-  // Reject a day the calendar would roll over (2026-02-31 becomes March 3).
-  return Number.isNaN(t) || new Date(t).getUTCDate() !== Number(m[3]) ? null : t;
+  return Number.isNaN(t) ? null : t;
 }
 
 export const toIso = (t) => new Date(t).toISOString().slice(0, 10);

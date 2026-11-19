@@ -583,13 +583,29 @@ test('texts: off until Twilio is set, then sent to your own phone, recorded, and
     assert.ok(!byBot.isError);
     assert.equal(byBot.value.to, 'the number ending 42');
     assert.equal(got.length, 2);
+    // Better: the Bot names the kind and the deadline, and Waypoint writes the words
+    // with its own day count. The same news is not texted twice in a day.
+    const brief = await callTool(key, 'get_brief', {});
+    const first = brief.value.deadlines.find((d) => d.days_left != null);
+    const written = await callTool(key, 'send_text', { kind: 'reminder', deadline_id: first.deadline_id });
+    assert.ok(!written.isError, JSON.stringify(written));
+    assert.match(written.value.text, /^Waypoint reminder\. /);
+    assert.ok(written.value.text.includes(first.name));
+    assert.equal(got.at(-1).form.get('Body'), written.value.text);
+    assert.equal(got.length, 3);
+    assert.match((await callTool(key, 'send_text', { kind: 'reminder', deadline_id: first.deadline_id })).value, /already texted/);
+    assert.match((await callTool(key, 'send_text', { kind: 'act_now', deadline_id: 'no-such-deadline' })).value, /no deadline/);
+    assert.match((await callTool(key, 'send_text', { kind: 'approval' })).value, /No emails are waiting/);
+    assert.match((await callTool(key, 'send_text', {})).value, /Pass "kind"/);
+    assert.equal(got.length, 3, 'a refused text never reaches Twilio');
     assert.match((await callTool(key, 'send_text', { text: 'Your receipt IOE0912345678 changed' })).value, /receipt numbers/);
     assert.match((await callTool(key, 'send_text', { text: 'x'.repeat(301) })).value, /300 characters/);
-    assert.equal(got.length, 2, 'refused texts never reach Twilio');
+    assert.equal(got.length, 3, 'refused texts never reach Twilio');
 
     const store = await gia.getJson('/api/store');
     const texts = store.notifications.filter((n) => n.via === 'twilio');
-    assert.equal(texts.length, 2);
+    assert.equal(texts.length, 3);
+    assert.equal(texts.at(-1).kind, 'reminder');
     assert.ok(texts.every((n) => n.channel === 'sms' && n.state === 'sent' && n.person === person));
     assert.ok(!JSON.stringify(store).includes('test-token'));
 
@@ -599,7 +615,7 @@ test('texts: off until Twilio is set, then sent to your own phone, recorded, and
     await gia.postJson(`/api/profiles/${person}/settings`, { channels: { sms: true, calendar: true, gmail: true } });
 
     // The daily limit: six texts a person, then no more.
-    for (let n = 0; n < 4; n += 1) assert.equal((await callTool(key, 'send_text', { text: `Waypoint: note ${n}` })).value.sent, true);
+    for (let n = 0; n < 3; n += 1) assert.equal((await callTool(key, 'send_text', { text: `Waypoint: note ${n}` })).value.sent, true);
     assert.match((await callTool(key, 'send_text', { text: 'Waypoint: one too many' })).value, /limit/);
     assert.equal(got.length, 6);
 

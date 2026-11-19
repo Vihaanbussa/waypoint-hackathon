@@ -61,6 +61,7 @@ These live on Waypoint's server, so no Bot can talk its way past them.
 - **Nothing reaches another person without approval.** A Bot can only save a draft, and the server refuses to mark an email delivered unless the student approved it in the browser.
 - **A post on X is never enough.** A rule change needs an official source. Scout must list the X searches it ran, or its run is refused.
 - **No ID numbers in a text.** A text with a receipt number in it, or over 300 characters, is refused. A student gets at most 6 texts a day.
+- **Waypoint writes the texts.** A Bot picks the kind (act now, reminder, status change, approval waiting, rule change, a check that failed) and the deadline; Waypoint writes the words with its own date and day count, and will not send the same news twice in a day.
 - **A key speaks for one student.** A Bot's key reaches one account's person and nobody else, and no template carries a key.
 - **Read only where it matters.** Case Clerk never submits anything on a portal. Scout never replies to, forwards or deletes mail.
 
