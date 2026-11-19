@@ -175,6 +175,8 @@ $('setup-form').addEventListener('submit', async (event) => {
       ...draftProfile(),
       receipts: $('receipts').value,
       phone: $('phone').value,
+      // So the server counts days from the person's own today, not the server's.
+      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
       channels: { sms: $('ch-sms').checked, calendar: $('ch-calendar').checked, gmail: $('ch-gmail').checked },
     });
     location.assign(editing ? '/settings/' : '/');

@@ -122,3 +122,80 @@ test('F7: responses carry anti-framing and CSP headers', async () => {
   const res = await fetch(`${base}/login/`);
   assert.ok(res.headers.get('content-security-policy') || res.headers.get('x-frame-options'));
 });
+
+// ---- smaller items ----
+
+import { parseDay } from '../public/js/clocks.js';
+
+async function bot(key, name, args = {}) {
+  const res = await fetch(`${base}/mcp`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${key}` },
+    body: JSON.stringify({ jsonrpc: '2.0', id: 1, method: 'tools/call', params: { name, arguments: args } }),
+  });
+  return JSON.parse((await res.json()).result.content[0].text);
+}
+
+test('S1: a calendar day that does not exist is not a date', () => {
+  assert.equal(parseDay('2026-02-31'), null);
+  assert.equal(parseDay('2026-04-31'), null);
+  assert.notEqual(parseDay('2028-02-29'), null);
+});
+
+test('S2: login lockout is per address and email, and does not lock out a different email', async () => {
+  await newAccount('lockme');
+  for (let i = 0; i < 5; i += 1) await call('POST', '/api/auth/login', { email: 'lockme@example.com', password: 'wrong-password' });
+  assert.equal((await call('POST', '/api/auth/login', { email: 'lockme@example.com', password: 'correct-horse-9' })).status, 429);
+  const other = await call('POST', '/api/auth/login', { email: 'nobody@example.com', password: 'x' });
+  assert.equal(other.status, 401);
+});
+
+test('S3: signups are limited per address', async () => {
+  process.env.WAYPOINT_SIGNUPS_PER_HOUR = '2';
+  const { start } = await import('../server.js?signup-limit');
+  const small = await start({ port: 0, host: '127.0.0.1' });
+  delete process.env.WAYPOINT_SIGNUPS_PER_HOUR;
+  const url = `http://127.0.0.1:${small.address().port}/api/auth/signup`;
+  const go = (n) => fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: 'N', email: `n${n}@example.com`, password: 'correct-horse-9' }) });
+  const codes = [(await go(1)).status, (await go(2)).status, (await go(3)).status];
+  small.close();
+  small.closeAllConnections?.();
+  assert.deepEqual(codes, [200, 200, 429]);
+});
+
+test('S4: the session cookie is Secure when a proxy says the browser used https', async () => {
+  const res = await fetch(`${base}/api/auth/signup`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'X-Forwarded-Proto': 'https' },
+    body: JSON.stringify({ name: 'Sec', email: 'sec@example.com', password: 'correct-horse-9' }),
+  });
+  assert.match(res.headers.get('set-cookie') || '', /; Secure/);
+});
+
+test('S5: one account writing many rows does not push another account\'s rows out', async () => {
+  const flood = await newAccount('flood');
+  const calm = await newAccount('calm');
+  const write = (a, i) =>
+    call('POST', '/api/rows/runs', { person: a.profile.id, bot: 'Case Clerk', status: 'ok', summary: `r${i}` }, { headers: { Authorization: `Bearer ${a.key}` } });
+  await write(calm, 0);
+  for (let i = 0; i < 405; i += 1) await write(flood, i);
+  const mine = await call('GET', '/api/store', undefined, { cookie: calm.cookie });
+  assert.equal(mine.json.runs.length, 1);
+  const theirs = await call('GET', '/api/store', undefined, { cookie: flood.cookie });
+  assert.equal(theirs.json.runs.length, 400);
+});
+
+test('S6: days are counted from the person\'s own time zone', async () => {
+  const mk = async (tag, timezone) => {
+    const up = await call('POST', '/api/auth/signup', { name: tag, email: `${tag}@example.com`, password: 'correct-horse-9' });
+    await call('POST', '/api/profile', { name: tag, visa_type: 'f1_opt', timezone }, { cookie: up.cookie });
+    const key = (await call('GET', '/api/connect', undefined, { cookie: up.cookie })).json.bot_key;
+    return (await bot(key, 'get_brief')).today;
+  };
+  const east = await mk('tzeast', 'Pacific/Kiritimati'); // UTC+14
+  const west = await mk('tzwest', 'Pacific/Pago_Pago'); // UTC-11
+  const expect = (zone) => new Intl.DateTimeFormat('en-CA', { timeZone: zone, year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date());
+  assert.equal(east, expect('Pacific/Kiritimati'));
+  assert.equal(west, expect('Pacific/Pago_Pago'));
+  assert.notEqual(east, west);
+});
