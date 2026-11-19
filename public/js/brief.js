@@ -180,7 +180,7 @@ function renderGuide(ctx, clocks, actions, pending) {
     el('p', {
       class: 'guide-foot',
       text: ctx.me.demo
-        ? 'This demo shows Priya, a sample F-1 student on OPT. Help brings this guide back.'
+        ? 'This demo has two sample people: Priya, a student on OPT, and Wei, a graduate on H-1B. Switch between them with Viewing, at the top. Help brings this guide back.'
         : 'These are your own details. Change them any time in Settings. Help brings this guide back.',
     }),
   );

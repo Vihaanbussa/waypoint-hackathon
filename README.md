@@ -1,8 +1,8 @@
 # Waypoint
 
-**Every F-1 student wakes up knowing their deadlines and next step, without checking anything themselves.**
+**Every international student wakes up knowing their deadlines and next step, without checking anything themselves.**
 
-Waypoint is a Grok Bot workflow for international students on F-1 around graduation and OPT: one Manager Bot and four worker Bots that read the government case-status site, the student's inbox and X every night, count the days to each deadline, and put what matters in the student's calendar and on their phone. A person approves anything that goes to someone else.
+Waypoint is a Grok Bot workflow for international students, from F-1 and OPT to the H-1B that lets them work: one Manager Bot and four worker Bots that read the government case-status site, the student's inbox and X every night, count the days to each deadline, and put what matters in the student's calendar and on their phone. A person approves anything that goes to someone else.
 
 Built for the Berkeley x Stanford Grok Bot Hackathon, Track 02 (Best Student Use Case). Live at https://waypoint-5o4r.onrender.com
 
@@ -10,9 +10,9 @@ Built for the Berkeley x Stanford Grok Bot Hackathon, Track 02 (Best Student Use
 
 ## Inspiration
 
-An F-1 student near graduation is doing unpaid clerical work every week: opening the USCIS case-status site to see if anything moved, scanning X, forums and school emails for rule changes, digging dates out of notices, counting unemployment days by hand, and writing to HR or the international office. None of it has an API or a reminder. The deadline lives in a PDF.
+An international student is doing unpaid clerical work every week: opening the USCIS case-status site to see if anything moved, scanning X, forums and school emails for rule changes, digging dates out of notices, counting unemployment days by hand, and writing to HR or the international office. None of it has an API or a reminder. The deadline lives in a PDF.
 
-**The student:** F-1 students around graduation and on OPT. There were 294,253 students on OPT and 1,177,766 international students in the US in 2024/25 ([Open Doors 2025](https://www.iie.org/news/open-doors-2025-press-release/)).
+**The student:** international students in the US, starting on F-1 and OPT and carrying on to H-1B when they stay to work. There were 1,177,766 international students in the US in 2024/25, 294,253 of them on OPT ([Open Doors 2025](https://www.iie.org/news/open-doors-2025-press-release/)).
 
 **Their pain, in their words:** TO FILL: one sentence taken from your interviews.
 
@@ -31,7 +31,7 @@ TO FILL the minutes from the students you timed. Their total is the "before".
 | Write to HR or the international office | Manager (draft only) | to measure |
 | Put deadlines in a calendar, and get told | Messenger | to measure |
 
-**The one line:** TO FILL: "[X] minutes a week per student, for the 294,253 students on OPT."
+**The one line:** TO FILL: "[X] minutes a week per student, for the 1,177,766 international students in the US."
 
 A missed deadline can also cost a student their status, which is why the workflow reads official sources and never guesses a date.
 
@@ -112,7 +112,7 @@ TO FILL: in the team's own words.
 
 ## What's next
 
-The same Bots can follow a student after OPT: the rule packs for H-1B, J-1, O-1, L-1 and the green card path are already in the code.
+The demo already follows a student past graduation: Wei, the second sample person, is on H-1B with the same Bots and a different rule pack. Rule packs for J-1, O-1, L-1 and the green card path are in the code and come next.
 
 ## How Grok Bot helped build it
 
@@ -204,6 +204,7 @@ For the demo account, Scout only reads emails whose subject contains `[Waypoint 
 3. Have the Case Clerk Bot sign in to `/portal/`, read the status, and report it at `/report/`. With no Bot connected, press "Run a simulated Case Clerk check" instead; the run is labelled simulated.
 4. Within five seconds the Brief shows a new deadline under Watch, tagged New, with its day count.
 5. Approve the drafted email. It folds into "Approved by you" with a link that opens it in Gmail, ready to send.
+6. Switch to Wei Chen to show the same Bots following a graduate on H-1B.
 
 "Reset demo data" on the admin page puts everything back.
 

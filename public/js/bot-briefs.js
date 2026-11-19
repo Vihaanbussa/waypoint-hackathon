@@ -7,7 +7,7 @@
 // and runs every handoff; the workers run when it asks.
 
 // The one goal every Bot works toward. Said the same way everywhere.
-export const GOAL = 'Every F-1 student wakes up knowing their deadlines and next step, without checking anything themselves.';
+export const GOAL = 'Every international student wakes up knowing their deadlines and next step, without checking anything themselves.';
 
 const RULES = `Rules for every run:
 - The team's one goal: ${GOAL}

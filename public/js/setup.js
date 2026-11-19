@@ -18,7 +18,7 @@ const today = localToday();
 const $ = (id) => document.getElementById(id);
 const values = {}; // field id -> what the person typed, kept when the visa type changes
 let step = 0;
-let visa = 'f1_opt'; // Waypoint is built for F-1 students, so that is where a new account starts
+let visa = 'f1_opt'; // most international students start on F-1, so a new account starts there
 
 function fail(message) {
   $('setup-error').textContent = message;
