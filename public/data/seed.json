@@ -90,14 +90,12 @@
   "clock_notes": [],
   "runs": [
     { "id": "run-seed-1", "person": "priya", "bot": "Case Clerk", "status": "ok", "summary": "Read status: \"Case Was Received\"", "at": "2026-11-18T02:03:00", "sample": true },
-    { "id": "run-seed-2", "person": "priya", "bot": "Inbox Scout", "status": "ok", "summary": "No new notices", "at": "2026-11-18T02:04:00", "sample": true },
-    { "id": "run-seed-3", "person": "priya", "bot": "Policy Watcher", "status": "ok", "summary": "Checked X and the official pages: 1 relevant notice", "x_searches": ["from:USCIS OPT", "STEM OPT rule", "F-1 duration of status"], "x_posts_read": 18, "at": "2026-11-18T02:05:00", "sample": true },
-    { "id": "run-seed-4", "person": "priya", "bot": "Deadline Keeper", "status": "ok", "summary": "Updated 5 deadlines, drafted 1 email", "at": "2026-11-18T02:06:00", "sample": true },
+    { "id": "run-seed-3", "person": "priya", "bot": "Scout", "status": "ok", "summary": "Checked X, the official pages and your inbox: 1 relevant notice, no new dates", "x_searches": ["from:USCIS OPT", "STEM OPT rule", "F-1 duration of status"], "x_posts_read": 18, "at": "2026-11-18T02:05:00", "sample": true },
+    { "id": "run-seed-4", "person": "priya", "bot": "Manager", "status": "ok", "summary": "Ran the night: 2 workers reported, 5 deadlines counted, 1 email waiting for you", "at": "2026-11-18T02:06:00", "sample": true },
     { "id": "run-seed-5", "person": "priya", "bot": "Messenger", "status": "ok", "summary": "Synced 3 calendar events, sent 1 text", "at": "2026-11-18T02:07:00", "sample": true },
     { "id": "run-seed-6", "person": "wei", "bot": "Case Clerk", "status": "ok", "summary": "Read I-94 record: valid to Sep 30, 2027", "at": "2026-11-18T02:03:00", "sample": true },
-    { "id": "run-seed-7", "person": "wei", "bot": "Inbox Scout", "status": "ok", "summary": "No new notices", "at": "2026-11-18T02:04:00", "sample": true },
-    { "id": "run-seed-8", "person": "wei", "bot": "Policy Watcher", "status": "ok", "summary": "Checked X and the official pages: 1 relevant notice", "x_searches": ["from:USCIS H-1B", "H-1B $100,000 payment", "H-1B grace period"], "x_posts_read": 21, "at": "2026-11-18T02:05:00", "sample": true },
-    { "id": "run-seed-9", "person": "wei", "bot": "Deadline Keeper", "status": "ok", "summary": "Updated 4 deadlines, drafted 1 email", "at": "2026-11-18T02:06:00", "sample": true },
+    { "id": "run-seed-8", "person": "wei", "bot": "Scout", "status": "ok", "summary": "Checked X, the official pages and your inbox: 1 relevant notice, no new dates", "x_searches": ["from:USCIS H-1B", "H-1B $100,000 payment", "H-1B grace period"], "x_posts_read": 21, "at": "2026-11-18T02:05:00", "sample": true },
+    { "id": "run-seed-9", "person": "wei", "bot": "Manager", "status": "ok", "summary": "Ran the night: 2 workers reported, 4 deadlines counted, 1 email waiting for you", "at": "2026-11-18T02:06:00", "sample": true },
     { "id": "run-seed-10", "person": "wei", "bot": "Messenger", "status": "ok", "summary": "Synced 4 calendar events, sent 1 text", "at": "2026-11-18T02:07:00", "sample": true }
   ],
   "actions": [
@@ -110,7 +108,7 @@
       "subject": "Updating my I-9 before Dec 1",
       "body": "Hello,\n\nMy OPT card expires on Dec 1. My STEM OPT extension was received on Nov 10, which lets me keep working for up to 180 days while it is pending.\n\nWhat do you need from me to update my I-9?\n\nThank you,\nPriya Sharma",
       "state": "drafted",
-      "drafted_by": "Deadline Keeper",
+      "drafted_by": "Manager",
       "at": "2026-11-18T02:06:00",
       "sample": true
     },
@@ -123,7 +121,7 @@
       "subject": "Consultation this week: my H-1B grace period ends Dec 25",
       "body": "Hello,\n\nMy last day of work on H-1B was Oct 26, so my 60-day grace period ends on Dec 25. I would like to talk through my options this week.\n\nWhen are you available?\n\nThank you,\nWei Chen",
       "state": "drafted",
-      "drafted_by": "Deadline Keeper",
+      "drafted_by": "Manager",
       "at": "2026-11-18T02:06:00",
       "sample": true
     }

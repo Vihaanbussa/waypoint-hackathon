@@ -1,7 +1,7 @@
 // Activity: every Bot run and every message sent, newest first.
 
 import { initPage, el, formatTime, rowsOf, xChecked } from './common.js';
-import { botAvatar, botByName, heroBot } from './bots.js';
+import { botAvatar, botByName, botName, heroBot } from './bots.js';
 import { arriveBands } from './motion.js';
 
 arriveBands();
@@ -10,7 +10,7 @@ const CHANNEL = { sms: 'Text message', calendar: 'Google Calendar', gmail: 'Gmai
 const newestFirst = (a, b) => String(b.at).localeCompare(String(a.at));
 
 function tags(row) {
-  return `${row.simulated ? ' (simulated)' : ''}${row.sample ? ' (sample)' : ''}`;
+  return `${row.simulated ? ' (simulated)' : ''}${row.sample ? ' (sample)' : ''}${row.trial_template ? " (Twilio trial: the phone got Twilio's sample text, not this wording)" : ''}`;
 }
 
 function avatarFor(name, state, small = true) {
@@ -37,7 +37,7 @@ initPage(({ store, profile, today, live }) => {
   runningLine.className = running.length ? 'with-bot' : '';
   runningLine.replaceChildren(
     ...running.map((r) => avatarFor(r.bot, 'working', false)),
-    running.length ? `${running.map((r) => r.bot).join(', ')} ${running.length === 1 ? 'is' : 'are'} working.` : 'No Bot is working right now.',
+    running.length ? `${running.map((r) => botName(r.bot)).join(', ')} ${running.length === 1 ? 'is' : 'are'} working.` : 'No Bot is working right now.',
   );
 
   document.getElementById('runs').replaceChildren(
@@ -50,7 +50,7 @@ initPage(({ store, profile, today, live }) => {
           'span',
           { class: 'log-who' },
           avatarFor(run.bot, run.status === 'failed' ? 'blocked' : run.status === 'running' ? 'working' : 'idle'),
-          run.bot || 'Bot',
+          botName(run.bot) || 'Bot',
         ),
         el(
           'span',

@@ -271,7 +271,7 @@ function fromAlerts(profile, store) {
       risk: normalizeRisk(row.risk) ?? 'clear',
       reason: String(row.why ?? ''),
       source: row.source_label ? { label: String(row.source_label), url: row.source_url } : null,
-      // Policy Watcher first saw it on X; the source above is what confirmed it.
+      // Scout first saw it on X; the source above is what confirmed it.
       seenOnX: row.x_url || row.seen_on_x === true || String(row.seen_on_x).toLowerCase() === 'true' ? { url: row.x_url || null } : null,
       link: null,
     });
@@ -304,7 +304,7 @@ export function buildClocks(profile, store, today) {
     ...fromAlerts(profile, store),
   );
 
-  // Deadline Keeper (the Bot) may replace a reason with its own wording.
+  // The Manager (the Bot) may replace a reason with its own wording.
   for (const note of rows(store.clock_notes)) {
     if (note.person !== profile.id || !note.reason) continue;
     const clock = clocks.find((c) => c.id === note.clock);

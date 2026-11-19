@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Sign in · Waypoint</title>
-    <meta name="description" content="Waypoint watches your visa deadlines with six Grok Bots that check the government portal, your inbox and X. See how one night goes, open the demo, or sign in.">
+    <meta name="description" content="Waypoint watches an international student's visa deadlines with five Grok Bots, one Manager and four workers, that check the government portal, your inbox and X. See how one night goes, open the demo, or sign in.">
     <link rel="icon" href="/logo.svg" type="image/svg+xml">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -37,8 +37,9 @@
               <svg class="logo-mark" viewBox="0 0 32 32" width="40" height="40" aria-hidden="true"><circle class="logo-stop logo-stop--1" cx="5" cy="26" r="2"/><circle class="logo-stop logo-stop--2" cx="11.5" cy="20.5" r="2.7"/><circle class="logo-ring" pathLength="1" cx="22" cy="11" r="6.5" transform="rotate(135 22 11)"/><circle class="logo-stop logo-stop--3" cx="22" cy="11" r="2.6"/></svg>
               Waypoint
             </div>
+            <p class="pitch-for">For international students, from F-1 and OPT to the H-1B that lets you work</p>
             <h1>Your visa deadlines, <span class="go">watched for you.</span></h1>
-            <p>Visa dates hide in a government portal, your inbox and rules that change. Missing one can cost your status. Six Bots check all three every night, and watch X for news that affects you. You only come here to see what needs you.</p>
+            <p>Every international student wakes up knowing their deadlines and next step, without checking anything themselves. A Manager Bot and four workers read the government portal, your inbox and X every night, so you only come here to see what needs you.</p>
             <div id="relay"></div>
           </div>
           <a class="scroll-cue" href="#night">
@@ -73,14 +74,14 @@
 
           <p class="auth-or">or</p>
           <button class="btn" type="button" id="demo" data-demo>Show me the demo</button>
-          <p class="fine">The demo has two sample people, one on F-1 OPT and one on H-1B. No account needed.</p>
+          <p class="fine">The demo has two sample people: Priya, a student on OPT, and Wei, a graduate on H-1B. No account needed.</p>
         </section>
       </div>
 
       <section class="night" id="night" aria-labelledby="night-title">
         <div class="night-head">
           <h2 id="night-title">One night, while you sleep</h2>
-          <p>Each Bot has one job and a time to do it. Scroll to move the clock.</p>
+          <p>One Manager runs the night on one schedule, and each worker has one job. Scroll to move the clock.</p>
         </div>
 
         <div class="night-body">
@@ -88,48 +89,48 @@
             <p class="night-clock"><span id="night-clock">2:00 AM</span></p>
             <div id="night-relay"></div>
             <ul class="night-brief" id="night-brief">
-              <li data-from="0"><span class="night-key">Case status</span><span class="night-val">Request for Evidence Was Sent</span></li>
-              <li data-from="1"><span class="night-key">From your inbox</span><span class="night-val">Biometrics appointment, Dec 9</span></li>
-              <li data-from="2"><span class="night-key">Days left</span><span class="night-val"><b>84</b> to answer the request</span></li>
-              <li data-from="2"><span class="night-key">Email to HR</span><span class="night-val night-swap"><span class="night-drafted">Drafted, waiting for you</span><span class="night-approved">Approved by you</span></span></li>
-              <li data-from="3"><span class="night-key">Your calendar</span><span class="night-val">3 deadlines added</span></li>
-              <li data-from="4"><span class="night-key">On X today</span><span class="night-val">1 post checked, nothing confirmed</span></li>
+              <li data-from="1"><span class="night-key">Case status</span><span class="night-val">Request for Evidence Was Sent</span></li>
+              <li data-from="2"><span class="night-key">On X today</span><span class="night-val">3 searches, nothing confirmed</span></li>
+              <li data-from="2"><span class="night-key">From your inbox</span><span class="night-val">Biometrics appointment, Dec 9</span></li>
+              <li data-from="3"><span class="night-key">Days left</span><span class="night-val"><b>84</b> to answer the request</span></li>
+              <li data-from="3"><span class="night-key">Email to HR</span><span class="night-val night-swap"><span class="night-drafted">Held by the Manager for you</span><span class="night-approved">Approved by you</span></span></li>
+              <li data-from="4"><span class="night-key">Your calendar</span><span class="night-val">3 deadlines added</span></li>
             </ul>
           </div>
 
           <ol class="night-steps" id="night-steps">
-            <li data-time="2:00 AM" data-bot="case">
+            <li data-time="2:00 AM" data-bot="manager">
               <p class="night-time">2:00 AM</p>
+              <h3>The Manager starts the night</h3>
+              <p>One Bot is in charge and holds the only schedule. It wakes Case Clerk and Scout, waits for both, and asks once more if one fails before going on with the last good data.</p>
+            </li>
+            <li data-time="2:01 AM" data-bot="case">
+              <p class="night-time">2:01 AM</p>
               <h3>Case Clerk reads the government portal</h3>
               <p>It signs in, looks up your receipt number and reads the status word for word. It only reads. It never submits or uploads anything.</p>
             </li>
-            <li data-time="2:10 AM" data-bot="inbox">
-              <p class="night-time">2:10 AM</p>
-              <h3>Inbox Scout finds dates in your email</h3>
-              <p>It looks at mail from USCIS, your school and your employer, and keeps only the date and who sent it. It never replies, forwards or deletes.</p>
+            <li data-time="2:05 AM" data-bot="scout">
+              <p class="night-time">2:05 AM</p>
+              <h3>Scout watches X and reads your inbox</h3>
+              <p>News about visas breaks on X first, so it searches X for your visa type and checks each claim against USCIS and the Federal Register. A post only counts once an official page confirms it. Then it finds dates in mail from USCIS, your school and your employer, and never replies, forwards or deletes.</p>
             </li>
-            <li data-time="2:30 AM" data-bot="keeper">
+            <li data-time="2:30 AM" data-bot="manager">
               <p class="night-time">2:30 AM</p>
-              <h3>Deadline Keeper counts the days</h3>
-              <p>Plain code does the date math from the official rule, so the number is the same every time. Then the Bot drafts the email someone else needs to get.</p>
+              <h3>The Manager counts the days and drafts</h3>
+              <p>Plain code does the date math from the official rule, so the number is the same every time. The Manager drafts the email someone else needs to get, then holds it. Nothing goes to another person until you approve.</p>
             </li>
-            <li data-time="3:00 AM" data-bot="messenger">
-              <p class="night-time">3:00 AM</p>
+            <li data-time="2:40 AM" data-bot="messenger">
+              <p class="night-time">2:40 AM</p>
               <h3>Messenger puts it where you will see it</h3>
-              <p>One calendar event per deadline, and one text if something needs you now. It keeps to your quiet hours unless it is urgent.</p>
-            </li>
-            <li data-time="7:00 AM" data-bot="policy">
-              <p class="night-time">7:00 AM</p>
-              <h3>Policy Watcher watches X for rule changes</h3>
-              <p>News about visas breaks on X first. It searches X for your visa type, then checks each claim against USCIS, the Federal Register and the Visa Bulletin. A post only counts once an official page confirms it.</p>
+              <p>One calendar event per deadline, and one text if something needs you now. Those go only to you, so they need no approval. It keeps to your quiet hours unless it is urgent.</p>
             </li>
             <li data-time="8:00 AM" data-bot="">
               <p class="night-time">8:00 AM</p>
               <h3>You open one page</h3>
-              <p>Everything is sorted by how soon it needs you. You read the top deadline, approve one email, and you are done.</p>
+              <p>Everything is sorted by how soon it needs you. You read the top deadline, approve the one email the Manager held for you, and you are done.</p>
             </li>
           </ol>
-          <p class="night-foot">The sixth Bot, Intake Clerk, reads a document whenever you send it one.</p>
+          <p class="night-foot">The fourth worker, Intake Clerk, reads a document whenever you send it one.</p>
         </div>
       </section>
 
@@ -153,7 +154,7 @@
 
       <section class="land-cta" aria-labelledby="cta-title">
         <h2 id="cta-title">See it with sample data first.</h2>
-        <p>Two made-up people, one on F-1 OPT and one on H-1B. No account, nothing to install.</p>
+        <p>Two made-up people: Priya, a student on OPT, and Wei, a graduate on H-1B. No account, nothing to install.</p>
         <div class="land-cta-actions">
           <button class="btn btn--primary" type="button" data-demo>Show me the demo</button>
           <button class="link-button" type="button" id="cta-signup">Create my account</button>

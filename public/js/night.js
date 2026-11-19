@@ -52,9 +52,15 @@ export function startNight() {
     stage.classList.toggle('is-morning', i === last);
 
     for (const bot of BOTS) {
-      const turn = order.indexOf(bot.id);
-      // Intake Clerk has no turn at night: it waits for a document.
-      const state = turn === -1 ? 'idle' : turn < i ? 'done' : turn === i ? 'working' : 'asleep';
+      // A Bot can have more than one turn (the Manager starts the night and
+      // later counts and drafts). Intake Clerk has none: it waits for a document.
+      const turns = order.flatMap((id, n) => (id === bot.id ? [n] : []));
+      let state = 'asleep';
+      if (!turns.length) state = 'idle';
+      else if (turns.includes(i)) state = 'working';
+      else if (turns.some((n) => n > i)) state = turns.some((n) => n < i) ? 'thinking' : 'asleep';
+      // Its work is done, but the Manager keeps holding the email until morning.
+      else state = bot.id === 'manager' && i < last ? 'waiting' : 'done';
       setBotState(faceOf(bot.id), state);
     }
     sendPacket(relay, order[i] || null);

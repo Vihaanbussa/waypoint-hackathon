@@ -133,7 +133,7 @@ function textTest(profile, me, canText) {
     status.textContent = 'Sending…';
     try {
       const sent = await post(`/api/profiles/${encodeURIComponent(profile.id)}/test-text`, {});
-      status.textContent = `Sent to ${sent.to}. It can take a few seconds to arrive.`;
+      status.textContent = `Sent to ${sent.to}. It can take a few seconds to arrive.${sent.trial ? " Your Twilio account is on a trial, so it arrives as one of Twilio's sample texts, not Waypoint's wording." : ''}`;
     } catch (err) {
       status.classList.add('is-error');
       status.textContent = err.message;

@@ -45,7 +45,7 @@
           <div class="hero-text">
             <p class="step-count"><a href="/settings/" id="back-link">Settings</a> · Connect your Bots</p>
             <h1>Connect your Bots</h1>
-            <p class="lede">Waypoint's six Bots are Grok Bots you set up in your own Grok Bot app. This page has everything to paste: the connector, your key, and each Bot's first message.</p>
+            <p class="lede">Waypoint's five Bots, one Manager and four workers, are Grok Bots you set up in your own Grok Bot app. This page has everything to paste: the connector, your key, and each Bot's first message.</p>
             <p class="notice" id="connect-notice" hidden></p>
           </div>
           <div class="hero-bot" id="hero-bot"></div>
@@ -72,8 +72,8 @@
       <section class="band band--wash" aria-labelledby="c2">
         <div class="band-inner split">
           <div class="split-label">
-            <h2 id="c2">2. Create the six Bots</h2>
-            <p>Make a new Bot for each, give it the name shown, and paste its message as the first thing you say. Then ask it to set up the schedule shown.</p>
+            <h2 id="c2">2. Create the five Bots</h2>
+            <p>Make a new Bot for each, give it the name shown, and paste its message as the first thing you say. Only the Manager gets a schedule: it starts the others. No message has your key in it, so each Bot can be shared as a template.</p>
           </div>
           <div class="split-body">
             <div id="briefs"></div>
@@ -84,7 +84,7 @@
         <div class="band-inner split">
           <div class="split-label">
             <h2 id="c3">3. Let Check now wake them</h2>
-            <p>Optional. Send the message to Case Clerk, then paste the webhook address and key it gives you. After that, Check now on your Brief starts a real run instead of a simulated one.</p>
+            <p>Optional. Send the message to the Manager, then paste the webhook address and key it gives you. After that, Check now on your Brief starts a real run instead of a simulated one.</p>
           </div>
           <div class="split-body">
             <pre class="paste" id="webhook-message"></pre>
@@ -117,7 +117,7 @@
             <h2 id="c4">4. Check it worked</h2>
           </div>
           <div class="split-body">
-            <p>Ask Case Clerk to "run your Waypoint check now". Within a minute your Brief should show Case Clerk with a time under it, and a line in Checked for you that does not say simulated.</p>
+            <p>Ask the Manager to "run the night now". Within a few minutes your Brief should show each Bot with a time under it, and lines in Checked for you that do not say simulated.</p>
             <p class="fine">Bots share one cloud computer and its sign-ins, so treat the key like a password. Make a new key here if it leaks; the old one stops working at once.</p>
           </div>
         </div>
