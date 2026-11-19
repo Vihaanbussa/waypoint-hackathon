@@ -3674,6 +3674,14 @@ main.bands {
   height: 50px;
 }
 
+/* Who it is for, said plainly above the headline. */
+.auth-pitch-body > .pitch-for {
+  margin: 0 0 10px;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--paper);
+}
+
 @media (max-width: 860px) {
   .pitch-brand {
     gap: 11px;

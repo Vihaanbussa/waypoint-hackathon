@@ -121,6 +121,9 @@ async function loadStore() {
   if (!Array.isArray(store.profiles)) store.profiles = [];
   if (!Array.isArray(store.own_deadlines)) store.own_deadlines = [];
   if (!store.portal || typeof store.portal !== 'object') store.portal = {};
+  // Waypoint is for F-1 students. The H-1B sample person stays in the data to
+  // show what comes next, but the demo no longer opens on him.
+  for (const p of store.profiles) if (p && !p.owner && p.visa_type !== 'f1_opt') p.later = true;
   for (const run of store.runs) if (run && run.bot) run.bot = botName(run.bot);
   for (const action of store.actions) if (action && action.drafted_by) action.drafted_by = botName(action.drafted_by);
 }

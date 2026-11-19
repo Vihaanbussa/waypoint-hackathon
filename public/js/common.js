@@ -104,7 +104,10 @@ function pickProfile(store) {
   } catch {
     // No storage: the address still carries the choice.
   }
-  return profiles.find((p) => p.id === fromUrl) || profiles.find((p) => p.id === saved) || profiles[0] || null;
+  // The demo is about the student. A sample person marked "later" (what comes
+  // after graduation) only opens when the address asks for them by id.
+  const shown = profiles.filter((p) => !p.later);
+  return profiles.find((p) => p.id === fromUrl) || shown.find((p) => p.id === saved) || shown[0] || profiles[0] || null;
 }
 
 function rememberProfile(id) {
@@ -127,7 +130,11 @@ function syncTopbar(store, profile, onSwitch) {
     link.setAttribute('href', url.pathname + url.search);
   }
   syncAccount(store.me);
-  syncPicker(rowsOf(store.profiles), profile, onSwitch);
+  const people = rowsOf(store.profiles).filter((p) => !p.later || p.id === profile?.id);
+  syncPicker(people, profile, onSwitch);
+  // With one person to show there is nothing to switch between.
+  const switcher = document.getElementById('profile-switch');
+  if (switcher && people.length < 2) switcher.hidden = true;
 }
 
 function lineIcon(d, cls) {

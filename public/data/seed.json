@@ -21,6 +21,7 @@
     },
     {
       "id": "wei",
+      "later": true,
       "name": "Wei Chen",
       "visa_type": "h1b",
       "visa_label": "H-1B",
