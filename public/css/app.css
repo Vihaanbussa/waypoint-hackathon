@@ -1,5 +1,5 @@
 /* Waypoint. Black on white with one green, one typeface, the whole width of the window.
-   The only other colour is the six Bots, one pastel each (the last block).
+   The only other colour is the five Bots, one pastel each (the last block).
    The typeface is Atkinson Hyperlegible Next: built so 0/O and 1/l/I are easy
    to tell apart, which matters for dates and receipt numbers.
    Flat fills only. No gradients, no shadows, no blur. */
@@ -743,7 +743,7 @@ main {
   overflow-wrap: anywhere;
 }
 
-/* A second, quieter line under a run: what Policy Watcher searched on X. */
+/* A second, quieter line under a run: what Scout searched on X. */
 .log-detail {
   display: block;
   color: var(--muted);
@@ -1129,7 +1129,7 @@ main > .fine {
   }
 }
 
-/* The relay: six Bots on one line, work passing left to right. */
+/* The relay: five Bots on one line, work passing left to right. */
 .relay {
   --bot: 52px;
   --wire: var(--line);
@@ -1149,8 +1149,8 @@ main > .fine {
 .relay-track::before {
   content: '';
   position: absolute;
-  left: 8.333%;
-  right: 8.333%;
+  left: 10%;
+  right: 10%;
   top: calc(var(--bot) / 2);
   height: 1px;
   background: var(--wire);
@@ -1457,9 +1457,10 @@ main > .fine {
   display: none;
 }
 
-/* The sign-in page plays the hand-off on its own, nine seconds a lap. */
+/* The sign-in page plays the hand-off on its own: five Bots, seven and a half
+   seconds a lap. */
 .relay--loop .relay-face {
-  animation: relay-wake 9s infinite both;
+  animation: relay-wake 7.5s infinite both;
   animation-delay: calc(var(--i) * 1.5s);
 }
 
@@ -1467,21 +1468,21 @@ main > .fine {
    stay hidden behind them. */
 @keyframes relay-wake {
   0%,
-  16.6%,
+  20%,
   100% {
     color: var(--dim);
     transform: none;
   }
-  2.5% {
+  3% {
     color: inherit;
     transform: translateY(-7px) scale(1.12);
   }
-  5% {
+  6% {
     color: inherit;
     transform: scale(1.1, 0.9);
   }
-  7.5%,
-  12% {
+  9%,
+  14.4% {
     color: inherit;
     transform: none;
   }
@@ -1495,44 +1496,40 @@ main > .fine {
   width: 8px;
   height: 8px;
   background: currentColor;
-  animation: relay-packet 9s infinite both;
+  animation: relay-packet 7.5s infinite both;
 }
 
 @keyframes relay-packet {
   0% {
     opacity: 0;
-    transform: translateX(calc(8.333cqw - 50%));
+    transform: translateX(calc(10cqw - 50%));
   }
-  2% {
+  2.4% {
     opacity: 1;
   }
-  11% {
-    transform: translateX(calc(8.333cqw - 50%));
+  13.2% {
+    transform: translateX(calc(10cqw - 50%));
   }
-  16.67%,
-  27.7% {
-    transform: translateX(calc(25cqw - 50%));
+  20%,
+  33.2% {
+    transform: translateX(calc(30cqw - 50%));
   }
-  33.33%,
-  44.4% {
-    transform: translateX(calc(41.667cqw - 50%));
+  40%,
+  53.2% {
+    transform: translateX(calc(50cqw - 50%));
   }
-  50%,
-  61.1% {
-    transform: translateX(calc(58.333cqw - 50%));
+  60%,
+  73.2% {
+    transform: translateX(calc(70cqw - 50%));
   }
-  66.67%,
-  77.7% {
-    transform: translateX(calc(75cqw - 50%));
-  }
-  83.33% {
+  80% {
     opacity: 1;
-    transform: translateX(calc(91.667cqw - 50%));
+    transform: translateX(calc(90cqw - 50%));
   }
-  88%,
+  86%,
   100% {
     opacity: 0;
-    transform: translateX(calc(91.667cqw - 50%));
+    transform: translateX(calc(90cqw - 50%));
   }
 }
 
@@ -1553,18 +1550,18 @@ main > .fine {
   position: absolute;
   inset: 0;
   opacity: 0;
-  animation: relay-say 9s infinite both;
+  animation: relay-say 7.5s infinite both;
   animation-delay: calc(var(--i) * 1.5s);
 }
 
 @keyframes relay-say {
   0%,
-  16.6%,
+  20%,
   100% {
     opacity: 0;
   }
-  2%,
-  14.5% {
+  2.4%,
+  17.4% {
     opacity: 1;
   }
 }
@@ -2269,7 +2266,7 @@ code {
   width: 8px;
   height: 8px;
   background: currentColor;
-  transform: translateX(calc(var(--at, 0) * 16.667cqw + 8.333cqw - 50%));
+  transform: translateX(calc(var(--at, 0) * 20cqw + 10cqw - 50%));
   transition: transform 700ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -3794,9 +3791,9 @@ body {
 }
 
 /* ---- the Bots' own colours ----
-   Each Bot is one pastel, so you can tell the six apart before you read a name.
+   Each Bot is one pastel, so you can tell the five apart before you read a name.
    The colour belongs to the Bot's body and to nothing else: no text, line,
-   button or panel takes it. None of the six is a green, so green still only
+   button or panel takes it. None of the five is a green, so green still only
    means "act here" or "working now".
    On white a Bot keeps a thin black edge, so a pale shape still reads. On black
    it is a solid shape with its details cut out. A Bot that is not connected
@@ -3805,9 +3802,8 @@ body {
 :root {
   --bot-intake: #FADD82; /* butter: the page */
   --bot-case: #96C8F8; /* sky: the monitor */
-  --bot-policy: #C8ADF3; /* lilac: the owl */
-  --bot-inbox: #FDBD87; /* peach: the envelope */
-  --bot-keeper: #F7A3C6; /* rose: the stopwatch */
+  --bot-scout: #C8ADF3; /* lilac: the owl */
+  --bot-manager: #F7A3C6; /* rose: the stopwatch */
   --bot-messenger: #8CDFD8; /* aqua: the speech bubble */
 }
 
@@ -3838,16 +3834,12 @@ body {
   --bot-tint: var(--bot-case);
 }
 
-.bot-glyph--policy {
-  --bot-tint: var(--bot-policy);
+.bot-glyph--scout {
+  --bot-tint: var(--bot-scout);
 }
 
-.bot-glyph--inbox {
-  --bot-tint: var(--bot-inbox);
-}
-
-.bot-glyph--keeper {
-  --bot-tint: var(--bot-keeper);
+.bot-glyph--manager {
+  --bot-tint: var(--bot-manager);
 }
 
 .bot-glyph--messenger {

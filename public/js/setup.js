@@ -93,9 +93,9 @@ function draftProfile() {
   return profile;
 }
 
-// Deadline Keeper sits on the preview: thinking while there is nothing to count,
+// The Manager sits on the preview: thinking while there is nothing to count,
 // working for a moment each time a date changes, then settled.
-const keeper = botAvatar('keeper', { state: 'thinking', size: 32 });
+const keeper = botAvatar('manager', { state: 'thinking', size: 32 });
 let keeperTimer = null;
 function nudgeKeeper(hasWork) {
   clearTimeout(keeperTimer);
@@ -118,7 +118,7 @@ function drawPreview() {
   }
   nudgeKeeper(true);
   preview.replaceChildren(
-    el('h3', { class: 'with-bot' }, keeper, `Deadline Keeper will count ${clocks.length} ${clocks.length === 1 ? 'deadline' : 'deadlines'} for you`),
+    el('h3', { class: 'with-bot' }, keeper, `The Manager will count ${clocks.length} ${clocks.length === 1 ? 'deadline' : 'deadlines'} for you`),
     el(
       'ul',
       {},

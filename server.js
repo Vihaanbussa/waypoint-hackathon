@@ -40,7 +40,11 @@ const HOST = process.env.HOST || (HOSTED ? '0.0.0.0' : '127.0.0.1');
 
 // Tables a Bot may append to. Profiles and the portal are not on this list.
 const APPEND_TABLES = ['runs', 'case_status', 'alerts', 'inbox_facts', 'notifications', 'actions', 'clock_notes'];
-const BOTS = ['Intake Clerk', 'Case Clerk', 'Policy Watcher', 'Inbox Scout', 'Deadline Keeper', 'Messenger'];
+// One Manager and four workers. The team used to be six, so a row or a report
+// under an old name is filed under the Bot that took the job over.
+const BOTS = ['Manager', 'Intake Clerk', 'Case Clerk', 'Scout', 'Messenger'];
+const OLD_BOT_NAMES = { 'Deadline Keeper': 'Manager', 'Policy Watcher': 'Scout', 'Inbox Scout': 'Scout' };
+const botName = (name) => OLD_BOT_NAMES[String(name)] ?? String(name);
 const TYPES = {
   '.html': 'text/html; charset=utf-8',
   '.css': 'text/css; charset=utf-8',
@@ -117,6 +121,8 @@ async function loadStore() {
   if (!Array.isArray(store.profiles)) store.profiles = [];
   if (!Array.isArray(store.own_deadlines)) store.own_deadlines = [];
   if (!store.portal || typeof store.portal !== 'object') store.portal = {};
+  for (const run of store.runs) if (run && run.bot) run.bot = botName(run.bot);
+  for (const action of store.actions) if (action && action.drafted_by) action.drafted_by = botName(action.drafted_by);
 }
 
 // ---- accounts and sessions ----
@@ -384,6 +390,7 @@ function appendRow(table, input, scope = null) {
     delete row.decided_at;
   }
   if (table === 'case_status' && !row.checked_at) row.checked_at = row.at;
+  if (table === 'runs' && row.bot) row.bot = botName(row.bot);
   store[table].push(row);
   return row;
 }
@@ -651,7 +658,7 @@ async function api(req, res, url) {
   }
 
   // "Check now": the two Bots that work without a connection. Case Clerk reads the
-  // mock portal for the person's receipt numbers; Deadline Keeper counts deadlines.
+  // mock portal for the person's receipt numbers; the Manager counts deadlines.
   // Both runs are marked simulated. The other Bots are not pretended.
   if (url.pathname === '/api/check') {
     const session = requireSession(req);
@@ -701,7 +708,7 @@ async function api(req, res, url) {
     runs.push(
       appendRow('runs', {
         person: profile.id,
-        bot: 'Deadline Keeper',
+        bot: 'Manager',
         status: 'ok',
         summary: `Counted ${clocks.length} ${clocks.length === 1 ? 'deadline' : 'deadlines'}, ${urgent} to act on now`,
         simulated: true,
@@ -747,13 +754,13 @@ async function api(req, res, url) {
       const saved = [];
       const person = String(data.person || '').trim();
       if (data.bot && data.summary) {
-        if (!BOTS.includes(String(data.bot))) throw httpError(400, 'Pick one of the six Bots.');
+        if (!BOTS.includes(botName(data.bot))) throw httpError(400, 'Pick one of the five Bots.');
         saved.push(
           appendRow(
             'runs',
             {
               person,
-              bot: String(data.bot),
+              bot: botName(data.bot),
               status: data.status === 'failed' ? 'failed' : data.status === 'running' ? 'running' : 'ok',
               summary: String(data.summary),
             },
@@ -1074,28 +1081,30 @@ const BOT_TOOLS = [
         x_searches: {
           type: 'array',
           items: { type: 'string' },
-          description: 'Policy Watcher only, and required when its run went ok: the searches you ran on X this run, exactly as you typed them.',
+          description: 'Scout only, and required when its run went ok: the searches you ran on X this run, exactly as you typed them.',
         },
-        x_posts_read: { type: 'integer', description: 'Policy Watcher only: how many X posts you read this run.' },
+        x_posts_read: { type: 'integer', description: 'Scout only: how many X posts you read this run.' },
       },
       ['bot', 'summary'],
     ),
     run: async (args, { scope }) => {
       const profile = personFor(args, scope);
-      if (!BOTS.includes(String(args.bot))) throw new Error(`"bot" must be one of: ${BOTS.join(', ')}.`);
+      const bot = botName(args.bot);
+      if (!BOTS.includes(bot)) throw new Error(`"bot" must be one of: ${BOTS.join(', ')}.`);
       if (!String(args.summary || '').trim()) throw new Error('Add a one-line summary.');
       const status = ['failed', 'running'].includes(args.status) ? args.status : 'ok';
-      // Policy Watcher's job is to watch X, so a run that went ok has to say what
-      // it searched there. Otherwise "No relevant changes" could mean it never looked.
-      const watcher = String(args.bot) === 'Policy Watcher';
+      // Scout's job includes watching X, so a run that went ok has to say what it
+      // searched there. Otherwise "No relevant changes" could mean it never looked.
+      // (A Bot still reporting as the old Inbox Scout never searched X, so it is let be.)
+      const watcher = ['Scout', 'Policy Watcher'].includes(String(args.bot));
       const searches = watcher ? xSearches(args.x_searches) : [];
       if (watcher && status === 'ok' && !searches.length) {
         throw new Error(
-          'Policy Watcher has to search X before it reports. Run your X searches for this person\'s visa type, then call report_run again with x_searches (the searches you ran) and x_posts_read (how many posts you read). If you cannot search X right now, report status "failed" and say so in the summary.',
+          'Scout has to search X before it reports. Run your X searches for this person\'s visa type, then call report_run again with x_searches (the searches you ran) and x_posts_read (how many posts you read). If you cannot search X right now, report status "failed" and say so in the summary.',
         );
       }
       const onX = searches.length ? { x_searches: searches, x_posts_read: Math.max(0, Math.min(9999, Math.floor(Number(args.x_posts_read)) || 0)) } : {};
-      const row = appendRow('runs', { person: profile.id, bot: String(args.bot), status, summary: String(args.summary), ...onX }, scope);
+      const row = appendRow('runs', { person: profile.id, bot, status, summary: String(args.summary), ...onX }, scope);
       await save();
       return { saved: row.id };
     },
@@ -1140,7 +1149,7 @@ const BOT_TOOLS = [
   },
   {
     name: 'save_policy_alert',
-    description: 'Policy Watcher: record a rule change or official notice that matters to this person, with why it matters to them and a link to the official source. If you first saw it on X, say so with x_url.',
+    description: 'Scout: record a rule change or official notice that matters to this person, with why it matters to them and a link to the official source. If you first saw it on X, say so with x_url.',
     inputSchema: schema(
       {
         person: PERSON,
@@ -1177,7 +1186,7 @@ const BOT_TOOLS = [
   },
   {
     name: 'save_inbox_date',
-    description: 'Inbox Scout: record a dated item found in the person\'s email (an appointment, a response deadline). Waypoint turns it into a deadline. Never pass ID numbers or the email\'s full text.',
+    description: 'Scout: record a dated item found in the person\'s email (an appointment, a response deadline). Waypoint turns it into a deadline. Never pass ID numbers or the email\'s full text.',
     inputSchema: schema(
       {
         person: PERSON,
@@ -1202,7 +1211,7 @@ const BOT_TOOLS = [
   },
   {
     name: 'set_deadline_note',
-    description: 'Deadline Keeper: replace the default one-line reason under a deadline with wording that fits this person. Do not restate day counts; Waypoint shows those.',
+    description: 'Manager: replace the default one-line reason under a deadline with wording that fits this person. Do not restate day counts; Waypoint shows those.',
     inputSchema: schema({ person: PERSON, deadline_id: str('From get_brief.'), reason: str('One or two plain sentences.') }, ['deadline_id', 'reason']),
     run: async (args, { scope }) => {
       const profile = personFor(args, scope);
@@ -1215,7 +1224,7 @@ const BOT_TOOLS = [
   {
     name: 'draft_email',
     description:
-      'Deadline Keeper: draft an email from the person to someone else (HR, a school official, an attorney). It is only a draft: the person must approve it in Waypoint before anything is sent. Never send it yourself.',
+      'Manager: draft an email from the person to someone else (HR, a school official, an attorney). It is only a draft: the person must approve it in Waypoint before anything is sent. Never send it yourself.',
     inputSchema: schema(
       {
         person: PERSON,
@@ -1239,7 +1248,7 @@ const BOT_TOOLS = [
           to: args.to || '',
           subject: String(args.subject || ''),
           body: String(args.body),
-          drafted_by: 'Deadline Keeper',
+          drafted_by: 'Manager',
         },
         scope,
       );
@@ -1248,8 +1257,35 @@ const BOT_TOOLS = [
     },
   },
   {
+    name: 'workflow_status',
+    description:
+      'Manager: where this run stands. Each Bot\'s latest run (who has reported and when, who failed), how many drafted emails are waiting for the person\'s approval, and which approved emails are not in their Gmail yet. Call it after starting the workers and before handing off to Messenger.',
+    inputSchema: schema({ person: PERSON }),
+    run: (args, { scope }) => {
+      const profile = personFor(args, scope);
+      const latest = new Map();
+      for (const run of store.runs) {
+        if (!run || run.person !== profile.id) continue;
+        const prev = latest.get(run.bot);
+        if (!prev || String(run.at) >= String(prev.at)) latest.set(run.bot, run);
+      }
+      const emails = store.actions.filter((a) => a && a.person === profile.id);
+      return {
+        now: nowIso(),
+        bots: BOTS.map((name) => {
+          const run = latest.get(name);
+          return run
+            ? { bot: name, status: run.status || 'ok', at: run.at, summary: run.summary ?? '', simulated: run.simulated === true, sample: run.sample === true }
+            : { bot: name, status: 'no run yet' };
+        }),
+        emails_waiting_for_approval: emails.filter((a) => !a.state || a.state === 'drafted').length,
+        approved_emails_not_delivered: emails.filter((a) => a.state === 'approved' && !a.gmail_draft_id).map((a) => a.id),
+      };
+    },
+  },
+  {
     name: 'list_emails',
-    description: 'Messenger: the person\'s drafted emails and what they decided. Only an email whose state is "approved" may be put in their Gmail.',
+    description: 'Manager and Messenger: the person\'s drafted emails and what they decided. Only an email whose state is "approved" may be put in their Gmail.',
     inputSchema: schema({ person: PERSON, state: str('Only this state.', { enum: ['drafted', 'approved', 'rejected', 'sent'] }) }),
     run: (args, { scope }) => {
       const profile = personFor(args, scope);

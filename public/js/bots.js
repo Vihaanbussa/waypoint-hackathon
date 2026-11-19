@@ -1,20 +1,27 @@
-// The six Bots as characters, and the relay that shows work passing between
-// them. Each is a solid shape in its own pastel (see "the Bots' own colours"
+// The five Bots as characters, and the relay that shows work passing between
+// them: one Manager and four workers. Each is a solid shape in its own pastel (see "the Bots' own colours"
 // in app.css), with dark eyes.
 
 const NS = 'http://www.w3.org/2000/svg';
 
+// In the order the work passes along: three workers gather, the Manager counts,
+// drafts and holds the approval, and Messenger delivers.
 export const BOTS = [
-  { id: 'intake', name: 'Intake Clerk', does: 'reads your documents' },
-  { id: 'case', name: 'Case Clerk', does: 'checks the government portal' },
-  { id: 'policy', name: 'Policy Watcher', does: 'watches X for rule changes' },
-  { id: 'inbox', name: 'Inbox Scout', does: 'finds dates in your email' },
-  { id: 'keeper', name: 'Deadline Keeper', does: 'counts the days and drafts the email' },
-  { id: 'messenger', name: 'Messenger', does: 'tells you' },
+  { id: 'intake', name: 'Intake Clerk', role: 'Worker', does: 'reads your documents' },
+  { id: 'case', name: 'Case Clerk', role: 'Worker', does: 'checks the government portal' },
+  { id: 'scout', name: 'Scout', role: 'Worker', does: 'watches X and reads your inbox' },
+  { id: 'manager', name: 'Manager', role: 'Manager', does: 'runs the night, counts the days and holds your approval' },
+  { id: 'messenger', name: 'Messenger', role: 'Worker', does: 'tells you' },
 ];
 
-// Each Bot is one solid shape that says its job (a page, a monitor, an owl, an
-// envelope, a stopwatch, a speech bubble) with two eyes cut out of it. The
+// The team used to be six. Rows written under the old names still belong to
+// the Bot that took the job over.
+const OLD_NAMES = { 'Deadline Keeper': 'Manager', 'Policy Watcher': 'Scout', 'Inbox Scout': 'Scout' };
+const OLD_IDS = { keeper: 'manager', policy: 'scout', inbox: 'scout' };
+export const botName = (name) => OLD_NAMES[name] ?? name;
+
+// Each Bot is one solid shape that says its job (a page, a monitor, an owl, a
+// stopwatch, a speech bubble) with two eyes cut out of it. The
 // shapes are drawn for Waypoint; they are not xAI's artwork.
 //   fill: the body            cut: detail drawn on the body in the eye colour
 //   line/dots: extras (an antenna)
@@ -31,18 +38,12 @@ const SHAPES = {
     dots: [[12, 3.4, 1.5]],
     eyes: [[9.3, 13.4], [14.7, 13.4]],
   },
-  policy: {
+  scout: {
     fill: ['M12 21a7.6 7.6 0 0 0 7.6-7.6c0-2-.7-3.700-1.900-5.100L18.600 3.600 14.600 6a7.900 7.900 0 0 0-5.200 0L5.400 3.600l.900 4.700c-1.200 1.400-1.900 3.100-1.900 5.100A7.600 7.600 0 0 0 12 21z'],
     eyes: [[9.2, 13.2], [14.8, 13.2]],
     eye: [1.45, 1.95],
   },
-  inbox: {
-    fill: ['M5.5 6h13A2.5 2.5 0 0 1 21 8.5v9a2.500 2.500 0 0 1-2.500 2.500h-13A2.500 2.500 0 0 1 3 17.500v-9A2.500 2.500 0 0 1 5.500 6z'],
-    cut: ['M4.4 8.6l7.6 4.800 7.600-4.800'],
-    eyes: [[9.4, 16.5], [14.6, 16.5]],
-    eye: [0.95, 1.3],
-  },
-  keeper: {
+  manager: {
     // The crown first, so the dial's edge is drawn over where they meet.
     fill: [
       'M10 2.5h4a1 1 0 0 1 1 1v.600a1 1 0 0 1-1 1h-.900v1.600h-2.200V5.100H10a1 1 0 0 1-1-1v-.600a1 1 0 0 1 1-1z',
@@ -63,6 +64,7 @@ function node(tag, attrs) {
 }
 
 export function botGlyph(id, size = 28) {
+  id = OLD_IDS[id] ?? id;
   const shape = SHAPES[id] ?? SHAPES.case;
   const svg = node('svg', { viewBox: '0 0 24 24', width: size, height: size, 'aria-hidden': 'true', class: `bot-glyph bot-glyph--${id}` });
   // The body is one group so it can squash and stretch from its feet.
@@ -92,10 +94,11 @@ export const BOT_STATES = {
   done: 'done',
 };
 
-export const botByName = (name) => BOTS.find((b) => b.name === name) ?? null;
+export const botByName = (name) => BOTS.find((b) => b.name === botName(name)) ?? null;
 
 // One Bot as a round avatar. `detail` is what hovering says ("checked at 2:03 AM").
 export function botAvatar(id, { state = 'idle', size = 28, detail = '' } = {}) {
+  id = OLD_IDS[id] ?? id;
   const bot = BOTS.find((b) => b.id === id);
   const avatar = document.createElement('span');
   avatar.className = 'bot-avatar';
@@ -119,6 +122,7 @@ export function setBotState(avatar, state, detail = '', name = avatar.dataset.na
 export function heroBot(id, state = 'idle', doing = '') {
   const slot = document.getElementById('hero-bot');
   if (!slot) return;
+  id = OLD_IDS[id] ?? id;
   const bot = BOTS.find((b) => b.id === id);
   const line = `${bot?.name ?? 'Bot'} ${doing}`.trim();
   let avatar = slot.querySelector('.bot-avatar');
@@ -134,7 +138,7 @@ export function heroBot(id, state = 'idle', doing = '') {
   avatar.title = line;
 }
 
-// A row of the six Bots joined by a line.
+// A row of the five Bots joined by a line.
 //   statusOf(bot) -> a short line under each name ("2:03 AM", "Not connected")
 //   stateOf(bot)  -> one of BOT_STATES
 //   loop: true plays the hand-off on its own (the sign-in page)

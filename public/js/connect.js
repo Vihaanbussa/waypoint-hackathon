@@ -6,7 +6,7 @@ import { botAvatar, setBotState, heroBot } from './bots.js';
 import { arriveBands } from './motion.js';
 
 arriveBands();
-heroBot('case', 'thinking', 'is ready to be connected');
+heroBot('manager', 'thinking', 'is ready to be connected');
 import { BOT_BRIEFS, CONNECT_MESSAGE, WEBHOOK_MESSAGE, fillBrief } from './bot-briefs.js';
 
 const $ = (id) => document.getElementById(id);
@@ -71,7 +71,7 @@ function drawBriefs() {
       return el(
         'div',
         { class: 'brief-item' },
-        el('div', { class: 'brief-head' }, avatar, el('h3', { text: brief.name }), button, el('p', { class: 'brief-when', text: `Runs: ${brief.when}` })),
+        el('div', { class: 'brief-head' }, avatar, el('h3', { text: brief.name }), button, el('p', { class: 'brief-when', text: `${brief.role}. Runs: ${brief.when}` })),
         el('details', {}, el('summary', { text: 'Read the message' }), el('pre', { class: 'paste', text })),
       );
     }),
@@ -85,7 +85,7 @@ function drawWebhook(profile, me) {
   if (document.activeElement !== $('webhook-url')) $('webhook-url').value = hook?.url ?? $('webhook-url').value;
   $('webhook-key').placeholder = hook?.has_key ? 'Saved. Leave empty to keep it.' : '';
   $('webhook-clear').hidden = !hook;
-  if (!$('webhook-status').textContent) $('webhook-status').textContent = hook ? 'Connected. Check now on your Brief wakes your Bot.' : '';
+  if (!$('webhook-status').textContent) $('webhook-status').textContent = hook ? 'Connected. Check now on your Brief wakes the Manager.' : '';
 }
 
 initPage(async (ctx) => {
@@ -135,7 +135,7 @@ initPage(async (ctx) => {
         $('webhook-error').hidden = false;
         return;
       }
-      save({ url: $('webhook-url').value, key: $('webhook-key').value }, 'Saved. Check now on your Brief wakes your Bot.');
+      save({ url: $('webhook-url').value, key: $('webhook-key').value }, 'Saved. Check now on your Brief wakes the Manager.');
     };
     $('webhook-clear').onclick = () => save({ url: '' }, 'Disconnected. Check now is back to a simulated run.');
   }

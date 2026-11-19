@@ -5,7 +5,7 @@
 import { initPage, el, safeUrl, formatTime, riskMark, rowsOf, recall, remember, xChecked } from './common.js';
 import { buildClocks, overall, formatDate, addDays, RISK_LABEL } from './clocks.js';
 import { updateAction, post } from './store.js';
-import { BOTS, botRelay, playRelay, botAvatar, botByName, setBotState, sendPacket, heroBot } from './bots.js';
+import { BOTS, botRelay, playRelay, botAvatar, botByName, botName, setBotState, sendPacket, heroBot } from './bots.js';
 import { arriveOnView, arriveBands } from './motion.js';
 
 arriveBands();
@@ -66,11 +66,11 @@ function renderLead(ctx, clocks, pending) {
   else if (act) headline = `${first}, ${plural(act, 'deadline needs', 'deadlines need')} you now.`;
   else if (watch) headline = `${first}, nothing is urgent. ${plural(watch, 'deadline is', 'deadlines are')} coming up.`;
   document.getElementById('headline').textContent = headline;
-  // Deadline Keeper fronts the page: waiting when an email needs an answer,
-  // thinking when a deadline is close, otherwise at ease.
-  if (pending.length) heroBot('keeper', 'waiting', 'is waiting for your answer');
-  else if (act) heroBot('keeper', 'thinking', 'is watching a close deadline');
-  else heroBot('keeper', 'idle', 'has nothing for you right now');
+  // The Manager fronts the page: waiting when it is holding an email for your
+  // approval, thinking when a deadline is close, otherwise at ease.
+  if (pending.length) heroBot('manager', 'waiting', 'is holding an email for your approval');
+  else if (act) heroBot('manager', 'thinking', 'is watching a close deadline');
+  else heroBot('manager', 'idle', 'has nothing for you right now');
 
   let next = clocks.length ? 'No dated deadlines.' : 'Waypoint counts the days once it has a date to count from.';
   if (overdue) next = `${plural(overdue, 'deadline is', 'deadlines are')} overdue.`;
@@ -295,8 +295,8 @@ function approvalCard(action, ctx) {
     el(
       'p',
       { class: 'card-note with-bot' },
-      botAvatar(botByName(action.drafted_by || 'Deadline Keeper')?.id ?? 'keeper', { state: 'waiting', size: 20, detail: 'waiting for your answer' }),
-      `Drafted by ${action.drafted_by || 'Deadline Keeper'}${draftedAt ? ` at ${draftedAt}` : ''}. Nothing is sent until you approve.`,
+      botAvatar('manager', { state: 'waiting', size: 20, detail: 'holding this for your approval' }),
+      `Drafted by the ${botName(action.drafted_by || 'Manager')}${draftedAt ? ` at ${draftedAt}` : ''}, which holds it until you approve. Nothing is sent before that.`,
     ),
     error,
     el('div', { class: 'card-actions' }, ...buttons),
@@ -569,7 +569,7 @@ const shownLog = new Map(); // person -> the runs already listed, to mark a new 
 function renderRelay(ctx, latest, pending) {
   const { profile, today, me } = ctx;
   const connected = Boolean(profile.bot_webhook?.url);
-  const waitingOn = pending.length ? 'Deadline Keeper' : null; // its draft is waiting for the person
+  const waitingOn = pending.length ? 'Manager' : null; // it holds the draft until the person approves
 
   const statusOf = (bot) => {
     const run = latest.get(bot.name);
@@ -608,10 +608,10 @@ function renderRelay(ctx, latest, pending) {
   }
 
   document.getElementById('bots-intro').textContent = me.demo
-    ? 'Bots are AI assistants that check government sites, your inbox, and X for rule changes. This is what each one last did.'
+    ? 'Bots are AI assistants: one Manager and four workers that check government sites, your inbox, and X for rule changes. This is what each one last did.'
     : connected
-      ? 'Bots are AI assistants that check government sites, your inbox, and X for rule changes. Yours are connected: Check now wakes them, and each one reports here when it finishes.'
-      : 'Bots are AI assistants that check government sites, your inbox, and X for rule changes. Yours are not connected yet. Check now runs the two that work without a connection.';
+      ? 'Bots are AI assistants: one Manager and four workers that check government sites, your inbox, and X for rule changes. Yours are connected: Check now wakes the Manager, and each Bot reports here when it finishes.'
+      : 'Bots are AI assistants: one Manager and four workers that check government sites, your inbox, and X for rule changes. Yours are not connected yet. Check now runs the two that work without a connection.';
 
   const button = document.getElementById('check-now');
   const note = document.getElementById('check-note');
@@ -620,16 +620,16 @@ function renderRelay(ctx, latest, pending) {
     button.disabled = true;
     relayBusy = true;
     ctx.setBusy(true);
-    heroBot('keeper', 'working', 'is checking now');
+    heroBot('manager', 'working', 'is running the check');
     const ask = post('/api/check', { person: profile.id, today });
     try {
       if (connected) {
         note.textContent = 'Waking your Bots.';
-        await playRelay(relay, ['Case Clerk'], ask);
+        await playRelay(relay, ['Manager'], ask);
         note.textContent = 'Your Bots are running. Each one shows up here when it reports.';
       } else {
-        note.textContent = 'Case Clerk is reading the portal, then Deadline Keeper counts the days.';
-        await playRelay(relay, ['Case Clerk', 'Deadline Keeper'], ask);
+        note.textContent = 'Case Clerk is reading the portal, then the Manager counts the days.';
+        await playRelay(relay, ['Case Clerk', 'Manager'], ask);
         note.textContent = 'Checked just now. This was a simulated run against the mock portal.';
       }
     } catch (err) {
@@ -657,8 +657,9 @@ function renderBots(ctx) {
   const runs = rowsOf(store.runs).filter((r) => r.person === profile.id);
   const latest = new Map();
   for (const run of runs) {
-    const prev = latest.get(run.bot);
-    if (!prev || String(run.at) >= String(prev.at)) latest.set(run.bot, run);
+    const name = botName(run.bot);
+    const prev = latest.get(name);
+    if (!prev || String(run.at) >= String(prev.at)) latest.set(name, run);
   }
   const lines = [...latest.values()].sort((a, b) => String(a.at).localeCompare(String(b.at)));
   const waiting = rowsOf(store.actions).filter((a) => a.person === profile.id && (!a.state || a.state === 'drafted'));
@@ -681,7 +682,7 @@ function renderBots(ctx) {
         'li',
         { class: listed && !listed.has(run.id) ? 'is-new' : null },
         el('span', { class: 'log-when', text: formatTime(run.at, today) }),
-        el('span', { class: 'log-who' }, logAvatar(run), run.bot || 'Bot'),
+        el('span', { class: 'log-who' }, logAvatar(run), botName(run.bot) || 'Bot'),
         el(
           'span',
           { class: 'log-what' },

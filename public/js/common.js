@@ -25,7 +25,7 @@ export function remember(key, value) {
 }
 
 // Build an element. Text always goes in as text, never as HTML.
-// What Policy Watcher searched on X in a run, as one line under its summary.
+// What Scout searched on X in a run, as one line under its summary.
 // Empty when the run did not say.
 export function xChecked(run) {
   const searches = Array.isArray(run?.x_searches) ? run.x_searches.filter(Boolean) : [];

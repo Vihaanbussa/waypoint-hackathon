@@ -182,11 +182,11 @@ test('your own deadlines, and Check now', async () => {
   assert.equal(own.risk, 'act');
   assert.equal(own.reason, 'Bring the notice.');
 
-  // Check now: Case Clerk reads the mock portal, Deadline Keeper counts. Both say simulated.
+  // Check now: Case Clerk reads the mock portal, the Manager counts. Both say simulated.
   const check = await dee.postJson('/api/check', { person, today: '2026-11-18' });
   assert.equal(check.status, 200);
   store = await dee.getJson('/api/store');
-  assert.deepEqual(store.runs.map((r) => r.bot), ['Case Clerk', 'Deadline Keeper']);
+  assert.deepEqual(store.runs.map((r) => r.bot), ['Case Clerk', 'Manager']);
   assert.ok(store.runs.every((r) => r.simulated === true));
   // Work permit card, the appointment, the case just read, and one rule-change notice for F-1.
   assert.match(store.runs[1].summary, /Counted 4 deadlines, 1 to act on now/);
@@ -408,7 +408,7 @@ test('a Bot with its own key: reads the brief, reports, drafts, and cannot appro
   assert.equal((await callTool(key, 'save_case_status', { receipt: 'X', status: 'ok', response_due: 'next week' })).isError, true);
   await callTool(key, 'report_run', { bot: 'Case Clerk', summary: 'Read status: "Request for Evidence Was Sent"' });
 
-  // Policy Watcher can say it first saw something on X. Only a real X link is kept.
+  // Scout can say it first saw something on X. Only a real X link is kept.
   await callTool(key, 'save_policy_alert', { title: 'Fee change', why: 'The filing fee goes up in January.', source_label: 'USCIS', source_url: 'https://www.uscis.gov/', x_url: 'https://x.com/USCIS/status/1' });
   await callTool(key, 'save_policy_alert', { title: 'Rumour', why: 'Unconfirmed.', x_url: 'https://example.com/not-x' });
   const notices = (await eli.getJson('/api/store')).alerts.filter((a) => ['Fee change', 'Rumour'].includes(a.title));
@@ -418,11 +418,13 @@ test('a Bot with its own key: reads the brief, reports, drafts, and cannot appro
   assert.equal(notices.find((a) => a.title === 'Rumour').seen_on_x, false);
   assert.equal((await callTool(key, 'report_run', { bot: 'Mystery Bot', summary: 'x' })).isError, true);
 
-  // Policy Watcher cannot report a finished run without saying what it searched on X.
-  const silent = await callTool(key, 'report_run', { bot: 'Policy Watcher', summary: 'No relevant changes' });
+  // Scout cannot report a finished run without saying what it searched on X. A Bot
+  // still reporting under an old name is filed under the Bot that took the job over.
+  const silent = await callTool(key, 'report_run', { bot: 'Scout', summary: 'No relevant changes' });
+  assert.equal((await callTool(key, 'report_run', { bot: 'Policy Watcher', summary: 'No relevant changes' })).isError, true);
   assert.equal(silent.isError, true);
   assert.match(silent.value, /search X/);
-  assert.ok(!(await callTool(key, 'report_run', { bot: 'Policy Watcher', status: 'failed', summary: 'X search was not available' })).isError);
+  assert.ok(!(await callTool(key, 'report_run', { bot: 'Scout', status: 'failed', summary: 'X search was not available' })).isError);
   assert.ok(
     !(await callTool(key, 'report_run', {
       bot: 'Policy Watcher',
@@ -431,7 +433,13 @@ test('a Bot with its own key: reads the brief, reports, drafts, and cannot appro
       x_posts_read: 14.7,
     })).isError,
   );
-  const watched = (await eli.getJson('/api/store')).runs.filter((r) => r.bot === 'Policy Watcher');
+  // The Manager can see where the run stands: who has reported, and what waits for approval.
+  const standing = await callTool(key, 'workflow_status', {});
+  assert.deepEqual(standing.value.bots.map((b) => b.bot), ['Manager', 'Intake Clerk', 'Case Clerk', 'Scout', 'Messenger']);
+  assert.equal(standing.value.bots.find((b) => b.bot === 'Scout').status, 'ok');
+  assert.equal(standing.value.bots.find((b) => b.bot === 'Messenger').status, 'no run yet');
+  assert.equal(standing.value.emails_waiting_for_approval, 0);
+  const watched = (await eli.getJson('/api/store')).runs.filter((r) => r.bot === 'Scout');
   assert.equal(watched.length, 2);
   assert.deepEqual(watched.find((r) => r.status === 'ok').x_searches, ['from:USCIS OPT', 'STEM OPT rule']);
   assert.equal(watched.find((r) => r.status === 'ok').x_posts_read, 14);
@@ -442,7 +450,7 @@ test('a Bot with its own key: reads the brief, reports, drafts, and cannot appro
   assert.equal(notice.days_left, 84);
   assert.equal(notice.risk, 'watch');
 
-  // Deadline Keeper drafts. It stays a draft whatever the Bot says.
+  // The Manager drafts. It stays a draft whatever the Bot says.
   const draft = await callTool(key, 'draft_email', {
     deadline_id: 'notice-ioe0912345678',
     recipient_label: 'your international office',
@@ -464,7 +472,7 @@ test('a Bot with its own key: reads the brief, reports, drafts, and cannot appro
 
   // What the Bot wrote is what the person sees, not marked simulated.
   const store = await eli.getJson('/api/store');
-  assert.equal(store.runs.at(-1).bot, 'Policy Watcher');
+  assert.equal(store.runs.at(-1).bot, 'Scout');
   assert.ok(store.runs.some((r) => r.bot === 'Case Clerk'));
   assert.equal(store.runs.at(-1).simulated, undefined);
   assert.equal(store.case_status.at(-1).receipt, 'IOE0912345678');
