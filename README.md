@@ -157,7 +157,7 @@ The portal sign-in is in `data/portal-users.json`. In the demo, add `?p=wei` to 
 
 ## Accounts and your own data
 
-- **Create an account** on the sign-in page, then answer three steps. Step two asks only for the dates your visa type uses, says which document each one is on, and shows the deadlines they create as you type.
+- **Create an account** on the sign-in page, then answer three steps. Step one also asks, optionally, for your school, degree, major and home country, which tell the Bots which office to write to and what news to watch. Step two asks only for the dates your visa type uses, says which document each one is on, and shows the deadlines they create as you type.
 - **Your Brief** is counted from those dates by the same rule packs as the demo. A new account starts empty: no sample deadlines, no sample Bot runs.
 - **Add a deadline of your own** from the Brief for anything the rules do not cover (an appointment, a lease). Remove it there or in Settings.
 - **Edit your details** from Settings. The deadlines recount at once.

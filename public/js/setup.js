@@ -3,12 +3,12 @@
 
 import { get, post } from './store.js';
 import { el } from './common.js';
-import { VISA_TYPES, VISA_BLURBS, fieldsFor } from './rules.js';
+import { VISA_TYPES, VISA_BLURBS, ABOUT_FIELDS, fieldsFor } from './rules.js';
 import { buildClocks, localToday, formatDate, RISK_LABEL } from './clocks.js';
 import { botAvatar, setBotState } from './bots.js';
 
 const STEPS = [
-  { title: 'Which visa are you on?', lede: 'This decides which deadlines Waypoint counts for you. You can change it later.' },
+  { title: 'About you and your visa', lede: 'Your visa type decides which deadlines Waypoint counts for you. Your school, major and home country tell the Bots who to write to and what news to watch. You can change any of it later.' },
   { title: 'Your dates', lede: 'Fill in what you have and leave the rest empty. Each one says where to find it.' },
   { title: 'How should Waypoint reach you?', lede: 'Messages to you are automatic. Anything to someone else waits for your approval.' },
 ];
@@ -25,7 +25,38 @@ function fail(message) {
   $('setup-error').hidden = false;
 }
 
-// ---- step 1: visa type ----
+// ---- step 1: about you, then visa type ----
+
+const about = {}; // field id -> what the person typed
+
+function drawAbout() {
+  $('about-fields').replaceChildren(
+    ...ABOUT_FIELDS.map((field) => {
+      const id = `about-${field.id}`;
+      let input;
+      if (field.options) {
+        input = el('select', { id }, el('option', { value: '', text: 'Choose one' }), ...field.options.map((o) => el('option', { value: o, text: o })));
+      } else {
+        input = el('input', { type: 'text', id, maxlength: String(field.max ?? 60), autocomplete: field.id === 'home_country' ? 'country-name' : 'off' });
+        if (field.hint) input.setAttribute('aria-describedby', `${id}-hint`);
+      }
+      input.value = about[field.id] ?? '';
+      input.addEventListener('input', () => {
+        about[field.id] = input.value;
+      });
+      input.addEventListener('change', () => {
+        about[field.id] = input.value;
+      });
+      return el(
+        'div',
+        { class: 'field' },
+        el('label', { for: id, text: field.label }),
+        field.hint ? el('span', { class: 'hint', id: `${id}-hint`, text: `Optional. ${field.hint}` }) : el('span', { class: 'hint', text: 'Optional.' }),
+        input,
+      );
+    }),
+  );
+}
 
 function drawVisaList() {
   $('visa-list').replaceChildren(
@@ -85,6 +116,7 @@ function drawFields() {
 
 function draftProfile() {
   const profile = { id: 'draft', name: $('name').value.trim(), visa_type: visa };
+  for (const field of ABOUT_FIELDS) if (String(about[field.id] ?? '').trim()) profile[field.id] = String(about[field.id]).trim();
   for (const field of fieldsFor(visa)) {
     const value = values[field.id];
     if (field.type === 'flag') profile[field.id] = value === true;
@@ -198,6 +230,7 @@ try {
   if (profile && !editing) location.replace('/');
   $('name').value = profile?.name ?? store.me?.name ?? '';
   if (profile) {
+    for (const field of ABOUT_FIELDS) about[field.id] = profile[field.id] ?? '';
     visa = profile.visa_type;
     for (const field of fieldsFor(visa)) {
       const value = profile[field.id];
@@ -210,6 +243,7 @@ try {
     $('ch-gmail').checked = profile.channels?.gmail !== false;
   }
   $('cancel-link').hidden = !editing;
+  drawAbout();
   drawVisaList();
   show(0, false);
 } catch {

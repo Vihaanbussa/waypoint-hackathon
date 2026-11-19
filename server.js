@@ -18,7 +18,7 @@ import { createMcp } from './lib/mcp.js';
 import { createPersist } from './lib/persist.js';
 import { createSms, toE164, maskNumber } from './lib/sms.js';
 import { TEXT_KINDS, composeText } from './lib/texts.js';
-import { VISA_TYPES, fieldsFor } from './public/js/rules.js';
+import { VISA_TYPES, ABOUT_FIELDS, fieldsFor } from './public/js/rules.js';
 import { buildClocks, parseDay, toIso } from './public/js/clocks.js';
 
 const ROOT = path.dirname(fileURLToPath(import.meta.url));
@@ -125,6 +125,14 @@ async function loadStore() {
   // An earlier version hid the H-1B sample person from the demo. He is back: an
   // international student's deadlines carry on after graduation.
   for (const p of store.profiles) if (p) delete p.later;
+  // Sample people saved before school, major and home country existed get them now.
+  if (store.profiles.some((p) => p && !p.owner && !p.school)) {
+    const fresh = JSON.parse(await readFile(SEED, 'utf8')).profiles ?? [];
+    for (const p of store.profiles) {
+      const from = !p.owner && fresh.find((f) => f.id === p.id);
+      if (from) for (const field of ABOUT_FIELDS) if (!p[field.id] && from[field.id]) p[field.id] = from[field.id];
+    }
+  }
   for (const run of store.runs) if (run && run.bot) run.bot = botName(run.bot);
   for (const action of store.actions) if (action && action.drafted_by) action.drafted_by = botName(action.drafted_by);
 }
@@ -292,6 +300,14 @@ function profileFromInput(data, existing, session) {
   if (!name) throw httpError(400, 'Add your name.');
 
   const profile = { id: existing?.id ?? `u-${session.id}`, owner: session.id, name, visa_type: visa };
+  // School, degree, major and home country: plain words, all optional.
+  for (const field of ABOUT_FIELDS) {
+    const value = String(data[field.id] ?? '').replace(/\s+/g, ' ').trim();
+    if (!value) continue;
+    if (field.options && !field.options.includes(value)) throw httpError(400, `"${field.label}" must be one of: ${field.options.join(', ')}.`);
+    if (!field.options && !/^[\p{L}\p{N} .,'&()\/-]+$/u.test(value)) throw httpError(400, `"${field.label}" has characters it cannot have.`);
+    profile[field.id] = value.slice(0, field.max ?? 60);
+  }
   for (const field of fieldsFor(visa)) {
     const value = data[field.id];
     if (field.type === 'flag') {
@@ -1121,7 +1137,7 @@ const BOT_TOOLS = [
   {
     name: 'list_people',
     description:
-      'Who this key can act for: each person\'s id, name, visa type, case receipt numbers and how they want to be told, plus the current links to Waypoint\'s pages. Call this first.',
+      'Who this key can act for: each person\'s id, name, visa type, school, degree, field of study and home country (when they gave them), case receipt numbers and how they want to be told, plus the current links to Waypoint\'s pages. Call this first.',
     inputSchema: schema({}),
     run: async (args, { scope }) => ({
       // Where Waypoint's pages are right now. The address can change, so use these
@@ -1133,6 +1149,7 @@ const BOT_TOOLS = [
           person: p.id,
           name: p.name,
           visa_type: VISA_TYPES[p.visa_type]?.label ?? p.visa_type,
+          ...Object.fromEntries(ABOUT_FIELDS.filter((f) => p[f.id]).map((f) => [f.id, p[f.id]])),
           receipts: p.receipts ?? [],
           phone: p.phone ?? '',
           channels: p.channels ?? {},

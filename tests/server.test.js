@@ -530,9 +530,27 @@ test('Check now wakes a real Bot when a webhook is set, and the key never reache
 test('texts: off until Twilio is set, then sent to your own phone, recorded, and limited', async () => {
   const cookie = await signUp('Gia Rossi', 'gia@example.com');
   const gia = as(cookie);
-  await gia.postJson('/api/profile', { name: 'Gia Rossi', visa_type: 'h1b', h1b_start: '2025-10-01', phone: '(415) 555-0142' });
+  // School, degree, major and home country are optional and checked.
+  assert.equal((await gia.postJson('/api/profile', { name: 'Gia Rossi', visa_type: 'h1b', degree: 'Wizard' })).status, 400);
+  assert.equal((await gia.postJson('/api/profile', { name: 'Gia Rossi', visa_type: 'h1b', school: '<script>' })).status, 400);
+  await gia.postJson('/api/profile', {
+    name: 'Gia Rossi',
+    visa_type: 'h1b',
+    h1b_start: '2025-10-01',
+    phone: '(415) 555-0142',
+    school: '  Northfield   University ',
+    degree: "Master's",
+    major: 'Computer Science',
+    home_country: 'Italy',
+  });
+  const about = (await gia.getJson('/api/store')).profiles[0];
+  assert.deepEqual([about.school, about.degree, about.major, about.home_country], ['Northfield University', "Master's", 'Computer Science', 'Italy']);
   const person = (await gia.getJson('/api/store')).profiles[0].id;
   const key = (await gia.getJson('/api/connect')).bot_key;
+  // The Bots are told who the student is.
+  const told = (await callTool(key, 'list_people', {})).value.people[0];
+  assert.equal(told.school, 'Northfield University');
+  assert.equal(told.home_country, 'Italy');
 
   // Nothing is set: the page is told, the button's route and the Bot's tool both say why.
   assert.equal((await gia.getJson('/api/store')).features.sms, false);
