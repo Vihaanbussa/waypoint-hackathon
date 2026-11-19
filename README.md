@@ -83,7 +83,7 @@ Each visa type is a **rule pack** of deadlines, limits and official sources. Whe
 | Green card | File Form I-751 in the 90 days before a two-year card expires | Next |
 
 > [!NOTE]
-> **Built to be trusted.** AI never does the date math: plain code computes every deadline from the official rule. No Bot can send anything to another person; it waits for the student's tap. Texts never contain receipt or ID numbers. Waypoint organizes, alerts and drafts. It is not legal advice.
+> **Built to be trusted.** AI never does the date math: plain code computes every deadline from the official rule. No Bot can send anything to another person; it waits for the student's tap, and after that it can only record a Gmail draft. A rule change needs an https link to the official page. A text with a receipt number, over 300 characters, or during quiet hours is refused, unless a deadline is already Act now. Case Clerk can only record a receipt number already on the student's profile. The report form and `/api/rows` use the same checks as the connector. Waypoint organizes, alerts and drafts. It is not legal advice.
 
 ## How we built it
 
@@ -107,15 +107,15 @@ Each visa type is a **rule pack** of deadlines, limits and official sources. Whe
 | `list_people` | Every Bot | Who the key speaks for and how they want to be told |
 | `get_brief` | Every Bot | Every deadline with days left and risk, already computed |
 | `report_run` | Every Bot | One plain line at the end of each run |
-| `save_case_status` | Case Clerk | The status as worded, when it changed, any response date |
-| `save_policy_alert` | Policy Watcher | A rule change, why it matters, and the official source |
+| `save_case_status` | Case Clerk | The status as worded, only for a receipt already on the profile |
+| `save_policy_alert` | Policy Watcher | A rule change with an https link to the official page. An X post alone is refused |
 | `save_inbox_date` | Inbox Scout | A date found in an email, with sender and subject |
 | `set_deadline_note` | Deadline Keeper | A plain-language reason under a deadline |
 | `draft_email` | Deadline Keeper | Saves a draft. It can never send |
 | `list_emails` | Deadline Keeper, Messenger | Drafted and approved emails, so nothing is written twice |
-| `mark_email_delivered` | Messenger | Records the Gmail draft, refused unless the student approved it |
-| `log_message` | Messenger | Records a calendar event or message |
-| `send_text` | Messenger | Sends one text through Twilio |
+| `mark_email_delivered` | Messenger | Records the Gmail draft id. Refused until the student approves, and it cannot mark the email sent |
+| `log_message` | Messenger | Records a calendar event or message. Same 300-character and receipt-number rules as a text |
+| `send_text` | Messenger | Sends one text through Twilio. Waits during quiet hours unless a deadline is Act now |
 
 No tool accepts a day count. Deadlines only ever come from `get_brief`.
 

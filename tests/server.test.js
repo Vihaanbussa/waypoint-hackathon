@@ -305,12 +305,22 @@ test('the report form works as a plain form post, and escapes what it echoes', a
     status: 'ok',
     summary: 'Found 1 relevant notice',
     table: 'alerts',
-    row: '{"title": "test notice", "why": "Because.", "risk": "watch"}',
+    x_searches: 'from:USCIS OPT',
+    x_posts_read: '3',
+    row: '{"title": "test notice", "why": "Because.", "risk": "watch", "source_url": "https://www.uscis.gov/"}',
   });
   assert.equal(good.status, 200);
   assert.match(await good.text(), /Saved 2 row\(s\)/);
   const store = await getJson('/api/store');
   assert.equal(store.alerts.at(-1).person, 'wei');
+  assert.equal(store.alerts.at(-1).source_url, 'https://www.uscis.gov/');
+
+  const noSource = await form({ table: 'alerts', person: 'wei', row: '{"title": "Rumour", "why": "A post said so.", "x_url": "https://x.com/USCIS/status/1"}' });
+  assert.equal(noSource.status, 400);
+  assert.match(await noSource.text(), /official page/);
+  const noSearch = await form({ bot: 'Scout', person: 'wei', status: 'ok', summary: 'No relevant changes' });
+  assert.equal(noSearch.status, 400);
+  assert.match(await noSearch.text(), /search X/);
 
   const bad = await form({ table: 'alerts', row: '{not json' });
   assert.equal(bad.status, 400);
@@ -410,12 +420,14 @@ test('a Bot with its own key: reads the brief, reports, drafts, and cannot appro
 
   // Scout can say it first saw something on X. Only a real X link is kept.
   await callTool(key, 'save_policy_alert', { title: 'Fee change', why: 'The filing fee goes up in January.', source_label: 'USCIS', source_url: 'https://www.uscis.gov/', x_url: 'https://x.com/USCIS/status/1' });
-  await callTool(key, 'save_policy_alert', { title: 'Rumour', why: 'Unconfirmed.', x_url: 'https://example.com/not-x' });
-  const notices = (await eli.getJson('/api/store')).alerts.filter((a) => ['Fee change', 'Rumour'].includes(a.title));
-  assert.equal(notices.find((a) => a.title === 'Fee change').x_url, 'https://x.com/USCIS/status/1');
-  assert.equal(notices.find((a) => a.title === 'Fee change').seen_on_x, true);
-  assert.equal(notices.find((a) => a.title === 'Rumour').x_url, '');
-  assert.equal(notices.find((a) => a.title === 'Rumour').seen_on_x, false);
+  const rumour = await callTool(key, 'save_policy_alert', { title: 'Rumour', why: 'Unconfirmed.', x_url: 'https://x.com/USCIS/status/9' });
+  assert.equal(rumour.isError, true);
+  assert.match(rumour.value, /official page/);
+  const notices = (await eli.getJson('/api/store')).alerts.filter((a) => a.title === 'Fee change');
+  assert.equal(notices[0].x_url, 'https://x.com/USCIS/status/1');
+  assert.equal(notices[0].seen_on_x, true);
+  assert.equal(notices[0].source_url, 'https://www.uscis.gov/');
+  assert.match((await callTool(key, 'save_case_status', { receipt: 'EAC0000000001', status: 'Case Was Received' })).value, /not on/);
   assert.equal((await callTool(key, 'report_run', { bot: 'Mystery Bot', summary: 'x' })).isError, true);
 
   // Scout cannot report a finished run without saying what it searched on X. A Bot
@@ -466,6 +478,8 @@ test('a Bot with its own key: reads the brief, reports, drafts, and cannot appro
   assert.equal((await eli.postJson(`/api/actions/${emailId}`, { state: 'approved' })).status, 200);
   const approved = await callTool(key, 'list_emails', { state: 'approved' });
   assert.equal(approved.value.emails[0].email_id, emailId);
+  assert.match((await callTool(key, 'mark_email_delivered', { email_id: emailId, sent: true })).value, /does not send/);
+  assert.equal((await callTool(key, 'list_emails', { state: 'approved' })).value.emails[0].state, 'approved');
   const delivered = await callTool(key, 'mark_email_delivered', { email_id: emailId, gmail_draft_id: 'r-123' });
   assert.equal(delivered.value.gmail_draft_id, 'r-123');
   assert.equal(delivered.value.state, 'approved');
@@ -480,6 +494,20 @@ test('a Bot with its own key: reads the brief, reports, drafts, and cannot appro
   // The key speaks for Eli only: not the sample people, not through any door.
   assert.equal((await callTool(key, 'get_brief', { person: 'priya' })).isError, true);
   assert.equal((await callTool(key, 'mark_email_delivered', { email_id: 'act-priya-hr', sent: true })).isError, true);
+  assert.match((await callTool(key, 'log_message', { channel: 'calendar', text: 'Receipt IOE0912345678 moved' })).value, /receipt numbers/);
+  assert.match((await callTool(key, 'log_message', { channel: 'chat', text: 'x'.repeat(301) })).value, /300 characters/);
+  const around = await fetch(`${base}/api/rows/alerts`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${key}` },
+    body: JSON.stringify({ person, title: 'Seen on X', why: 'A post said so.', x_url: 'https://x.com/USCIS/status/2' }),
+  });
+  assert.equal(around.status, 400);
+  const logged = await fetch(`${base}/api/rows/notifications`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${key}` },
+    body: JSON.stringify({ person, channel: 'sms', text: 'Your receipt IOE0912345678 changed' }),
+  });
+  assert.equal(logged.status, 400);
   const sneak = await fetch(`${base}/api/rows/runs`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${key}` },
@@ -533,6 +561,8 @@ test('texts: off until Twilio is set, then sent to your own phone, recorded, and
   await gia.postJson('/api/profile', { name: 'Gia Rossi', visa_type: 'h1b', h1b_start: '2025-10-01', phone: '(415) 555-0142' });
   const person = (await gia.getJson('/api/store')).profiles[0].id;
   const key = (await gia.getJson('/api/connect')).bot_key;
+  // Equal times mean no quiet window, so this test does not depend on the clock.
+  await gia.postJson(`/api/profiles/${person}/settings`, { quiet_hours: { from: '12:00', to: '12:00' } });
 
   // Nothing is set: the page is told, the button's route and the Bot's tool both say why.
   assert.equal((await gia.getJson('/api/store')).features.sms, false);
@@ -621,10 +651,37 @@ test('texts: off until Twilio is set, then sent to your own phone, recorded, and
 
     // The sample people have made-up numbers: nothing goes out unless the host
     // names a real phone for the demo, and then it goes there.
+    await postJson('/api/profiles/priya/settings', { quiet_hours: { from: '12:00', to: '12:00' } });
     assert.match((await callTool(sampleKey, 'send_text', { person: 'priya', text: 'Waypoint: hello' })).value, /made-up/);
     process.env.SMS_DEMO_TO = '+14155550199';
     assert.equal((await callTool(sampleKey, 'send_text', { person: 'priya', text: 'Waypoint: hello' })).value.sent, true);
     assert.equal(got.at(-1).form.get('To'), '+14155550199');
+
+    // Quiet hours hold a text. A deadline already at Act now still goes out.
+    const halCookie = await signUp('Hal Ives', 'hal@example.com');
+    const hal = as(halCookie);
+    await hal.postJson('/api/profile', {
+      name: 'Hal Ives',
+      visa_type: 'h1b',
+      h1b_start: '2025-10-01',
+      phone: '(415) 555-0177',
+      receipts: 'IOE0912345678',
+    });
+    const halPerson = (await hal.getJson('/api/store')).profiles[0].id;
+    const halKey = (await hal.getJson('/api/connect')).bot_key;
+    const now = new Date();
+    const pad = (n) => String(n).padStart(2, '0');
+    const mins = now.getHours() * 60 + now.getMinutes();
+    const fmt = (m) => `${pad(Math.floor(m / 60) % 24)}:${pad(m % 60)}`;
+    await hal.postJson(`/api/profiles/${halPerson}/settings`, {
+      quiet_hours: { from: fmt((mins + 24 * 60 - 30) % (24 * 60)), to: fmt((mins + 30) % (24 * 60)) },
+    });
+    assert.match((await callTool(halKey, 'send_text', { text: 'Waypoint: nothing urgent.' })).value, /quiet hours/);
+    assert.equal(got.length, 7);
+    const today = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
+    assert.equal((await callTool(halKey, 'save_case_status', { receipt: 'IOE0912345678', status: 'Request for Evidence Was Sent', response_due: today })).isError, false);
+    assert.equal((await callTool(halKey, 'send_text', { text: 'Waypoint: a response is due today.' })).value.sent, true);
+    assert.equal(got.length, 8);
   } finally {
     for (const name of ['TWILIO_ACCOUNT_SID', 'TWILIO_AUTH_TOKEN', 'TWILIO_FROM_NUMBER', 'TWILIO_API_BASE', 'SMS_DEMO_TO']) delete process.env[name];
     await new Promise((resolve) => twilio.close(resolve));

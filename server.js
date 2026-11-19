@@ -385,6 +385,7 @@ function appendRow(table, input, scope = null) {
       throw httpError(403, row.person ? `This key cannot write for person "${String(row.person).slice(0, 40)}".` : 'Say which person this row is for.');
     }
   }
+  prepareRow(table, row);
   row.id = row.id ? String(row.id) : newId(table);
   row.at = row.at || nowIso();
   delete row.sample;
@@ -394,7 +395,6 @@ function appendRow(table, input, scope = null) {
     delete row.decided_at;
   }
   if (table === 'case_status' && !row.checked_at) row.checked_at = row.at;
-  if (table === 'runs' && row.bot) row.bot = botName(row.bot);
   store[table].push(row);
   return row;
 }
@@ -758,15 +758,16 @@ async function api(req, res, url) {
       const saved = [];
       const person = String(data.person || '').trim();
       if (data.bot && data.summary) {
-        if (!BOTS.includes(botName(data.bot))) throw httpError(400, 'Pick one of the five Bots.');
         saved.push(
           appendRow(
             'runs',
             {
               person,
-              bot: botName(data.bot),
-              status: data.status === 'failed' ? 'failed' : data.status === 'running' ? 'running' : 'ok',
+              bot: data.bot,
+              status: data.status,
               summary: String(data.summary),
+              x_searches: data.x_searches,
+              x_posts_read: data.x_posts_read,
             },
             scope,
           ),
@@ -953,6 +954,104 @@ function xSearches(value) {
   return [...seen].slice(0, 8);
 }
 
+const RECEIPT = /\b[A-Z]{3}\d{10}\b/;
+
+function officialSource(value) {
+  try {
+    const url = new URL(String(value || ''));
+    const host = url.protocol === 'https:' ? url.hostname.replace(/^(www|mobile)\./, '') : '';
+    if (!host || host === 'x.com' || host === 'twitter.com') return '';
+    return url.href;
+  } catch {
+    return '';
+  }
+}
+
+// One line a person might read on their phone or in Activity. Receipt numbers stay out.
+function plainText(value) {
+  const text = String(value ?? '').replace(/\s+/g, ' ').trim();
+  if (!text) throw httpError(400, 'The text is empty.');
+  if (text.length > 300) throw httpError(400, 'Keep a text to one line, 300 characters at most.');
+  if (RECEIPT.test(text)) throw httpError(400, 'Leave receipt numbers out of a text.');
+  return text;
+}
+
+function quietMinutes(value) {
+  const match = /^([01]\d|2[0-3]):([0-5]\d)$/.exec(String(value || ''));
+  return match ? Number(match[1]) * 60 + Number(match[2]) : null;
+}
+
+// True when now falls inside quiet hours, including a window that passes midnight.
+function inQuietHours(quiet, now = new Date()) {
+  const from = quietMinutes(quiet?.from);
+  const to = quietMinutes(quiet?.to);
+  if (from == null || to == null || from === to) return false;
+  const nowMinutes = now.getHours() * 60 + now.getMinutes();
+  return from < to ? nowMinutes >= from && nowMinutes < to : nowMinutes >= from || nowMinutes < to;
+}
+
+// send_text waits out quiet hours. A deadline already at Act now still goes through.
+function textDuringQuietHours(profile, now = new Date()) {
+  if (!inQuietHours(profile.quiet_hours, now)) return;
+  const act = buildClocks(profile, store, localDay(now)).some((clock) => clock.risk === 'act');
+  if (act) return;
+  throw httpError(
+    400,
+    `It is quiet hours for ${profile.name} (${profile.quiet_hours.from} to ${profile.quiet_hours.to}). A text waits unless a deadline is Act now.`,
+  );
+}
+
+// The connector, the report form and /api/rows all append here, so the rules hold on every door.
+function prepareRow(table, row) {
+  if (table === 'alerts') {
+    const source = officialSource(row.source_url);
+    if (!source) throw httpError(400, 'A rule change needs a link to the official page (https). A post on X is not enough.');
+    row.source_url = source;
+    row.x_url = xPostUrl(row.x_url);
+    row.seen_on_x = Boolean(row.x_url);
+    if (!['act', 'watch', 'clear'].includes(row.risk)) row.risk = 'clear';
+    if (!String(row.title || '').trim() || !String(row.why || '').trim()) throw httpError(400, 'A title and a "why" are both needed.');
+  }
+  if (table === 'case_status') {
+    const profile = store.profiles.find((p) => p.id === String(row.person));
+    const receipt = String(row.receipt || '').trim().toUpperCase();
+    const owned = (profile?.receipts ?? []).map((item) => String(item).toUpperCase());
+    if (!owned.includes(receipt)) {
+      throw httpError(400, `That receipt number is not on ${profile?.name || 'this person'}'s profile. Add it under Settings before recording a status.`);
+    }
+    row.receipt = receipt;
+    if (!String(row.status || '').trim()) throw httpError(400, 'Pass the status as the portal words it.');
+    for (const field of ['last_changed', 'response_due']) {
+      if (row[field] && !strictDay(row[field])) throw httpError(400, `"${field}" must be a real date like 2027-02-10.`);
+    }
+  }
+  if (table === 'inbox_facts' && !strictDay(row.due_date)) throw httpError(400, '"due_date" must be a real date like 2026-12-09.');
+  if (table === 'notifications') row.text = plainText(row.text);
+  if (table === 'runs') {
+    const reportedAs = String(row.bot || '');
+    const bot = botName(reportedAs);
+    if (!BOTS.includes(bot)) throw httpError(400, `"bot" must be one of: ${BOTS.join(', ')}.`);
+    if (!String(row.summary || '').trim()) throw httpError(400, 'Add a one-line summary.');
+    row.bot = bot;
+    row.status = row.status === 'failed' || row.status === 'running' ? row.status : 'ok';
+    // Inbox Scout never searched X, so a report still using that old name is let be.
+    if (['Scout', 'Policy Watcher'].includes(reportedAs) && row.status === 'ok') {
+      const searches = xSearches(row.x_searches);
+      if (!searches.length) {
+        throw httpError(
+          400,
+          'Scout has to search X before it reports. Run your X searches for this person\'s visa type, then call report_run again with x_searches (the searches you ran) and x_posts_read (how many posts you read). If you cannot search X right now, report status "failed" and say so in the summary.',
+        );
+      }
+      row.x_searches = searches;
+      row.x_posts_read = Math.max(0, Math.min(9999, Math.floor(Number(row.x_posts_read)) || 0));
+    } else {
+      delete row.x_searches;
+      delete row.x_posts_read;
+    }
+  }
+}
+
 const schema = (properties, required = []) => ({ type: 'object', properties, required, additionalProperties: false });
 
 // ---- text messages ----
@@ -971,10 +1070,7 @@ const textsSince = (ms, person = null) =>
 // Activity shows it. The sample people have made-up numbers: their texts go to
 // SMS_DEMO_TO when the host sets it (the presenter's phone) and nowhere otherwise.
 async function sendText(profile, input, meta = {}) {
-  const text = String(input ?? '').replace(/\s+/g, ' ').trim();
-  if (!text) throw new Error('The text is empty.');
-  if (text.length > 300) throw new Error('Keep a text to one line, 300 characters at most.');
-  if (/\b[A-Z]{3}\d{10}\b/.test(text)) throw new Error('Leave receipt numbers out of a text.');
+  const text = plainText(input);
   if (profile.channels?.sms === false) throw new Error(`${profile.name} has text messages turned off in Settings.`);
   if (!sms.ready) throw new Error(`Texting is not switched on for this site yet (${sms.missing.join(', ')} missing on the host).`);
   const to = toE164(profile.owner ? profile.phone : process.env.SMS_DEMO_TO);
@@ -1127,29 +1223,18 @@ const BOT_TOOLS = [
     ),
     run: async (args, { scope }) => {
       const profile = personFor(args, scope);
-      const bot = botName(args.bot);
-      if (!BOTS.includes(bot)) throw new Error(`"bot" must be one of: ${BOTS.join(', ')}.`);
-      if (!String(args.summary || '').trim()) throw new Error('Add a one-line summary.');
-      const status = ['failed', 'running'].includes(args.status) ? args.status : 'ok';
-      // Scout's job includes watching X, so a run that went ok has to say what it
-      // searched there. Otherwise "No relevant changes" could mean it never looked.
-      // (A Bot still reporting as the old Inbox Scout never searched X, so it is let be.)
-      const watcher = ['Scout', 'Policy Watcher'].includes(String(args.bot));
-      const searches = watcher ? xSearches(args.x_searches) : [];
-      if (watcher && status === 'ok' && !searches.length) {
-        throw new Error(
-          'Scout has to search X before it reports. Run your X searches for this person\'s visa type, then call report_run again with x_searches (the searches you ran) and x_posts_read (how many posts you read). If you cannot search X right now, report status "failed" and say so in the summary.',
-        );
-      }
-      const onX = searches.length ? { x_searches: searches, x_posts_read: Math.max(0, Math.min(9999, Math.floor(Number(args.x_posts_read)) || 0)) } : {};
-      const row = appendRow('runs', { person: profile.id, bot, status, summary: String(args.summary), ...onX }, scope);
+      const row = appendRow(
+        'runs',
+        { person: profile.id, bot: args.bot, status: args.status, summary: args.summary, x_searches: args.x_searches, x_posts_read: args.x_posts_read },
+        scope,
+      );
       await save();
       return { saved: row.id };
     },
   },
   {
     name: 'save_case_status',
-    description: 'Case Clerk: record what a case-status portal shows for one receipt number. If the portal gives a date to respond by, pass it and Waypoint adds the deadline.',
+    description: 'Case Clerk: record what a case-status portal shows for one receipt number already on this person\'s profile. If the portal gives a date to respond by, pass it and Waypoint adds the deadline.',
     inputSchema: schema(
       {
         person: PERSON,
@@ -1187,7 +1272,7 @@ const BOT_TOOLS = [
   },
   {
     name: 'save_policy_alert',
-    description: 'Scout: record a rule change or official notice that matters to this person, with why it matters to them and a link to the official source. If you first saw it on X, say so with x_url.',
+    description: 'Scout: record a rule change that matters to this person. source_url must be the official https page. An X post alone is refused. If you first saw it on X, also pass that post as x_url.',
     inputSchema: schema(
       {
         person: PERSON,
@@ -1332,7 +1417,7 @@ const BOT_TOOLS = [
   },
   {
     name: 'mark_email_delivered',
-    description: 'Messenger: after putting an APPROVED email in the person\'s Gmail, record it. Pass the Gmail draft id if it was saved as a draft, or sent=true if it was sent.',
+    description: 'Messenger: after saving an APPROVED email as a Gmail draft, record the draft id. Waypoint will not mark the email sent. The person sends it.',
     inputSchema: schema(
       { email_id: str('From list_emails.'), gmail_draft_id: str('The Gmail draft id.'), sent: { type: 'boolean', description: 'True if the email was actually sent.' } },
       ['email_id'],
@@ -1340,16 +1425,17 @@ const BOT_TOOLS = [
     run: async (args, { scope }) => {
       const action = store.actions.find((a) => a.id === String(args.email_id));
       if (!action || !scope.persons.has(action.person)) throw new Error('No email with that id for the people this key acts for.');
-      if (!['approved', 'sent'].includes(action.state)) throw new Error(`This email is "${action.state}". Only an approved email may be delivered.`);
-      if (args.gmail_draft_id) action.gmail_draft_id = String(args.gmail_draft_id).slice(0, 200);
-      if (args.sent === true) action.state = 'sent';
+      if (action.state !== 'approved') throw new Error(`This email is "${action.state}". Only an approved email may be saved as a draft.`);
+      if (args.sent === true) throw new Error('Waypoint does not send email. Save it as a Gmail draft and pass gmail_draft_id. The person sends it.');
+      if (!String(args.gmail_draft_id || '').trim()) throw new Error('Pass gmail_draft_id, the id of the Gmail draft you saved.');
+      action.gmail_draft_id = String(args.gmail_draft_id).slice(0, 200);
       await save();
       return emailView(action);
     },
   },
   {
     name: 'log_message',
-    description: 'Messenger: record a message that went to the person themselves (a text, a calendar event). No receipt numbers or ID numbers in the text.',
+    description: 'Messenger: record a message that went to the person themselves (a calendar event, or a chat when texting is off). One line, 300 characters at most, with no receipt numbers.',
     inputSchema: schema(
       {
         person: PERSON,
@@ -1371,7 +1457,7 @@ const BOT_TOOLS = [
     description:
       'Messenger: send one text message to the person\'s own phone, through Waypoint. Pass "kind" and Waypoint writes the words itself, with the date and days left from its own counting: ' +
       Object.entries(TEXT_KINDS).map(([kind, k]) => `${kind} (${k.about})`).join('; ') +
-      '. Pass deadline_id from get_brief for act_now, reminder and rule_change, and for status_change when the change added a deadline. Waypoint records the text, so do not also call log_message for it, and it will not send the same news twice in a day. Only when no kind fits, pass "text" instead: one line, no day counts of your own, no receipt numbers or ID numbers. If this fails, the reason says what to do.',
+      '. Pass deadline_id from get_brief for act_now, reminder and rule_change, and for status_change when the change added a deadline. Waypoint records the text, so do not also call log_message for it, and it will not send the same news twice in a day. Only when no kind fits, pass "text" instead: one line, no receipt numbers. During quiet hours this waits unless a deadline is Act now. If this fails, the reason says what to do.',
     inputSchema: schema({
       person: PERSON,
       kind: str('What the text is about. Waypoint writes the wording.', { enum: Object.keys(TEXT_KINDS) }),
@@ -1381,6 +1467,7 @@ const BOT_TOOLS = [
     }),
     run: async (args, { scope }) => {
       const profile = personFor(args, scope);
+      textDuringQuietHours(profile);
       if (!args.kind && !String(args.text || '').trim()) throw new Error('Pass "kind" (Waypoint writes the words), or "text" when no kind fits.');
       const made = args.kind ? await writtenText(profile, args) : { text: args.text };
       const { row, to, template } = await sendText(profile, made.text, made);

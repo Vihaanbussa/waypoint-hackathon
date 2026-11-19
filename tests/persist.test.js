@@ -80,7 +80,7 @@ test('with a database, an account and what a Bot wrote survive a restart on an e
   const wrote = await fetch(`${first.base}/api/rows/runs`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${key}` },
-    body: JSON.stringify({ person, bot: 'Policy Watcher', status: 'ok', summary: 'No relevant changes' }),
+    body: JSON.stringify({ person, bot: 'Policy Watcher', status: 'ok', summary: 'No relevant changes', x_searches: ['from:USCIS'], x_posts_read: 1 }),
   });
   assert.equal(wrote.status, 200);
   await stop(first);
