@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Connect your Bots · Waypoint</title>
+    <meta name="description" content="Connect Grok Bots to Waypoint: the connector address, your key, and what to tell each Bot.">
+    <link rel="icon" href="/logo.svg" type="image/svg+xml">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:wght@400;500;600&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600&text=waypoint&display=swap">
+    <link rel="stylesheet" href="/css/app.css">
+    <script src="/js/flow.js"></script>
+  </head>
+  <body data-page="connect">
+    <a class="skip" href="#main">Skip to content</a>
+
+    <header class="topbar">
+      <div class="topbar-inner">
+        <a class="wordmark" href="/">
+          <svg class="logo-mark" viewBox="0 0 32 32" width="22" height="22" aria-hidden="true"><circle class="logo-stop logo-stop--1" cx="5" cy="26" r="2"/><circle class="logo-stop logo-stop--2" cx="11.5" cy="20.5" r="2.7"/><circle class="logo-ring" pathLength="1" cx="22" cy="11" r="6.5" transform="rotate(135 22 11)"/><circle class="logo-stop logo-stop--3" cx="22" cy="11" r="2.6"/></svg>
+          Waypoint
+        </a>
+        <nav class="places" aria-label="Places">
+          <a href="/" data-place="brief">Brief</a>
+          <a href="/activity/" data-place="activity">Activity</a>
+          <a href="/settings/" data-place="settings" class="is-section">Settings</a>
+        </nav>
+        <div class="topbar-tools">
+          <a class="help-link" id="help-link" href="/?guide=1">Help</a>
+          <div class="profile-switch" id="profile-switch" hidden>
+            <span class="profile-label" id="profile-label">Viewing</span>
+            <div class="picker" id="profile-picker"></div>
+          </div>
+          <span class="account-name" id="account-name" hidden></span>
+          <button class="btn btn--quiet" type="button" id="sign-out">Sign out</button>
+        </div>
+      </div>
+    </header>
+
+    <main id="main" class="bands" tabindex="-1">
+      <section class="band band--hero">
+        <div class="band-inner hero">
+          <div class="hero-text">
+            <p class="step-count"><a href="/settings/" id="back-link">Settings</a> · Connect your Bots</p>
+            <h1>Connect your Bots</h1>
+            <p class="lede">Waypoint's six Bots are Grok Bots you set up in your own Grok Bot app. This page has everything to paste: the connector, your key, and each Bot's first message.</p>
+            <p class="notice" id="connect-notice" hidden></p>
+          </div>
+          <div class="hero-bot" id="hero-bot"></div>
+        </div>
+      </section>
+      <section class="band" aria-labelledby="c1">
+        <div class="band-inner split">
+          <div class="split-label">
+            <h2 id="c1">1. Add Waypoint as a connector</h2>
+            <p>In Grok Bot, send this to your first Bot. If your app has a Plugins or Connectors screen with "custom MCP server", the same address and header go there.</p>
+          </div>
+          <div class="split-body">
+            <dl class="facts" id="connect-facts"></dl>
+            <pre class="paste" id="connect-message"></pre>
+            <div class="form-actions">
+              <button class="btn btn--primary" type="button" id="copy-connect">Copy message with key</button>
+              <button class="btn" type="button" id="show-key">Show key</button>
+              <button class="btn" type="button" id="rotate-key">Make a new key</button>
+            </div>
+            <p class="save-status" id="connect-status" role="status"></p>
+          </div>
+        </div>
+      </section>
+      <section class="band band--wash" aria-labelledby="c2">
+        <div class="band-inner split">
+          <div class="split-label">
+            <h2 id="c2">2. Create the six Bots</h2>
+            <p>Make a new Bot for each, give it the name shown, and paste its message as the first thing you say. Then ask it to set up the schedule shown.</p>
+          </div>
+          <div class="split-body">
+            <div id="briefs"></div>
+          </div>
+        </div>
+      </section>
+      <section class="band" aria-labelledby="c3">
+        <div class="band-inner split">
+          <div class="split-label">
+            <h2 id="c3">3. Let Check now wake them</h2>
+            <p>Optional. Send the message to Case Clerk, then paste the webhook address and key it gives you. After that, Check now on your Brief starts a real run instead of a simulated one.</p>
+          </div>
+          <div class="split-body">
+            <pre class="paste" id="webhook-message"></pre>
+            <div class="form-actions">
+              <button class="btn" type="button" id="copy-webhook">Copy message</button>
+            </div>
+            <form id="webhook-form" novalidate>
+              <div class="field">
+                <label for="webhook-url">Webhook address</label>
+                <input type="text" id="webhook-url" inputmode="url" autocomplete="off" maxlength="500" placeholder="https://">
+              </div>
+              <div class="field">
+                <label for="webhook-key">Webhook key</label>
+                <span class="hint" id="webhook-key-hint">Kept on the server. It is never shown again after you save.</span>
+                <input type="password" id="webhook-key" autocomplete="off" maxlength="300" aria-describedby="webhook-key-hint">
+              </div>
+              <p class="form-error" id="webhook-error" role="alert" hidden></p>
+              <div class="form-actions">
+                <button class="btn btn--primary" type="submit" id="webhook-save">Save</button>
+                <button class="btn" type="button" id="webhook-clear" hidden>Disconnect</button>
+              </div>
+              <p class="save-status" id="webhook-status" role="status"></p>
+            </form>
+          </div>
+        </div>
+      </section>
+      <section class="band" aria-labelledby="c4">
+        <div class="band-inner split">
+          <div class="split-label">
+            <h2 id="c4">4. Check it worked</h2>
+          </div>
+          <div class="split-body">
+            <p>Ask Case Clerk to "run your Waypoint check now". Within a minute your Brief should show Case Clerk with a time under it, and a line in Checked for you that does not say simulated.</p>
+            <p class="fine">Bots share one cloud computer and its sign-ins, so treat the key like a password. Make a new key here if it leaks; the old one stops working at once.</p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-foot">
+      <div class="site-foot-inner">
+        <nav class="foot-group" aria-labelledby="foot-visa">
+          <h2 id="foot-visa">Your visa</h2>
+          <a href="/" data-keep>Brief</a>
+          <a href="/activity/" data-keep>Activity</a>
+          <a href="/settings/" data-keep>Settings</a>
+        </nav>
+        <nav class="foot-group" aria-labelledby="foot-bots">
+          <h2 id="foot-bots">Your Bots</h2>
+          <a href="/connect/" data-keep>Connect your Bots</a>
+          <a href="/portal/">Mock case portal</a>
+        </nav>
+        <nav class="foot-group" aria-labelledby="foot-help">
+          <h2 id="foot-help">Help</h2>
+          <a href="/?guide=1" data-keep>Show the first-visit guide</a>
+        </nav>
+      </div>
+    </footer>
+
+    <script type="module" src="/js/connect.js"></script>
+  </body>
+</html>

@@ -1,0 +1,8 @@
+data/store.json
+data/store.json.tmp
+data/config.json
+node_modules/
+.DS_Store
+data/accounts.json
+data/accounts.json.tmp
+data/bot-key.txt

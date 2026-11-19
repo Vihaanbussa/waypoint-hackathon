@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Brief · Waypoint</title>
+    <meta name="description" content="Your visa deadlines, most urgent first, with what your Bots checked and what needs your approval.">
+    <link rel="icon" href="/logo.svg" type="image/svg+xml">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:wght@400;500;600&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600&text=waypoint&display=swap">
+    <link rel="stylesheet" href="/css/app.css">
+    <script src="/js/flow.js"></script>
+  </head>
+  <body data-page="brief">
+    <a class="skip" id="skip-link" href="#main">Skip to content</a>
+
+    <header class="topbar">
+      <div class="topbar-inner">
+        <a class="wordmark" href="/">
+          <svg class="logo-mark" viewBox="0 0 32 32" width="22" height="22" aria-hidden="true"><circle class="logo-stop logo-stop--1" cx="5" cy="26" r="2"/><circle class="logo-stop logo-stop--2" cx="11.5" cy="20.5" r="2.7"/><circle class="logo-ring" pathLength="1" cx="22" cy="11" r="6.5" transform="rotate(135 22 11)"/><circle class="logo-stop logo-stop--3" cx="22" cy="11" r="2.6"/></svg>
+          Waypoint
+        </a>
+        <nav class="places" aria-label="Places">
+          <a href="/" data-place="brief" aria-current="page">Brief</a>
+          <a href="/activity/" data-place="activity">Activity</a>
+          <a href="/settings/" data-place="settings">Settings</a>
+        </nav>
+        <div class="topbar-tools">
+          <a class="help-link" id="help-link" href="/?guide=1">Help</a>
+          <div class="profile-switch" id="profile-switch" hidden>
+            <span class="profile-label" id="profile-label">Viewing</span>
+            <div class="picker" id="profile-picker"></div>
+          </div>
+          <span class="account-name" id="account-name" hidden></span>
+          <button class="btn btn--quiet" type="button" id="sign-out">Sign out</button>
+        </div>
+      </div>
+    </header>
+
+    <main id="main" class="bands" tabindex="-1">
+      <section class="band band--hero">
+        <div class="band-inner hero">
+          <div class="hero-text">
+            <h1 id="headline">Brief</h1>
+            <p class="lead-sub" id="lead-sub"></p>
+            <p class="lead-action" id="lead-action" hidden></p>
+            <p class="notice" id="notice" hidden></p>
+          </div>
+          <div class="hero-bot" id="hero-bot"></div>
+        </div>
+      </section>
+      <section class="band band--ink" id="connect-prompt" aria-labelledby="connect-prompt-title" hidden>
+        <div class="band-inner split">
+          <div class="split-label">
+            <h2 id="connect-prompt-title">Connect your Bots</h2>
+          </div>
+          <div class="split-body">
+            <p class="with-bot" id="connect-prompt-line"></p>
+            <div class="form-actions">
+              <a class="btn btn--primary" href="/connect/">Set up your Bots</a>
+              <button class="btn btn--quiet" type="button" id="connect-later">Not now</button>
+            </div>
+          </div>
+        </div>
+      </section>
+      <section class="band band--wash guide-band">
+        <div class="band-inner">
+          <div class="guide" id="guide" aria-labelledby="guide-title" tabindex="-1" hidden></div>
+        </div>
+      </section>
+      <section class="band band--groups">
+        <div class="band-inner">
+          <div id="groups"></div>
+        </div>
+      </section>
+      <section class="band band--ink" aria-labelledby="bots-heading">
+        <div class="band-inner split">
+          <div class="split-label">
+            <h2 id="bots-heading">Checked for you</h2>
+            <p id="bots-intro">Bots are AI assistants that check government sites, your inbox, and X for rule changes. This is what each one last did.</p>
+            <div class="check-row">
+              <button class="btn btn--primary" type="button" id="check-now">Check now</button>
+              <p id="check-note" role="status"></p>
+            </div>
+          </div>
+          <div class="split-body">
+            <div class="relay-wrap" id="bot-relay"></div>
+          </div>
+        </div>
+      </section>
+      <section class="band" aria-labelledby="log-heading">
+        <div class="band-inner split">
+          <div class="split-label">
+            <h2 id="log-heading">What they last did</h2>
+            <p class="after-log" id="bot-log-note"></p>
+          </div>
+          <div class="split-body">
+            <ul class="log" id="bot-log"></ul>
+          </div>
+        </div>
+      </section>
+      <section class="band band--wash" aria-labelledby="own-heading">
+        <div class="band-inner split">
+          <div class="split-label">
+            <h2 id="own-heading">Your own deadlines</h2>
+            <p>For anything the rules do not cover: an appointment, a lease, a renewal.</p>
+          </div>
+          <div class="split-body">
+            <details class="add-own" id="add-own">
+            <summary>Add a deadline</summary>
+            <form id="add-own-form" novalidate>
+              <div class="field">
+                <label for="own-label">What is it?</label>
+                <span class="hint" id="own-label-hint">For example: biometrics appointment, lease ends, renew driver's license.</span>
+                <input type="text" id="own-label" maxlength="80" aria-describedby="own-label-hint" required>
+              </div>
+              <div class="field">
+                <label for="own-date">Date</label>
+                <input type="date" id="own-date" required>
+              </div>
+              <div class="field">
+                <label for="own-note">Note</label>
+                <span class="hint" id="own-note-hint">Optional. Shown under the deadline.</span>
+                <input type="text" id="own-note" maxlength="300" aria-describedby="own-note-hint">
+              </div>
+              <p class="form-error" id="own-error" role="alert" hidden></p>
+              <div class="form-actions">
+                <button class="btn btn--primary" type="submit" id="own-save">Add deadline</button>
+              </div>
+            </form>
+          </details>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-foot">
+      <div class="site-foot-inner">
+        <nav class="foot-group" aria-labelledby="foot-visa">
+          <h2 id="foot-visa">Your visa</h2>
+          <a href="/" data-keep>Brief</a>
+          <a href="/activity/" data-keep>Activity</a>
+          <a href="/settings/" data-keep>Settings</a>
+        </nav>
+        <nav class="foot-group" aria-labelledby="foot-bots">
+          <h2 id="foot-bots">Your Bots</h2>
+          <a href="/connect/" data-keep>Connect your Bots</a>
+          <a href="/portal/">Mock case portal</a>
+        </nav>
+        <nav class="foot-group" aria-labelledby="foot-help">
+          <h2 id="foot-help">Help</h2>
+          <a href="/?guide=1" data-keep>Show the first-visit guide</a>
+        </nav>
+      </div>
+    </footer>
+
+    <script type="module" src="/js/brief.js"></script>
+  </body>
+</html>

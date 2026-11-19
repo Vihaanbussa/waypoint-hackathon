@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Mock Case Status Portal</title>
+    <meta name="robots" content="noindex">
+    <link rel="stylesheet" href="/css/portal.css">
+  </head>
+  <body>
+    <p class="demo-banner">Demo portal for a hackathon. Not a government website. All data is fake.</p>
+    <header class="portal-bar">
+      <p class="portal-name">Mock Case Status Portal</p>
+    </header>
+
+    <main>
+      <section id="login-view">
+        <h1>Sign in</h1>
+        <p>Sign in to see the status of your case.</p>
+        <p id="demo-signin">This is a mock portal with fake data. Demo sign-in: username <strong id="demo-username">%DEMO_USERNAME%</strong>, password <strong id="demo-password">%DEMO_PASSWORD%</strong>.</p>
+        <form id="login-form" method="post" action="/portal/">
+          <label for="username">Username</label>
+          <input id="username" name="username" autocomplete="username" required>
+          <label for="password">Password</label>
+          <input id="password" name="password" type="password" autocomplete="current-password" required>
+          <button type="submit" id="sign-in">Sign in</button>
+        </form>
+        <p class="message" id="login-message" role="alert"></p>
+      </section>
+
+      <section id="case-view" hidden>
+        <h1>Case status</h1>
+        <dl class="case">
+          <div><dt>Receipt number</dt><dd id="case-receipt"></dd></div>
+          <div><dt>Form</dt><dd id="case-form"></dd></div>
+          <div><dt>Status</dt><dd id="case-status"></dd></div>
+          <div><dt>Details</dt><dd id="case-detail"></dd></div>
+          <div><dt>Last updated</dt><dd id="case-last-updated"></dd></div>
+          <div><dt>Response due</dt><dd id="case-response-due"></dd></div>
+        </dl>
+        <button type="button" class="plain" id="refresh">Check again</button>
+        <button type="button" class="plain" id="sign-out">Sign out</button>
+        <p class="message" id="case-message" role="status"></p>
+      </section>
+    </main>
+
+    <script type="module" src="/js/portal.js"></script>
+  </body>
+</html>

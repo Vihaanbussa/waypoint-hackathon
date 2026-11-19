@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Sign in · Waypoint</title>
+    <meta name="description" content="Waypoint watches your visa deadlines with six Grok Bots that check the government portal, your inbox and X. See how one night goes, open the demo, or sign in.">
+    <link rel="icon" href="/logo.svg" type="image/svg+xml">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:wght@400;500;600&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600&text=waypoint&display=swap">
+    <link rel="stylesheet" href="/css/app.css">
+    <script src="/js/flow.js"></script>
+  </head>
+  <body class="auth">
+    <a class="skip" href="#form-title">Skip to sign in</a>
+
+    <header class="topbar land-bar">
+      <div class="land-bar-inner">
+        <a class="wordmark wordmark--draw" href="#top">
+          <svg class="logo-mark" viewBox="0 0 32 32" width="22" height="22" aria-hidden="true"><circle class="logo-stop logo-stop--1" cx="5" cy="26" r="2"/><circle class="logo-stop logo-stop--2" cx="11.5" cy="20.5" r="2.7"/><circle class="logo-ring" pathLength="1" cx="22" cy="11" r="6.5" transform="rotate(135 22 11)"/><circle class="logo-stop logo-stop--3" cx="22" cy="11" r="2.6"/></svg>
+          Waypoint
+        </a>
+        <div class="land-tools">
+          <a class="land-signin" href="#form-title">Sign in</a>
+          <button class="btn btn--primary btn--small" type="button" data-demo>Show me the demo</button>
+        </div>
+      </div>
+    </header>
+
+    <main id="top">
+      <div class="auth-layout">
+        <section class="auth-pitch" aria-label="About Waypoint">
+          <div class="auth-pitch-body">
+            <div class="pitch-brand wordmark wordmark--draw" aria-hidden="true">
+              <svg class="logo-mark" viewBox="0 0 32 32" width="40" height="40" aria-hidden="true"><circle class="logo-stop logo-stop--1" cx="5" cy="26" r="2"/><circle class="logo-stop logo-stop--2" cx="11.5" cy="20.5" r="2.7"/><circle class="logo-ring" pathLength="1" cx="22" cy="11" r="6.5" transform="rotate(135 22 11)"/><circle class="logo-stop logo-stop--3" cx="22" cy="11" r="2.6"/></svg>
+              Waypoint
+            </div>
+            <h1>Your visa deadlines, <span class="go">watched for you.</span></h1>
+            <p>Visa dates hide in a government portal, your inbox and rules that change. Missing one can cost your status. Six Bots check all three every night, and watch X for news that affects you. You only come here to see what needs you.</p>
+            <div id="relay"></div>
+          </div>
+          <a class="scroll-cue" href="#night">
+            <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M12 4v15"/><path d="M6 13l6 6 6-6"/></svg>
+            Watch one night go by
+          </a>
+        </section>
+
+        <section class="auth-form" aria-labelledby="form-title">
+          <h2 id="form-title" tabindex="-1">Sign in</h2>
+          <p class="auth-switch"><span id="switch-text">New to Waypoint?</span> <button class="link-button" type="button" id="switch-mode">Create an account</button></p>
+
+          <form id="auth-form" novalidate>
+            <div class="field" id="name-field" hidden>
+              <label for="name">Your name</label>
+              <input type="text" id="name" name="name" autocomplete="name" maxlength="80">
+            </div>
+            <div class="field">
+              <label for="email">Email</label>
+              <input type="email" id="email" name="email" autocomplete="email" maxlength="200" required>
+            </div>
+            <div class="field">
+              <label for="password">Password</label>
+              <span class="hint" id="password-hint" hidden>At least 8 characters.</span>
+              <input type="password" id="password" name="password" autocomplete="current-password" maxlength="200" aria-describedby="password-hint" required>
+            </div>
+            <p class="form-error" id="auth-error" role="alert" hidden></p>
+            <div class="form-actions">
+              <button class="btn btn--solid" type="submit" id="auth-submit">Sign in</button>
+            </div>
+          </form>
+
+          <p class="auth-or">or</p>
+          <button class="btn" type="button" id="demo" data-demo>Show me the demo</button>
+          <p class="fine">The demo has two sample people, one on F-1 OPT and one on H-1B. No account needed.</p>
+        </section>
+      </div>
+
+      <section class="night" id="night" aria-labelledby="night-title">
+        <div class="night-head">
+          <h2 id="night-title">One night, while you sleep</h2>
+          <p>Each Bot has one job and a time to do it. Scroll to move the clock.</p>
+        </div>
+
+        <div class="night-body">
+          <div class="night-stage" id="night-stage" aria-hidden="true">
+            <p class="night-clock"><span id="night-clock">2:00 AM</span></p>
+            <div id="night-relay"></div>
+            <ul class="night-brief" id="night-brief">
+              <li data-from="0"><span class="night-key">Case status</span><span class="night-val">Request for Evidence Was Sent</span></li>
+              <li data-from="1"><span class="night-key">From your inbox</span><span class="night-val">Biometrics appointment, Dec 9</span></li>
+              <li data-from="2"><span class="night-key">Days left</span><span class="night-val"><b>84</b> to answer the request</span></li>
+              <li data-from="2"><span class="night-key">Email to HR</span><span class="night-val night-swap"><span class="night-drafted">Drafted, waiting for you</span><span class="night-approved">Approved by you</span></span></li>
+              <li data-from="3"><span class="night-key">Your calendar</span><span class="night-val">3 deadlines added</span></li>
+              <li data-from="4"><span class="night-key">On X today</span><span class="night-val">1 post checked, nothing confirmed</span></li>
+            </ul>
+          </div>
+
+          <ol class="night-steps" id="night-steps">
+            <li data-time="2:00 AM" data-bot="case">
+              <p class="night-time">2:00 AM</p>
+              <h3>Case Clerk reads the government portal</h3>
+              <p>It signs in, looks up your receipt number and reads the status word for word. It only reads. It never submits or uploads anything.</p>
+            </li>
+            <li data-time="2:10 AM" data-bot="inbox">
+              <p class="night-time">2:10 AM</p>
+              <h3>Inbox Scout finds dates in your email</h3>
+              <p>It looks at mail from USCIS, your school and your employer, and keeps only the date and who sent it. It never replies, forwards or deletes.</p>
+            </li>
+            <li data-time="2:30 AM" data-bot="keeper">
+              <p class="night-time">2:30 AM</p>
+              <h3>Deadline Keeper counts the days</h3>
+              <p>Plain code does the date math from the official rule, so the number is the same every time. Then the Bot drafts the email someone else needs to get.</p>
+            </li>
+            <li data-time="3:00 AM" data-bot="messenger">
+              <p class="night-time">3:00 AM</p>
+              <h3>Messenger puts it where you will see it</h3>
+              <p>One calendar event per deadline, and one text if something needs you now. It keeps to your quiet hours unless it is urgent.</p>
+            </li>
+            <li data-time="7:00 AM" data-bot="policy">
+              <p class="night-time">7:00 AM</p>
+              <h3>Policy Watcher watches X for rule changes</h3>
+              <p>News about visas breaks on X first. It searches X for your visa type, then checks each claim against USCIS, the Federal Register and the Visa Bulletin. A post only counts once an official page confirms it.</p>
+            </li>
+            <li data-time="8:00 AM" data-bot="">
+              <p class="night-time">8:00 AM</p>
+              <h3>You open one page</h3>
+              <p>Everything is sorted by how soon it needs you. You read the top deadline, approve one email, and you are done.</p>
+            </li>
+          </ol>
+          <p class="night-foot">The sixth Bot, Intake Clerk, reads a document whenever you send it one.</p>
+        </div>
+      </section>
+
+      <section class="promise" id="promise" aria-labelledby="promise-title">
+        <h2 id="promise-title">Three things Waypoint never does</h2>
+        <ul class="promise-list">
+          <li>
+            <h3>It never lets AI do the date math.</h3>
+            <p>Days left come from plain code and the official rule. The number is the same every time you look.</p>
+          </li>
+          <li>
+            <h3>It never contacts anyone for you on its own.</h3>
+            <p>A Bot can only draft. Nothing reaches your employer, school or attorney until you approve it.</p>
+          </li>
+          <li>
+            <h3>It never puts your ID numbers in a message.</h3>
+            <p>A text or email names the deadline and the days left. Receipt numbers and documents stay out of it.</p>
+          </li>
+        </ul>
+      </section>
+
+      <section class="land-cta" aria-labelledby="cta-title">
+        <h2 id="cta-title">See it with sample data first.</h2>
+        <p>Two made-up people, one on F-1 OPT and one on H-1B. No account, nothing to install.</p>
+        <div class="land-cta-actions">
+          <button class="btn btn--primary" type="button" data-demo>Show me the demo</button>
+          <button class="link-button" type="button" id="cta-signup">Create my account</button>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-foot">
+      <div class="site-foot-inner">
+        <nav class="foot-group" aria-labelledby="foot-about">
+          <h2 id="foot-about">Waypoint</h2>
+          <a href="#night">How it works</a>
+          <a href="#promise">What it never does</a>
+        </nav>
+        <nav class="foot-group" aria-labelledby="foot-start">
+          <h2 id="foot-start">Get started</h2>
+          <a href="#form-title">Sign in</a>
+          <a href="/login/?mode=signup#form-title">Create an account</a>
+        </nav>
+      </div>
+    </footer>
+
+    <script type="module" src="/js/login.js"></script>
+  </body>
+</html>

@@ -1,0 +1,3916 @@
+/* Waypoint. Black on white with one green, one typeface, the whole width of the window.
+   The only other colour is the six Bots, one pastel each (the last block).
+   The typeface is Atkinson Hyperlegible Next: built so 0/O and 1/l/I are easy
+   to tell apart, which matters for dates and receipt numbers.
+   Flat fills only. No gradients, no shadows, no blur. */
+
+:root {
+  --paper: #FFFFFF;
+  --ink: #0A0A0A;
+  --ink-soft: #2E2E2E;
+  --muted: #5F5F5F;
+  --line: #E4E4E4;
+  --wash: #F5F5F5;
+  --radius: 8px;
+  --font: 'Atkinson Hyperlegible Next', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --bar-h: 57px;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-padding-top: calc(var(--bar-h) + 16px);
+}
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font: 400 16px/1.55 var(--font);
+  text-align: left;
+  -webkit-text-size-adjust: 100%;
+  accent-color: var(--ink);
+  caret-color: var(--ink);
+}
+
+::selection {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+h1,
+h2,
+h3,
+h4 {
+  margin: 0;
+  font-weight: 600;
+  line-height: 1.25;
+  text-wrap: balance;
+}
+
+h1 {
+  font-size: 32px;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+
+h2 {
+  font-size: 20px;
+  margin-top: 56px;
+  margin-bottom: 12px;
+}
+
+h3,
+h4 {
+  font-size: 16px;
+}
+
+p,
+li {
+  text-wrap: pretty;
+}
+
+/* About 75 characters a line in this typeface, whose digits are wide. */
+p {
+  margin: 0;
+  max-width: 54ch;
+}
+
+a {
+  color: var(--ink);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+
+a:hover {
+  text-decoration-thickness: 2px;
+}
+
+:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 3px;
+}
+
+[tabindex='-1']:focus {
+  outline: 2px solid var(--ink);
+  outline-offset: 6px;
+}
+
+/* Moved to by script so a screen reader starts in the right place; no ring needed. */
+main[tabindex='-1']:focus,
+h1[tabindex='-1']:focus {
+  outline: none;
+}
+
+/* The hidden attribute always wins, whatever display a class sets. */
+[hidden] {
+  display: none !important;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.skip {
+  position: absolute;
+  left: 16px;
+  top: -64px;
+  z-index: 30;
+  padding: 10px 14px;
+  background: var(--ink);
+  color: var(--paper);
+  border-radius: var(--radius);
+}
+
+.skip:focus {
+  top: 8px;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+/* ---- top bar: three places, always visible ---- */
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: var(--paper);
+  border-bottom: 1px solid var(--line);
+}
+
+.topbar-inner,
+main {
+  max-width: 760px;
+  margin: 0 auto;
+  padding-left: 24px;
+  padding-right: 24px;
+}
+
+.topbar-inner {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  min-height: 56px;
+}
+
+/* The wordmark: Unbounded, lowercase. Its round letters echo the logo's dots.
+   Only the eight letters of the name are loaded. */
+.wordmark {
+  font-family: 'Unbounded', var(--font);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  text-transform: lowercase;
+  text-decoration: none;
+}
+
+.places {
+  display: flex;
+  gap: 20px;
+  align-self: stretch;
+}
+
+.places a {
+  display: flex;
+  align-items: center;
+  color: var(--muted);
+  text-decoration: none;
+  border-bottom: 2px solid transparent;
+  border-top: 2px solid transparent;
+}
+
+.places a:hover {
+  color: var(--ink);
+}
+
+.places a[aria-current='page'] {
+  color: var(--ink);
+  font-weight: 500;
+  border-bottom-color: var(--ink);
+}
+
+.topbar-tools {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-left: auto;
+  min-width: 0;
+}
+
+.help-link {
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+.profile-switch {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 0 1 auto;
+  min-width: 0;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+select,
+input[type='time'],
+textarea {
+  font: inherit;
+  color: var(--ink);
+  background: var(--paper);
+  border: 1px solid var(--ink);
+  border-radius: var(--radius);
+  padding: 8px 10px;
+}
+
+select {
+  max-width: 100%;
+  min-width: 0;
+  text-overflow: ellipsis;
+  font-size: 14px;
+  padding: 6px 8px;
+  border-color: var(--line);
+}
+
+select:hover {
+  border-color: var(--ink);
+}
+
+main {
+  padding-top: 48px;
+  padding-bottom: 96px;
+}
+
+.lede {
+  margin-top: 12px;
+  color: var(--muted);
+}
+
+.notice {
+  margin-top: 16px;
+  padding: 10px 14px;
+  border: 1px solid var(--ink);
+  border-radius: var(--radius);
+}
+
+/* ---- first-visit guide ---- */
+
+.guide {
+  margin-bottom: 48px;
+  padding: 24px;
+  background: var(--wash);
+  border-radius: var(--radius);
+}
+
+.guide-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.guide h2 {
+  margin: 0;
+}
+
+.guide-intro {
+  margin-top: 8px;
+}
+
+.guide-steps {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px;
+  margin: 20px 0 0;
+  padding: 20px 0 0;
+  list-style: none;
+  counter-reset: step;
+  border-top: 1px solid var(--line);
+}
+
+.guide-steps li {
+  counter-increment: step;
+  font-size: 14px;
+}
+
+.guide-steps li::before {
+  content: counter(step);
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  margin-bottom: 12px;
+  font-weight: 600;
+  border: 1px solid var(--ink);
+  border-radius: 50%;
+}
+
+.guide-steps li.is-done::before {
+  color: var(--paper);
+  background: var(--ink);
+}
+
+.guide-step-title {
+  display: block;
+  margin-bottom: 2px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.guide-step-go {
+  display: inline-block;
+  margin-top: 8px;
+  font-weight: 500;
+}
+
+.guide-done {
+  margin-left: 10px;
+  color: var(--muted);
+}
+
+.guide-foot {
+  margin-top: 20px;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+/* ---- the top of the Brief: what needs you, and the one next step ---- */
+
+.lead-sub {
+  margin-top: 12px;
+  color: var(--muted);
+}
+
+.lead-action {
+  margin-top: 24px;
+}
+
+/* ---- risk marks: shape carries the meaning, not colour ---- */
+
+.mark {
+  flex: none;
+}
+
+.mark--act {
+  fill: var(--ink);
+}
+
+.mark--watch,
+.mark--clear {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 2;
+}
+
+/* ---- deadlines, grouped by how soon they need you ---- */
+
+.group {
+  margin-top: 56px;
+}
+
+.group-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 2px 14px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--ink);
+}
+
+.group-head h2 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+}
+
+.group-hint {
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.stops {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.stop {
+  display: grid;
+  grid-template-columns: 96px minmax(0, 1fr);
+  gap: 0 24px;
+  padding: 28px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+/* "Show me" in the guide lands here: mark the row without drawing over its rules. */
+.stop:focus {
+  outline: none;
+  margin-inline: -16px;
+  padding-inline: 16px;
+  background: var(--wash);
+  border-radius: var(--radius);
+}
+
+.stop-count {
+  display: flex;
+  flex-direction: column;
+}
+
+.stop-num {
+  font-size: 44px;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+}
+
+/* "Notice", "Case", "Today": a word where there is no count. */
+.stop .stop-num.stop-num--word {
+  font-size: 16px;
+  line-height: 1.55;
+  letter-spacing: 0;
+}
+
+.stop-unit {
+  margin-top: 6px;
+  font-size: 14px;
+  line-height: 1.3;
+  color: var(--muted);
+}
+
+.stop-title {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 2px 16px;
+}
+
+.stop-when {
+  font-size: 14px;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.stop-reason {
+  margin-top: 6px;
+}
+
+.stop-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 20px;
+  margin-top: 10px;
+  font-size: 14px;
+}
+
+.stop-links a,
+.stop-links span {
+  color: var(--muted);
+}
+
+.stop-links a:hover {
+  color: var(--ink);
+}
+
+.group--watch .stop-num {
+  font-size: 32px;
+}
+
+/* Clear deadlines stay compact: a row each, with the rest behind Details. */
+.group--clear .stop {
+  padding: 16px 0;
+}
+
+.group--clear .stop-num {
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+}
+
+.group--clear .stop-unit {
+  margin-top: 0;
+}
+
+.group--clear .stop-name {
+  font-weight: 500;
+}
+
+.stop-more {
+  margin-top: 4px;
+}
+
+.stop-more summary {
+  width: max-content;
+  font-size: 14px;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.stop-more summary:hover {
+  color: var(--ink);
+}
+
+.stop-more .stop-reason {
+  margin-top: 8px;
+}
+
+.tag-new {
+  margin-left: 8px;
+  padding: 1px 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--paper);
+  background: var(--ink);
+  border-radius: 999px;
+}
+
+/* ---- approval: the only bordered box on the page ---- */
+
+.card {
+  position: relative;
+  margin-top: 20px;
+  padding: 20px;
+  border: 1px solid var(--ink);
+  border-radius: var(--radius);
+}
+
+/* "Review the drafted email" lands here: thicken the border, no second ring. */
+.card:focus {
+  outline: 2px solid var(--ink);
+  outline-offset: -1px;
+}
+
+.mail-meta {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 2px 12px;
+  margin: 12px 0 0;
+  font-size: 14px;
+}
+
+.mail-meta dt {
+  color: var(--muted);
+}
+
+.mail-meta dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.mail-body {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.card textarea {
+  display: block;
+  width: 100%;
+  min-height: 220px;
+  margin-top: 6px;
+  resize: vertical;
+}
+
+.card label {
+  display: block;
+  margin-top: 14px;
+  font-weight: 500;
+}
+
+.card-note {
+  margin-top: 14px;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 10px 18px;
+  font: 500 16px/1.2 var(--font);
+  color: var(--ink);
+  text-decoration: none;
+  background: var(--paper);
+  border: 1px solid var(--ink);
+  border-radius: var(--radius);
+  cursor: pointer;
+}
+
+.btn:hover {
+  background: var(--wash);
+}
+
+.btn--primary {
+  color: var(--paper);
+  background: var(--ink);
+}
+
+.btn--primary:hover {
+  background: var(--ink-soft);
+  border-color: var(--ink-soft);
+}
+
+.btn--quiet {
+  flex: none;
+  white-space: nowrap;
+  min-height: 36px;
+  padding: 6px 12px;
+  font-size: 14px;
+  background: transparent;
+  border-color: transparent;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+
+.btn--quiet:hover {
+  background: transparent;
+  text-decoration-thickness: 2px;
+}
+
+.btn:disabled {
+  cursor: default;
+  color: var(--muted);
+  background: var(--wash);
+  border-color: var(--line);
+}
+
+/* The one motion moment: the stamp. */
+.stamp {
+  position: absolute;
+  /* Beside the buttons, so it lands where the person is looking. */
+  right: 20px;
+  bottom: 20px;
+  padding: 2px 14px;
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--ink);
+  background: var(--paper);
+  border: 3px solid var(--ink);
+  border-radius: var(--radius);
+  transform: rotate(-6deg);
+  animation: stamp 300ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes stamp {
+  from {
+    opacity: 0;
+    transform: rotate(-6deg) scale(1.5);
+  }
+  to {
+    opacity: 1;
+    transform: rotate(-6deg) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stamp {
+    animation: none;
+  }
+}
+
+.decided {
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.error {
+  margin-top: 10px;
+  font-weight: 600;
+}
+
+/* ---- timestamped lines (Bot activity, messages) ---- */
+
+.log {
+  list-style: none;
+  margin: 16px 0 0;
+  padding: 0;
+  border-top: 1px solid var(--ink);
+}
+
+.log li {
+  display: grid;
+  grid-template-columns: 16ch 21ch 1fr;
+  gap: 4px 16px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.log--wide li {
+  grid-template-columns: 16ch 21ch 1fr;
+}
+
+.log-when {
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.log-who {
+  font-weight: 500;
+}
+
+.log-what {
+  overflow-wrap: anywhere;
+}
+
+/* A second, quieter line under a run: what Policy Watcher searched on X. */
+.log-detail {
+  display: block;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.after-log {
+  margin-top: 12px;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+/* ---- settings ---- */
+
+.facts {
+  display: grid;
+  grid-template-columns: minmax(12ch, max-content) 1fr;
+  gap: 0;
+  margin: 16px 0 0;
+  border-top: 1px solid var(--ink);
+}
+
+.facts dt,
+.facts dd {
+  margin: 0;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.facts dt {
+  padding-right: 32px;
+  color: var(--muted);
+}
+
+.channels {
+  margin: 16px 0 0;
+  padding: 0;
+  border: 0;
+}
+
+.channel {
+  display: grid;
+  grid-template-columns: 32px 1fr;
+  gap: 2px 8px;
+  align-items: start;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.channel:first-of-type {
+  border-top: 1px solid var(--ink);
+}
+
+.channel input[type='checkbox'] {
+  width: 22px;
+  height: 22px;
+  margin: 1px 0 0;
+}
+
+.channel label {
+  font-weight: 500;
+}
+
+.channel p {
+  grid-column: 2;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+/* Under a channel: something to try, and what happened when you did. */
+.channel-extra {
+  grid-column: 2;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 14px;
+  margin-top: 10px;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.channel-status.is-error {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.quiet {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
+  margin-top: 20px;
+}
+
+.quiet > span {
+  font-weight: 500;
+}
+
+.quiet label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.save-status {
+  min-height: 24px;
+  margin-top: 12px;
+  font-size: 14px;
+}
+
+.rule-list {
+  margin: 16px 0 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--ink);
+}
+
+.rule-list li {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 2px 16px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.rule-list .rule-source {
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.fine {
+  margin-top: 16px;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+main > .fine {
+  margin-top: 56px;
+}
+
+/* ---- phone: the three places move to a bottom bar ---- */
+
+@media (max-width: 640px) {
+  .topbar-inner,
+  main {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .topbar-inner {
+    gap: 12px;
+  }
+
+  .profile-label {
+    display: none;
+  }
+
+  .profile-switch select {
+    width: 100%;
+  }
+
+  .places {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 20;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0;
+    background: var(--paper);
+    border-top: 1px solid var(--line);
+  }
+
+  .places a {
+    justify-content: center;
+    min-height: 56px;
+    border-bottom: 0;
+  }
+
+  .places a[aria-current='page'] {
+    border-top-color: var(--ink);
+  }
+
+  main {
+    padding-top: 32px;
+    padding-bottom: 120px;
+  }
+
+  h1 {
+    font-size: 28px;
+  }
+
+  .guide {
+    padding: 20px 16px;
+  }
+
+  .guide-steps {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .guide-steps li {
+    position: relative;
+    padding-left: 44px;
+  }
+
+  .guide-steps li::before {
+    position: absolute;
+    left: 0;
+    top: 0;
+    margin: 0;
+  }
+
+  .stop {
+    grid-template-columns: 68px minmax(0, 1fr);
+    gap: 0 16px;
+  }
+
+  .stop-num {
+    font-size: 36px;
+  }
+
+  .group--watch .stop-num {
+    font-size: 28px;
+  }
+
+  .card {
+    /* Use the full width under the day count on a narrow screen. */
+    margin-left: -84px;
+    padding: 16px;
+  }
+
+  .log li,
+  .log--wide li {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .log-what {
+    grid-column: 1 / -1;
+  }
+
+  .facts {
+    grid-template-columns: 1fr;
+  }
+
+  .facts dt {
+    padding-bottom: 0;
+    border-bottom: 0;
+    font-size: 14px;
+  }
+
+  .facts dd {
+    padding-top: 0;
+  }
+
+  .stamp {
+    font-size: 20px;
+  }
+}
+
+/* ---- moving between pages: a short cross-fade, the top bar holds still ---- */
+
+@view-transition {
+  navigation: auto;
+}
+
+.topbar {
+  view-transition-name: topbar;
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 180ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+}
+
+/* ---- brand ---- */
+
+.wordmark {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: inherit;
+}
+
+.logo-mark {
+  flex: none;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.logo-mark circle {
+  fill: currentColor;
+  stroke: none;
+}
+
+/* The target the stops lead to. */
+.logo-mark .logo-ring {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 3;
+}
+
+.account-name {
+  font-size: 14px;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 16ch;
+}
+
+.tag-demo {
+  padding: 1px 8px;
+  font-size: 14px;
+  font-weight: 500;
+  border: 1px solid var(--ink);
+  border-radius: 999px;
+}
+
+/* ---- the Bots ---- */
+
+.bot-glyph {
+  overflow: visible;
+}
+
+.bot-fill,
+.bot-dot {
+  fill: currentColor;
+}
+
+.bot-line {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* Details and eyes are cut out of the body: they take the colour behind it. */
+.bot-cut {
+  fill: none;
+  stroke: var(--bot-cut, var(--paper));
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* The body squashes and stretches from its feet. */
+.bot-body {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+}
+
+.bot-eye {
+  fill: var(--bot-cut, var(--paper));
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: bot-blink 5.2s infinite;
+  animation-delay: calc(var(--i, 0) * 0.7s);
+}
+
+@keyframes bot-blink {
+  0%,
+  93%,
+  100% {
+    transform: scaleY(1);
+  }
+  96.5% {
+    transform: scaleY(0.1);
+  }
+}
+
+/* The relay: six Bots on one line, work passing left to right. */
+.relay {
+  --bot: 52px;
+  --wire: var(--line);
+  --dim: #8A8A8A;
+  position: relative;
+  container-type: inline-size;
+}
+
+.relay-track {
+  position: relative;
+  display: flex;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.relay-track::before {
+  content: '';
+  position: absolute;
+  left: 8.333%;
+  right: 8.333%;
+  top: calc(var(--bot) / 2);
+  height: 1px;
+  background: var(--wire);
+}
+
+.relay-bot {
+  position: relative;
+  z-index: 1;
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.relay-face {
+  display: grid;
+  place-items: center;
+  width: var(--bot);
+  height: var(--bot);
+  color: inherit;
+}
+
+.relay-face .bot-glyph {
+  width: var(--bot);
+  height: var(--bot);
+}
+
+.relay-name {
+  margin-top: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.3;
+}
+
+.relay-status {
+  margin-top: 2px;
+  font-size: 14px;
+  line-height: 1.3;
+  color: var(--muted);
+}
+
+/* ---- a Bot's state, shown in how it moves ---- */
+
+.bot-avatar {
+  --bot-cut: var(--paper);
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  vertical-align: middle;
+  color: inherit;
+}
+
+.bot-avatar .bot-glyph {
+  display: block;
+}
+
+/* Small avatars beside a name in a list. */
+.bot-avatar--small {
+  width: 28px;
+  height: 28px;
+  margin-right: 8px;
+}
+
+.bot-avatar--small .bot-glyph {
+  width: 26px;
+  height: 26px;
+}
+
+/* Idle: calm and a little curious. It floats, blinks, and glances to the side. */
+.bot-avatar[data-state='idle'] .bot-body {
+  animation: bot-float 4.6s ease-in-out infinite;
+  animation-delay: calc(var(--i, 0) * -0.8s);
+}
+
+.bot-avatar[data-state='idle'] .bot-eye {
+  animation:
+    bot-blink 5.2s infinite,
+    bot-glance 9s infinite;
+  animation-delay: calc(var(--i, 0) * 0.7s), calc(var(--i, 0) * 1.3s);
+}
+
+@keyframes bot-float {
+  0%,
+  100% {
+    transform: none;
+  }
+  50% {
+    transform: translateY(-0.7px) scale(0.985, 1.02);
+  }
+}
+
+@keyframes bot-glance {
+  0%,
+  42%,
+  58%,
+  100% {
+    translate: 0 0;
+  }
+  46%,
+  54% {
+    translate: 0.9px 0;
+  }
+}
+
+/* Asleep: not connected. Eyes shut, a slow breath, set back in grey. */
+.bot-avatar[data-state='asleep'] {
+  color: #8A8A8A;
+}
+
+.bot-avatar[data-state='asleep'] .bot-eye {
+  animation: none;
+  transform: scaleY(0.12);
+}
+
+.bot-avatar[data-state='asleep'] .bot-body {
+  animation: bot-breathe 4.5s ease-in-out infinite;
+}
+
+@keyframes bot-breathe {
+  0%,
+  100% {
+    transform: none;
+  }
+  50% {
+    transform: scale(1.02, 1.05);
+  }
+}
+
+/* Thinking: tilts side to side and looks up, as if working something out. */
+.bot-avatar[data-state='thinking'] .bot-body {
+  animation: bot-tilt 2.4s ease-in-out infinite;
+}
+
+.bot-avatar[data-state='thinking'] .bot-eye {
+  animation: none;
+  translate: 0.6px -1px;
+}
+
+@keyframes bot-tilt {
+  0%,
+  100% {
+    transform: rotate(-7deg);
+  }
+  50% {
+    transform: rotate(7deg);
+  }
+}
+
+/* Working: bounces on the spot, eyes scanning, inside a turning ring. */
+.bot-avatar[data-state='working'] .bot-body {
+  animation: bot-bounce 620ms cubic-bezier(0.45, 0, 0.55, 1) infinite alternate;
+}
+
+.bot-avatar[data-state='working'] .bot-eye {
+  animation: bot-scan 1.1s ease-in-out infinite alternate;
+}
+
+.bot-avatar[data-state='working']::after {
+  content: '';
+  position: absolute;
+  inset: -7px;
+  border: 1.5px dashed currentColor;
+  border-radius: 50%;
+  animation: bot-ring 5s linear infinite;
+}
+
+@keyframes bot-bounce {
+  from {
+    transform: scale(1.08, 0.9);
+  }
+  to {
+    transform: translateY(-2px) scale(0.95, 1.07);
+  }
+}
+
+@keyframes bot-scan {
+  from {
+    translate: -1px 0;
+  }
+  to {
+    translate: 1px 0;
+  }
+}
+
+@keyframes bot-ring {
+  to {
+    rotate: 360deg;
+  }
+}
+
+/* Waiting for you: looks straight at you, a slow pulse and a dot. */
+.bot-avatar[data-state='waiting'] {
+  animation: bot-pulse 1.8s ease-in-out infinite;
+}
+
+.bot-avatar[data-state='waiting'] .bot-eye {
+  animation: bot-blink 3.4s infinite;
+}
+
+.bot-avatar[data-state='waiting']::after {
+  content: '';
+  position: absolute;
+  top: -3px;
+  right: -3px;
+  width: 11px;
+  height: 11px;
+  background: currentColor;
+  border: 2px solid var(--bot-cut);
+  border-radius: 50%;
+}
+
+@keyframes bot-pulse {
+  0%,
+  100% {
+    scale: 1;
+  }
+  50% {
+    scale: 1.08;
+  }
+}
+
+/* Blocked: could not finish. One shake, then still and slumped, eyes narrowed. */
+.bot-avatar[data-state='blocked'] {
+  animation: bot-shake 500ms ease-in-out 1;
+}
+
+.bot-avatar[data-state='blocked'] .bot-body {
+  transform: scale(1.04, 0.94);
+}
+
+.bot-avatar[data-state='blocked'] .bot-eye {
+  animation: none;
+  transform: scaleY(0.3);
+}
+
+@keyframes bot-shake {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+  20%,
+  60% {
+    translate: -3px 0;
+  }
+  40%,
+  80% {
+    translate: 3px 0;
+  }
+}
+
+/* Done: a hop, a squash on landing, eyes pleased, then calm. */
+.bot-avatar[data-state='done'] .bot-body {
+  animation: bot-land 700ms cubic-bezier(0.16, 1, 0.3, 1) 1;
+}
+
+.bot-avatar[data-state='done'] .bot-eye {
+  animation: none;
+  transform: scaleY(0.55);
+}
+
+@keyframes bot-land {
+  0% {
+    transform: translateY(-5px) scale(0.94, 1.08);
+  }
+  45% {
+    transform: scale(1.1, 0.88);
+  }
+  100% {
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bot-avatar,
+  .bot-avatar .bot-glyph,
+  .bot-avatar .bot-body,
+  .bot-avatar .bot-eye,
+  .bot-avatar::after {
+    animation: none !important;
+  }
+}
+
+/* The Bot on duty beside a line of words (a card note, a status line). */
+.with-bot {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.with-bot .bot-avatar {
+  width: 34px;
+  height: 34px;
+}
+
+.with-bot .bot-glyph {
+  width: 30px;
+  height: 30px;
+}
+
+.relay-packet {
+  display: none;
+}
+
+/* The sign-in page plays the hand-off on its own, nine seconds a lap. */
+.relay--loop .relay-face {
+  animation: relay-wake 9s infinite both;
+  animation-delay: calc(var(--i) * 1.5s);
+}
+
+/* Resting Bots are a solid grey, never see-through, so the wire and the packet
+   stay hidden behind them. */
+@keyframes relay-wake {
+  0%,
+  16.6%,
+  100% {
+    color: var(--dim);
+    transform: none;
+  }
+  2.5% {
+    color: inherit;
+    transform: translateY(-7px) scale(1.12);
+  }
+  5% {
+    color: inherit;
+    transform: scale(1.1, 0.9);
+  }
+  7.5%,
+  12% {
+    color: inherit;
+    transform: none;
+  }
+}
+
+.relay--loop .relay-packet {
+  display: block;
+  position: absolute;
+  left: 0;
+  top: calc(var(--bot) / 2 - 4px);
+  width: 8px;
+  height: 8px;
+  background: currentColor;
+  animation: relay-packet 9s infinite both;
+}
+
+@keyframes relay-packet {
+  0% {
+    opacity: 0;
+    transform: translateX(calc(8.333cqw - 50%));
+  }
+  2% {
+    opacity: 1;
+  }
+  11% {
+    transform: translateX(calc(8.333cqw - 50%));
+  }
+  16.67%,
+  27.7% {
+    transform: translateX(calc(25cqw - 50%));
+  }
+  33.33%,
+  44.4% {
+    transform: translateX(calc(41.667cqw - 50%));
+  }
+  50%,
+  61.1% {
+    transform: translateX(calc(58.333cqw - 50%));
+  }
+  66.67%,
+  77.7% {
+    transform: translateX(calc(75cqw - 50%));
+  }
+  83.33% {
+    opacity: 1;
+    transform: translateX(calc(91.667cqw - 50%));
+  }
+  88%,
+  100% {
+    opacity: 0;
+    transform: translateX(calc(91.667cqw - 50%));
+  }
+}
+
+/* On its own loop the line of words below names each Bot, so the labels go. */
+.relay--loop .relay-name {
+  display: none;
+}
+
+.relay-says {
+  position: relative;
+  height: 1.6em;
+  margin: 28px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.relay-says li {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  animation: relay-say 9s infinite both;
+  animation-delay: calc(var(--i) * 1.5s);
+}
+
+@keyframes relay-say {
+  0%,
+  16.6%,
+  100% {
+    opacity: 0;
+  }
+  2%,
+  14.5% {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bot-eye,
+  .relay--loop .relay-face,
+  .relay-says li {
+    animation: none;
+  }
+
+  .relay--loop .relay-packet,
+  .relay-says {
+    display: none;
+  }
+
+  .relay-face {
+    transition: none;
+  }
+}
+
+.relay-wrap {
+  margin-top: 24px;
+}
+
+.check-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
+  margin-top: 24px;
+}
+
+.check-row p {
+  font-size: 14px;
+  color: var(--muted);
+}
+
+/* ---- forms ---- */
+
+.field {
+  margin-top: 20px;
+}
+
+.field > label:not(.check),
+.field > legend {
+  display: block;
+  padding: 0;
+  font-weight: 500;
+}
+
+.field .hint {
+  display: block;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.field input[type='text'],
+.field input[type='email'],
+.field input[type='password'],
+.field input[type='tel'],
+.field input[type='date'],
+.field input[type='number'],
+.field textarea {
+  display: block;
+  width: 100%;
+  max-width: 420px;
+  min-height: 44px;
+  margin-top: 6px;
+  padding: 10px 12px;
+  font: inherit;
+  color: var(--ink);
+  background: var(--paper);
+  border: 1px solid var(--ink);
+  border-radius: var(--radius);
+}
+
+.field input::placeholder,
+.field textarea::placeholder {
+  color: var(--muted);
+}
+
+.field input[type='date'],
+.field input[type='number'] {
+  max-width: 220px;
+}
+
+.check {
+  display: grid;
+  grid-template-columns: 30px 1fr;
+  align-items: start;
+  margin-top: 16px;
+}
+
+.check input {
+  width: 20px;
+  height: 20px;
+  margin: 2px 0 0;
+}
+
+.form-error {
+  margin-top: 16px;
+  font-weight: 600;
+}
+
+.form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 28px;
+}
+
+fieldset.plain {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  min-width: 0;
+}
+
+fieldset.plain.field {
+  margin-top: 28px;
+}
+
+/* Add a deadline of your own, on the Brief. */
+.add-own {
+  margin-top: 28px;
+}
+
+.add-own summary {
+  width: max-content;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.add-own form {
+  max-width: 460px;
+  padding-bottom: 8px;
+}
+
+.link-button {
+  padding: 0;
+  font: inherit;
+  color: var(--muted);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+.link-button:hover {
+  color: var(--ink);
+  text-decoration-thickness: 2px;
+}
+
+.own-list {
+  margin: 16px 0 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--ink);
+}
+
+.own-list li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 2px 16px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.own-list .muted {
+  font-size: 14px;
+}
+
+.section-action {
+  margin-top: 16px;
+}
+
+code {
+  padding: 1px 6px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 14px;
+  background: var(--wash);
+  border-radius: 4px;
+}
+
+/* ---- sign in ---- */
+
+.auth {
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+.auth-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+  min-height: 100vh;
+  min-height: 100dvh;
+  max-width: none;
+  margin: 0;
+  padding: 0;
+}
+
+.auth-pitch {
+  display: flex;
+  flex-direction: column;
+  padding: 40px 56px 48px;
+  color: var(--paper);
+  background: var(--ink);
+}
+
+.auth-pitch .bot-avatar {
+  --bot-cut: var(--ink);
+}
+
+.auth-pitch .relay {
+  --wire: #4A4A4A;
+  --dim: #7A7A7A;
+  margin-top: 56px;
+}
+
+.auth-pitch .relay-name {
+  color: #C9C9C9;
+}
+
+.auth-pitch-body {
+  margin-top: auto;
+  padding-top: 64px;
+}
+
+.auth-pitch h1 {
+  max-width: 14ch;
+  font-size: 44px;
+}
+
+.auth-pitch-body > p {
+  max-width: 44ch;
+  margin-top: 16px;
+  color: #C9C9C9;
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 48px 32px;
+}
+
+.auth-form h2 {
+  margin: 0;
+  font-size: 28px;
+  letter-spacing: -0.01em;
+}
+
+.auth-form .btn {
+  width: 100%;
+  max-width: 420px;
+}
+
+.auth-switch {
+  margin-top: 8px;
+  color: var(--muted);
+}
+
+.auth-or {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  max-width: 420px;
+  margin: 28px 0 16px;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.auth-or::before,
+.auth-or::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--line);
+}
+
+/* ---- setup: your own details, three steps ---- */
+
+.steps-progress {
+  display: flex;
+  gap: 6px;
+  margin: 0 0 20px;
+  padding: 0;
+  list-style: none;
+}
+
+.steps-progress li {
+  width: 44px;
+  height: 4px;
+  background: var(--line);
+  border-radius: 2px;
+}
+
+.steps-progress li.is-on {
+  background: var(--ink);
+}
+
+.step-count {
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.visa-list {
+  margin-top: 8px;
+  border-top: 1px solid var(--ink);
+}
+
+.visa-option {
+  display: grid;
+  grid-template-columns: 30px 1fr;
+  align-items: start;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--line);
+  cursor: pointer;
+}
+
+.visa-option input {
+  width: 20px;
+  height: 20px;
+  margin: 2px 0 0;
+}
+
+.visa-option strong {
+  display: block;
+  font-weight: 500;
+}
+
+.visa-option span {
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.preview {
+  margin-top: 32px;
+  padding: 20px 24px;
+  background: var(--wash);
+  border-radius: var(--radius);
+}
+
+.preview h3 {
+  font-size: 16px;
+}
+
+.preview ul {
+  margin: 12px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.preview li {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 8px 0;
+  border-top: 1px solid var(--line);
+}
+
+.preview li span:last-child {
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 860px) {
+  .auth-layout {
+    grid-template-columns: 1fr;
+    min-height: 0;
+  }
+
+  .auth-pitch {
+    padding: 24px 20px 32px;
+  }
+
+  .auth-pitch-body {
+    margin-top: 0;
+    padding-top: 28px;
+  }
+
+  .auth-pitch h1 {
+    font-size: 32px;
+  }
+
+  .auth-pitch .relay {
+    margin-top: 32px;
+  }
+
+  .auth-form {
+    justify-content: flex-start;
+    padding: 32px 20px 56px;
+  }
+}
+
+@media (max-width: 640px) {
+  .relay {
+    --bot: 44px;
+  }
+
+  .relay-name,
+  .relay-status {
+    display: none;
+  }
+
+  .account-name {
+    display: none;
+  }
+}
+
+/* ---- connect your Bots ---- */
+
+.log-who {
+  display: flex;
+  align-items: center;
+}
+
+.paste {
+  margin: 16px 0 0;
+  padding: 16px;
+  max-width: min(100%, 76ch);
+  overflow-x: auto;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 14px;
+  line-height: 1.55;
+  background: var(--wash);
+  border-radius: var(--radius);
+}
+
+.brief-item {
+  padding: 20px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.brief-item:first-child {
+  margin-top: 16px;
+  border-top: 1px solid var(--ink);
+}
+
+.brief-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 14px;
+}
+
+.brief-head .bot-avatar {
+  width: 40px;
+  height: 40px;
+}
+
+.brief-head .bot-glyph {
+  width: 36px;
+  height: 36px;
+}
+
+.brief-head h3 {
+  margin-right: auto;
+}
+
+.brief-when {
+  flex-basis: 100%;
+  margin-left: 54px;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.brief-item details {
+  margin-top: 8px;
+  margin-left: 54px;
+}
+
+.brief-item summary {
+  width: max-content;
+  font-size: 14px;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+@media (max-width: 640px) {
+  .brief-when,
+  .brief-item details {
+    margin-left: 0;
+  }
+}
+
+/* The person switcher gives way before it runs under Exit demo. */
+.profile-switch select {
+  flex: 0 1 auto;
+  width: 100%;
+  max-width: 26ch;
+}
+
+.topbar-tools .btn--quiet,
+.topbar-tools .help-link {
+  flex: none;
+}
+
+/* ==== motion: the route draws as you go ====
+   One idea runs through all of it: lines draw themselves, the way the logo's W
+   is a route heading for a waypoint. Everything else is feedback for something
+   the person just did. Content is visible without any of it. */
+
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+@keyframes route-grow {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes unfold {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* How far down the page you are: a line along the top of the bar. */
+.topbar::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 2px;
+  background: var(--ink);
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+  pointer-events: none;
+}
+
+@supports (animation-timeline: scroll()) {
+  .topbar::before {
+    animation: route-grow linear both;
+    animation-timeline: scroll(root block);
+  }
+}
+
+/* The mark under the current place travels when you change page. */
+.places a {
+  position: relative;
+}
+
+.places a[aria-current='page'],
+.places a.is-section {
+  color: var(--ink);
+  font-weight: 500;
+  border-bottom-color: transparent;
+}
+
+.places a[aria-current='page']::after,
+.places a.is-section::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -2px;
+  height: 2px;
+  background: var(--ink);
+  view-transition-name: nav-here;
+}
+
+::view-transition-group(nav-here) {
+  animation-duration: 340ms;
+  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* The rule under each group of deadlines draws from the left as it comes into view. */
+.group-head {
+  position: relative;
+  border-bottom-color: var(--line);
+}
+
+.group-head::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -1px;
+  width: 100%;
+  height: 1px;
+  background: var(--ink);
+  transform-origin: 0 50%;
+}
+
+/* Held back until scrolled into view, then arriving once (motion.js). */
+.group-head.is-waiting::after,
+.promise-list li.is-waiting::before {
+  transform: scaleX(0);
+}
+
+.group-head.is-arriving::after,
+.promise-list li.is-arriving::before {
+  animation: route-grow 800ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: calc(var(--order, 0) * 90ms);
+}
+
+.stop.is-waiting {
+  opacity: 0;
+}
+
+.stop.is-arriving {
+  animation: rise 520ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: calc(var(--order, 0) * 60ms);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* Anything that opens, opens with a short unfold. */
+  details[open] > :not(summary),
+  #name-field:not([hidden]) {
+    animation: unfold 240ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  section[id^='step-']:not([hidden]) {
+    animation: step-in 320ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+}
+
+@keyframes step-in {
+  from {
+    opacity: 0;
+    transform: translateX(18px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.steps-progress li {
+  transition: background-color 300ms ease-out;
+}
+
+/* Buttons answer a press. */
+.btn {
+  transition:
+    background-color 150ms ease-out,
+    border-color 150ms ease-out,
+    color 150ms ease-out,
+    transform 120ms ease-out;
+}
+
+.btn:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+.btn--small {
+  min-height: 36px;
+  padding: 6px 14px;
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+/* The Bots look at the pointer (bots.js sets --lx and --ly on each avatar). */
+.bot-eye {
+  translate: calc(var(--lx, 0) * 1px) calc(var(--ly, 0) * 1px);
+  transition: translate 160ms ease-out;
+}
+
+.bot-avatar[data-state='asleep'] .bot-eye {
+  translate: none;
+}
+
+/* A live run: the packet goes along the wire to the Bot on duty. */
+.relay--live .relay-packet {
+  display: block;
+  position: absolute;
+  left: 0;
+  top: calc(var(--bot) / 2 - 4px);
+  width: 8px;
+  height: 8px;
+  background: currentColor;
+  transform: translateX(calc(var(--at, 0) * 16.667cqw + 8.333cqw - 50%));
+  transition: transform 700ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.relay--placing .relay-packet {
+  transition: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bot-eye {
+    translate: none;
+    transition: none;
+  }
+
+  .relay--live .relay-packet,
+  .btn {
+    transition: none;
+  }
+}
+
+/* ==== the page before sign-in: a bar, the hero, one night, three promises ==== */
+
+.auth {
+  min-height: 0;
+}
+
+.auth main {
+  max-width: none;
+  margin: 0;
+  padding: 0;
+}
+
+.auth-layout {
+  min-height: calc(100vh - var(--bar-h));
+  min-height: calc(100dvh - var(--bar-h));
+}
+
+.land-bar-inner {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  min-height: 56px;
+  padding: 0 56px;
+}
+
+.land-tools {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-left: auto;
+}
+
+.land-signin {
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+/* The logo plays once: the stops appear in order, the target draws around
+   the last one, and its centre lands. --logo-start is when that begins. */
+.wordmark--draw {
+  --logo-start: 200ms;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .wordmark--draw .logo-stop,
+  a.wordmark:hover .logo-stop {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: logo-dot 320ms cubic-bezier(0.16, 1, 0.3, 1) both;
+    animation-delay: var(--logo-start, 0ms);
+  }
+
+  .wordmark--draw .logo-stop--2,
+  a.wordmark:hover .logo-stop--2 {
+    animation-delay: calc(var(--logo-start, 0ms) + 140ms);
+  }
+
+  .wordmark--draw .logo-ring,
+  a.wordmark:hover .logo-ring {
+    stroke-dasharray: 1;
+    animation: logo-draw 560ms cubic-bezier(0.65, 0, 0.35, 1) both;
+    animation-delay: calc(var(--logo-start, 0ms) + 280ms);
+  }
+
+  .wordmark--draw .logo-stop--3,
+  a.wordmark:hover .logo-stop--3 {
+    animation-delay: calc(var(--logo-start, 0ms) + 760ms);
+  }
+}
+
+@keyframes logo-draw {
+  from {
+    stroke-dashoffset: 1;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes logo-dot {
+  from {
+    opacity: 0;
+    transform: scale(0.2);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.auth-pitch-body {
+  margin-block: auto;
+  padding-top: 24px;
+}
+
+.auth-pitch ::selection,
+.land-cta ::selection {
+  background: var(--paper);
+  color: var(--ink);
+}
+
+.auth-pitch :focus-visible,
+.land-cta :focus-visible {
+  outline-color: var(--paper);
+}
+
+.scroll-cue {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  gap: 10px;
+  min-height: 44px;
+  margin-top: 40px;
+  color: var(--paper);
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.scroll-cue:hover {
+  text-decoration: underline;
+}
+
+.scroll-cue svg {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .scroll-cue svg {
+    animation: cue 1.8s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+  }
+}
+
+@keyframes cue {
+  0%,
+  100% {
+    transform: translateY(-2px);
+  }
+  50% {
+    transform: translateY(4px);
+  }
+}
+
+/* Off screen, the hero's loops rest. */
+.auth-pitch.is-resting .scroll-cue svg,
+.auth-pitch.is-resting .relay--loop * {
+  animation-play-state: paused;
+}
+
+/* ---- one night ---- */
+
+.night,
+.promise {
+  padding: 120px 56px 96px;
+}
+
+.night-head,
+.night-body,
+.promise-list {
+  max-width: 1120px;
+}
+
+.night-head h2,
+.promise h2,
+.land-cta h2 {
+  margin: 0;
+  font-size: 36px;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+.night-head p {
+  margin-top: 12px;
+  font-size: 18px;
+  color: var(--muted);
+}
+
+.night-body {
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+  align-items: start;
+  gap: 0 88px;
+  margin-top: 64px;
+}
+
+.night-stage {
+  position: sticky;
+  top: calc(var(--bar-h) + 40px);
+  padding: 32px;
+  background: var(--paper);
+  border: 1px solid var(--ink);
+  border-radius: var(--radius);
+}
+
+.night-clock {
+  max-width: none;
+  overflow: hidden;
+  font-size: 64px;
+  font-weight: 600;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+}
+
+.night-clock span {
+  display: inline-block;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .night-clock .tick-up {
+    animation: tick-up 420ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .night-clock .tick-down {
+    animation: tick-down 420ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+}
+
+@keyframes tick-up {
+  from {
+    opacity: 0;
+    transform: translateY(70%);
+  }
+}
+
+@keyframes tick-down {
+  from {
+    opacity: 0;
+    transform: translateY(-70%);
+  }
+}
+
+#night-relay {
+  margin-top: 32px;
+}
+
+.night-stage .relay {
+  --bot: 46px;
+}
+
+.night-stage .relay-name,
+.night-stage .relay-status {
+  display: none;
+}
+
+.night-brief {
+  margin: 32px 0 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--ink);
+}
+
+.night-brief li {
+  display: grid;
+  grid-template-columns: 8.5em minmax(0, 1fr);
+  align-items: baseline;
+  gap: 12px;
+  padding: 11px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.night-key {
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.night-val {
+  font-weight: 500;
+}
+
+.night-val b {
+  font-weight: 600;
+}
+
+.night-swap {
+  display: grid;
+  justify-items: start;
+}
+
+.night-swap > span {
+  grid-area: 1 / 1;
+}
+
+/* The same stamp the real Brief uses when you approve an email. */
+.night-approved {
+  padding: 0 8px;
+  font-weight: 600;
+  border: 2px solid var(--ink);
+  border-radius: 6px;
+  transform: rotate(-3deg);
+  opacity: 0;
+}
+
+.is-morning .night-drafted {
+  opacity: 0;
+}
+
+.is-morning .night-approved {
+  opacity: 1;
+}
+
+/* With the script running, each row wipes in when its Bot has reported. */
+.night-stage.is-live .night-brief li {
+  opacity: 0;
+  clip-path: inset(0 100% 0 0);
+  transition:
+    clip-path 520ms cubic-bezier(0.16, 1, 0.3, 1),
+    opacity 200ms ease-out;
+}
+
+.night-stage.is-live .night-brief li.is-on {
+  opacity: 1;
+  clip-path: inset(0 0 0 0);
+}
+
+.night-drafted,
+.night-approved {
+  transition: opacity 200ms ease-out;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .is-morning .night-approved {
+    animation: night-stamp 320ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+}
+
+@keyframes night-stamp {
+  from {
+    opacity: 0;
+    transform: rotate(-3deg) scale(1.5);
+  }
+  to {
+    opacity: 1;
+    transform: rotate(-3deg) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .night-stage.is-live .night-brief li {
+    transition: none;
+  }
+}
+
+/* The steps hang off a route line; the line fills down to the step you are on. */
+.night-steps {
+  position: relative;
+  margin: 0;
+  padding: 0 0 0 40px;
+  list-style: none;
+}
+
+.night-steps::before,
+.night-steps::after {
+  content: '';
+  position: absolute;
+  left: 5px;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: var(--line);
+}
+
+.night-steps::after {
+  background: var(--ink);
+  transform: scaleY(var(--p, 1));
+  transform-origin: 50% 0;
+  transition: transform 600ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.night-steps li {
+  position: relative;
+  display: grid;
+  grid-template-columns: 5.5em minmax(0, 1fr);
+  align-content: start;
+  align-items: baseline;
+  gap: 0 16px;
+  min-height: 64vh;
+  padding-bottom: 48px;
+  transition: color 250ms ease-out;
+}
+
+.night-steps li:last-child {
+  min-height: 36vh;
+}
+
+.night-steps li::before {
+  content: '';
+  position: absolute;
+  left: -40px;
+  top: 12px;
+  width: 11px;
+  height: 11px;
+  background: var(--paper);
+  border: 1px solid var(--ink);
+  border-radius: 50%;
+  transition:
+    background-color 200ms ease-out,
+    transform 300ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.night-steps.is-live li {
+  color: var(--muted);
+}
+
+.night-steps.is-live li.is-on {
+  color: var(--ink);
+}
+
+.night-steps li.is-on::before,
+.night-steps li.is-past::before {
+  background: var(--ink);
+}
+
+.night-steps li.is-on::before {
+  transform: scale(1.4);
+}
+
+.night-time {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.night-steps h3 {
+  font-size: 28px;
+  line-height: 1.15;
+  letter-spacing: -0.015em;
+}
+
+.night-steps li > p:last-child {
+  grid-column: 2;
+  max-width: 40ch;
+  margin-top: 12px;
+  font-size: 18px;
+}
+
+.night-foot {
+  grid-column: 2;
+  padding-left: 40px;
+  color: var(--muted);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .night-steps::after,
+  .night-steps li,
+  .night-steps li::before {
+    transition: none;
+  }
+}
+
+/* ---- three promises ---- */
+
+.promise {
+  padding-top: 72px;
+  padding-bottom: 120px;
+}
+
+.promise-list {
+  margin: 48px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.promise-list li {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 12px 64px;
+  padding: 32px 0;
+  border-top: 1px solid var(--line);
+}
+
+.promise-list li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: -1px;
+  width: 100%;
+  height: 1px;
+  background: var(--ink);
+  transform-origin: 0 50%;
+}
+
+.promise-list h3 {
+  font-size: 24px;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+}
+
+.promise-list p {
+  max-width: 44ch;
+  font-size: 18px;
+  color: var(--ink-soft);
+}
+
+/* ---- the last ask ---- */
+
+.land-cta {
+  padding: 96px 56px;
+  color: var(--paper);
+  background: var(--ink);
+}
+
+.land-cta p {
+  margin-top: 12px;
+  font-size: 18px;
+  color: #C9C9C9;
+}
+
+.land-cta-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px 28px;
+  margin-top: 32px;
+}
+
+.land-cta .btn--primary {
+  color: var(--ink);
+  background: var(--paper);
+  border-color: var(--paper);
+}
+
+.land-cta .btn--primary:hover {
+  background: var(--line);
+  border-color: var(--line);
+}
+
+.land-cta .link-button {
+  min-height: 44px;
+  color: var(--paper);
+}
+
+/* ---- footer: a second way around ---- */
+
+.site-foot {
+  border-top: 1px solid var(--line);
+}
+
+.site-foot-inner {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px 32px;
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 40px 24px 56px;
+  font-size: 14px;
+}
+
+.auth .site-foot-inner {
+  max-width: 1232px;
+  margin: 0;
+  padding-left: 56px;
+  padding-right: 56px;
+}
+
+.foot-group h2 {
+  margin: 0 0 6px;
+  font-size: 14px;
+}
+
+.foot-group a {
+  display: block;
+  width: fit-content;
+  padding: 5px 0;
+  color: var(--muted);
+  text-decoration: none;
+}
+
+.foot-group a:hover {
+  color: var(--ink);
+  text-decoration: underline;
+}
+
+.foot-group p {
+  max-width: 34ch;
+  padding-top: 5px;
+  color: var(--muted);
+}
+
+@media (max-width: 960px) {
+  .land-bar-inner,
+  .auth .site-foot-inner {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+
+  .night,
+  .promise {
+    padding: 72px 20px 64px;
+  }
+
+  .land-cta {
+    padding: 64px 20px;
+  }
+
+  .night-head h2,
+  .promise h2,
+  .land-cta h2 {
+    font-size: 28px;
+  }
+
+  .night-body {
+    grid-template-columns: 1fr;
+    gap: 0;
+    margin-top: 32px;
+  }
+
+  /* The stage rides along under the bar, small: the clock, the Bots, the newest row. */
+  .night-stage {
+    position: static;
+    padding: 20px;
+  }
+
+  .night-stage.is-live {
+    position: sticky;
+    /* One pixel under the bar, so nothing shows through the seam. */
+    top: calc(var(--bar-h) - 1px);
+    z-index: 5;
+    margin: 0 -20px;
+    padding: 14px 20px 12px;
+    border: 0;
+    border-bottom: 1px solid var(--ink);
+    border-radius: 0;
+  }
+
+  .night-clock {
+    font-size: 36px;
+  }
+
+  #night-relay {
+    margin-top: 14px;
+  }
+
+  .night-stage .relay {
+    --bot: 38px;
+  }
+
+  .night-stage.is-live .night-brief {
+    display: grid;
+    margin-top: 12px;
+    border-top: 0;
+  }
+
+  .night-stage.is-live .night-brief li {
+    grid-area: 1 / 1;
+    padding: 0;
+    border-bottom: 0;
+  }
+
+  .night-stage.is-live .night-brief li.is-on:not(.is-latest) {
+    opacity: 0;
+  }
+
+  .night-steps {
+    margin-top: 48px;
+    padding-left: 28px;
+  }
+
+  .night-steps li {
+    grid-template-columns: 1fr;
+    min-height: 58vh;
+  }
+
+  .night-steps li::before {
+    left: -28px;
+    top: 7px;
+  }
+
+  .night-steps h3 {
+    margin-top: 4px;
+    font-size: 22px;
+  }
+
+  .night-steps li > p:last-child {
+    grid-column: 1;
+    font-size: 16px;
+  }
+
+  .night-foot {
+    grid-column: 1;
+    padding-left: 28px;
+  }
+
+  .promise-list li {
+    grid-template-columns: 1fr;
+    padding: 24px 0;
+  }
+
+  .promise-list h3 {
+    font-size: 20px;
+  }
+
+  .promise-list p {
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 760px) {
+  .land-bar-inner {
+    gap: 12px;
+  }
+
+  .btn--small {
+    min-height: 44px;
+    padding: 6px 12px;
+  }
+
+  .land-tools {
+    gap: 12px;
+  }
+
+  .land-signin {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+  }
+}
+
+@media (max-width: 640px) {
+  .places a[aria-current='page'],
+  .places a.is-section {
+    border-top-color: transparent;
+  }
+
+  .places a[aria-current='page']::after,
+  .places a.is-section::after {
+    top: -2px;
+    bottom: auto;
+  }
+
+  main {
+    padding-bottom: 64px;
+  }
+
+  .site-foot-inner {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    padding: 32px 16px 104px;
+  }
+
+  .auth .site-foot-inner {
+    padding-bottom: 48px;
+  }
+
+  .foot-group a {
+    padding: 11px 0;
+  }
+
+  .site-foot-inner > div.foot-group {
+    grid-column: 1 / -1;
+  }
+}
+
+/* ==== the signed-in pages: one section at a time, the whole width ====
+   Each page is a stack of bands that run edge to edge. A band holds one thing.
+   Its content sits in a centred column; on a wide screen the band's title is on
+   the left and what it is about on the right, so the eye reads one band, then
+   the next. A band can be white, grey or black. */
+
+:root {
+  --gutter: clamp(20px, 5vw, 80px);
+  --wide: 1320px;
+}
+
+.topbar-inner,
+.site-foot-inner {
+  max-width: calc(var(--wide) + 2 * var(--gutter));
+  margin: 0 auto;
+  padding-left: var(--gutter);
+  padding-right: var(--gutter);
+}
+
+main.bands {
+  max-width: none;
+  margin: 0;
+  padding: 0;
+}
+
+.band {
+  padding: clamp(56px, 7vw, 104px) var(--gutter);
+}
+
+.band + .band {
+  border-top: 1px solid var(--line);
+}
+
+.band-inner {
+  max-width: var(--wide);
+  margin: 0 auto;
+}
+
+.band h2 {
+  margin: 0;
+}
+
+/* The page's opening line, large, with room around it. */
+.band--hero {
+  padding-top: clamp(56px, 8vw, 120px);
+  padding-bottom: clamp(40px, 5vw, 72px);
+}
+
+.band--hero h1 {
+  max-width: 18ch;
+  font-size: clamp(34px, 5vw, 64px);
+  line-height: 1.04;
+  letter-spacing: -0.035em;
+}
+
+.band--hero .lede,
+.band--hero .lead-sub {
+  max-width: 46ch;
+  margin-top: 20px;
+  font-size: clamp(18px, 1.5vw, 22px);
+  line-height: 1.45;
+  color: var(--muted);
+}
+
+.band--hero .lead-action {
+  margin-top: 28px;
+}
+
+.band--wash {
+  background: var(--wash);
+}
+
+/* A black band: the same tokens, turned over, so everything inside follows. */
+.band--ink {
+  --paper: #0A0A0A;
+  --ink: #FFFFFF;
+  --ink-soft: #E4E4E4;
+  --muted: #B4B4B4;
+  --line: #333333;
+  --wash: #1B1B1B;
+  color: var(--ink);
+  background: var(--paper);
+}
+
+.band--wash,
+.band--ink,
+.band--wash + .band,
+.band--ink + .band {
+  border-top: 0;
+}
+
+/* Title on the left, the thing itself on the right. */
+.split-label h2,
+.group-head h2 {
+  font-size: clamp(24px, 2.4vw, 32px);
+  line-height: 1.12;
+  letter-spacing: -0.02em;
+}
+
+.split-label > p {
+  max-width: 36ch;
+  margin-top: 12px;
+  color: var(--muted);
+}
+
+.split-label .check-row {
+  margin-top: 28px;
+}
+
+.split-body {
+  margin-top: 28px;
+}
+
+.split-body > :first-child {
+  margin-top: 0;
+}
+
+@media (min-width: 900px) {
+  .split,
+  #groups .group {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+    align-items: start;
+    gap: 0 clamp(40px, 6vw, 104px);
+  }
+
+  .split-label,
+  #groups .group-head {
+    position: sticky;
+    top: calc(var(--bar-h) + 32px);
+  }
+
+  .split-body {
+    margin-top: 0;
+  }
+}
+
+/* The first-visit guide is a band of its own. */
+.guide-band:has(.guide[hidden]) {
+  display: none;
+}
+
+.guide {
+  margin: 0;
+  padding: 0;
+  background: none;
+  border-radius: 0;
+}
+
+.guide h2 {
+  font-size: clamp(24px, 2.4vw, 32px);
+  letter-spacing: -0.02em;
+}
+
+.guide-steps {
+  gap: clamp(24px, 4vw, 64px);
+  margin-top: 32px;
+  padding-top: 32px;
+  border-top-color: var(--ink);
+}
+
+/* Deadlines: each group under one rule that draws across the page. */
+#groups .group {
+  position: relative;
+  margin-top: 0;
+  padding-top: 32px;
+  border-top: 1px solid var(--line);
+}
+
+#groups .group + .group {
+  margin-top: clamp(48px, 6vw, 88px);
+}
+
+#groups .group::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: -1px;
+  width: 100%;
+  height: 1px;
+  background: var(--ink);
+  transform-origin: 0 50%;
+}
+
+#groups .group.is-waiting::before {
+  transform: scaleX(0);
+}
+
+#groups .group.is-arriving::before {
+  animation: route-grow 800ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+#groups .group-head {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+
+#groups .group-head::after {
+  content: none;
+}
+
+#groups .stops {
+  margin-top: 24px;
+}
+
+#groups .stops > .stop:first-child {
+  padding-top: 0;
+}
+
+@media (min-width: 900px) {
+  #groups .stops,
+  #groups .group > .card {
+    grid-column: 2;
+    margin-top: 0;
+  }
+}
+
+/* The Bots, on black, large. */
+@media (min-width: 900px) {
+  .band--ink .relay {
+    --bot: 64px;
+  }
+}
+
+.band--ink .relay-wrap {
+  margin-top: 0;
+}
+
+.band--ink .relay {
+  --dim: #8A8A8A;
+}
+
+/* Setup: the step's title on the left, its form on the right. */
+.band--setup .split-label h1 {
+  font-size: clamp(30px, 3.4vw, 44px);
+  line-height: 1.08;
+  letter-spacing: -0.03em;
+}
+
+.band--setup .split-label .lede {
+  margin-top: 16px;
+}
+
+.band--setup form {
+  max-width: 720px;
+}
+
+/* A setup step slides in from the right; keep that inside the form, with room
+   left for focus rings. */
+#setup-form {
+  overflow-x: clip;
+  margin: 0 -6px;
+  padding: 0 6px;
+}
+
+.add-own {
+  margin-top: 0;
+}
+
+@media (max-width: 640px) {
+  :root {
+    --gutter: 16px;
+  }
+
+  .band {
+    padding-top: 48px;
+    padding-bottom: 48px;
+  }
+}
+
+/* ==== small motion on the signed-in pages ====
+   A large Bot fronts each page and shows what is going on. Bands arrive as they
+   scroll into view. Hovering a Bot makes it hop. All of it is feedback or a
+   greeting; none of it holds content back for long, and none of it runs under
+   reduced motion. */
+
+.hero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: clamp(24px, 5vw, 80px);
+}
+
+.hero-text {
+  min-width: 0;
+}
+
+.hero-bot {
+  flex: none;
+  padding-right: clamp(0px, 4vw, 64px);
+}
+
+.bot-avatar--hero .bot-glyph {
+  width: clamp(104px, 15vw, 208px);
+  height: clamp(104px, 15vw, 208px);
+}
+
+.bot-avatar--hero[data-state='working']::after {
+  inset: -16px;
+  border-width: 2px;
+}
+
+.bot-avatar--hero[data-state='waiting']::after {
+  top: 6%;
+  right: 6%;
+  width: 22px;
+  height: 22px;
+  border-width: 4px;
+}
+
+.split-label.is-waiting,
+.split-body.is-waiting {
+  opacity: 0;
+}
+
+.log li.is-new {
+  background: var(--wash);
+}
+
+@keyframes hero-pop {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.7);
+  }
+  60% {
+    opacity: 1;
+    transform: translateY(-4px) scale(1.04);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes relay-hop {
+  35% {
+    transform: translateY(-9px) scale(0.96, 1.06);
+  }
+  70% {
+    transform: scale(1.07, 0.93);
+  }
+}
+
+@keyframes log-new {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+    background-color: var(--line);
+  }
+  40% {
+    opacity: 1;
+    transform: none;
+    background-color: var(--line);
+  }
+  to {
+    background-color: transparent;
+  }
+}
+
+@keyframes mark-pulse {
+  0%,
+  70%,
+  100% {
+    transform: scale(1);
+  }
+  85% {
+    transform: scale(1.25);
+  }
+}
+
+@keyframes check-pop {
+  50% {
+    transform: scale(1.18);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* The page opens: its words rise in, then its Bot pops up. */
+  .hero-text > * {
+    animation: rise 620ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  .hero-text > :nth-child(2) {
+    animation-delay: 70ms;
+  }
+
+  .hero-text > :nth-child(n + 3) {
+    animation-delay: 140ms;
+  }
+
+  .hero-bot {
+    animation: hero-pop 700ms cubic-bezier(0.16, 1, 0.3, 1) 180ms both;
+  }
+
+  /* Bands arrive: the title first, what it is about just after. */
+  .split-label.is-arriving {
+    animation: rise 560ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  .split-body.is-arriving {
+    animation: rise 640ms cubic-bezier(0.16, 1, 0.3, 1) 90ms both;
+  }
+
+  /* The Bots say hello in turn, and any Bot hops when you point at it. */
+  .relay-bot.is-greeting .relay-face,
+  .relay:not(.relay--loop) .relay-bot:hover .relay-face,
+  .log li:hover .bot-glyph,
+  .brief-item:hover .brief-head .bot-glyph,
+  .with-bot:hover .bot-glyph,
+  .hero-bot:hover .bot-glyph {
+    animation: relay-hop 560ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  /* A line a Bot has just added drops in and settles. */
+  .log li.is-new {
+    animation: log-new 1600ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  /* The Act now square taps for attention now and then. */
+  .group--act .group-head .mark {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: mark-pulse 3.2s ease-in-out infinite;
+  }
+
+  input[type='checkbox']:checked {
+    animation: check-pop 220ms ease-out;
+  }
+
+  .save-status:not(:empty) {
+    animation: unfold 240ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+}
+
+/* The other places underline as you point at them. */
+@media (hover: hover) and (min-width: 641px) {
+  .places a:not([aria-current='page']):not(.is-section)::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -2px;
+    height: 2px;
+    background: var(--ink);
+    transform: scaleX(0);
+    transform-origin: 0 50%;
+    transition: transform 220ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .places a:not([aria-current='page']):not(.is-section):hover::after {
+    transform: scaleX(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .places a::after {
+    transition: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .hero {
+    align-items: flex-start;
+  }
+
+  .hero-bot {
+    padding-right: 0;
+  }
+
+  .bot-avatar--hero .bot-glyph {
+    width: 72px;
+    height: 72px;
+  }
+}
+
+/* At this size the "waiting" dot read as a stray mark, so the large Bot goes
+   without it; its slow pulse still shows it is waiting. */
+.bot-avatar--hero[data-state='waiting']::after {
+  content: none;
+}
+
+/* ==== the demo's person picker ====
+   A quiet button in the bar; a short list under it, drawn like the rest of the
+   page: white, one black line, no shadow. */
+
+.picker {
+  position: relative;
+}
+
+.picker-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 36px;
+  padding: 6px 8px 6px 10px;
+  font: 500 14px/1.2 var(--font);
+  color: var(--ink);
+  white-space: nowrap;
+  background: transparent;
+  border: 0;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: background-color 150ms ease-out;
+}
+
+.picker-button:hover,
+.picker.is-open .picker-button {
+  background: var(--wash);
+}
+
+.picker-rest {
+  font-weight: 400;
+  color: var(--muted);
+}
+
+.picker-chevron,
+.picker-tick {
+  flex: none;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.picker-chevron {
+  transition: transform 200ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.picker.is-open .picker-chevron {
+  transform: rotate(180deg);
+}
+
+.picker-list {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 8px);
+  z-index: 30;
+  min-width: 264px;
+  max-width: calc(100vw - 32px);
+  margin: 0;
+  padding: 6px;
+  list-style: none;
+  background: var(--paper);
+  border: 1px solid var(--ink);
+  border-radius: var(--radius);
+}
+
+.picker-list:focus {
+  outline: none;
+}
+
+.picker-option {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0 12px;
+  padding: 10px 12px;
+  font-size: 14px;
+  line-height: 1.35;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.picker-option-name {
+  font-weight: 500;
+}
+
+.picker-option-note {
+  grid-column: 1;
+  color: var(--muted);
+}
+
+.picker-tick {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+}
+
+.picker-option.is-active {
+  background: var(--wash);
+}
+
+.picker-list:focus-visible .picker-option.is-active {
+  outline: 2px solid var(--ink);
+  outline-offset: -2px;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .picker-list:not([hidden]) {
+    animation: unfold 200ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .picker-chevron,
+  .picker-button {
+    transition: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .picker-rest {
+    display: none;
+  }
+
+  .picker-button {
+    min-height: 44px;
+  }
+
+  /* Narrower on a phone, so it stays inside the screen. */
+  .picker-list {
+    min-width: 208px;
+  }
+}
+
+/* The logo and name, large, above the headline on the page before sign-in. */
+.pitch-brand {
+  --logo-start: 450ms;
+  gap: 14px;
+  margin-bottom: 32px;
+  font-size: 30px;
+  color: var(--paper);
+}
+
+.pitch-brand .logo-mark {
+  width: 50px;
+  height: 50px;
+}
+
+@media (max-width: 860px) {
+  .pitch-brand {
+    gap: 11px;
+    margin-bottom: 22px;
+    font-size: 24px;
+  }
+
+  .pitch-brand .logo-mark {
+    width: 40px;
+    height: 40px;
+  }
+}
+
+/* ---- green, the accent ----
+   Black and white are the base. One accent on a neutral site only works when
+   it is spent on few things, so green goes on what you act on and on what is
+   happening now, and nowhere else:
+     1. the main button of each screen,
+     2. where you are and what is chosen (the nav mark, ticks, checked boxes),
+     3. a Bot working right now (its ring, and the packet it passes on),
+     4. the brand: the centre of the logo and one phrase before sign-in.
+   Rules, progress lines, risk marks and status words stay black. */
+
+:root {
+  --green: #0B8043;
+  --green-hover: #086534;
+  --on-green: #FFFFFF;
+}
+
+/* On black the same green would sink, so it is a brighter one. */
+.band--ink,
+.auth-pitch,
+.land-cta {
+  --green: #2FCB73;
+  --green-hover: #63DE98;
+  --on-green: #0A0A0A;
+}
+
+/* 1. The main button. Every other button stays black or outlined. */
+.btn--primary,
+.land-cta .btn--primary {
+  color: var(--on-green);
+  background: var(--green);
+  border-color: var(--green);
+}
+
+.btn--primary:hover,
+.land-cta .btn--primary:hover {
+  color: var(--on-green);
+  background: var(--green-hover);
+  border-color: var(--green-hover);
+}
+
+/* A solid black button, for a form's own submit beside a green main action. */
+.btn--solid {
+  color: var(--paper);
+  background: var(--ink);
+}
+
+.btn--solid:hover {
+  background: var(--ink-soft);
+  border-color: var(--ink-soft);
+}
+
+/* Approving is the green button, so its stamp answers in green. */
+.stamp,
+.night-approved {
+  color: var(--green);
+  border-color: var(--green);
+}
+
+/* 2. Where you are, and what is chosen. */
+body {
+  accent-color: var(--green);
+}
+
+.places a[aria-current='page']::after,
+.places a.is-section::after,
+.steps-progress li.is-on {
+  background: var(--green);
+}
+
+.picker-tick {
+  color: var(--green);
+}
+
+:focus-visible,
+.auth-pitch :focus-visible,
+.land-cta :focus-visible,
+.picker-list:focus-visible .picker-option.is-active {
+  outline-color: var(--green);
+}
+
+/* 3. A Bot at work, and what it passes along. */
+.bot-avatar[data-state='working']::after {
+  border-color: var(--green);
+}
+
+.relay--loop .relay-packet,
+.relay--live .relay-packet {
+  background: var(--green);
+}
+
+/* 4. The brand. */
+.logo-mark .logo-stop--3 {
+  fill: var(--green);
+}
+
+.go {
+  color: var(--green);
+}
+
+.save-status.is-error {
+  font-weight: 600;
+}
+
+/* ---- the Bots' own colours ----
+   Each Bot is one pastel, so you can tell the six apart before you read a name.
+   The colour belongs to the Bot's body and to nothing else: no text, line,
+   button or panel takes it. None of the six is a green, so green still only
+   means "act here" or "working now".
+   On white a Bot keeps a thin black edge, so a pale shape still reads. On black
+   it is a solid shape with its details cut out. A Bot that is not connected
+   has no colour until it wakes. */
+
+:root {
+  --bot-intake: #FADD82; /* butter: the page */
+  --bot-case: #96C8F8; /* sky: the monitor */
+  --bot-policy: #C8ADF3; /* lilac: the owl */
+  --bot-inbox: #FDBD87; /* peach: the envelope */
+  --bot-keeper: #F7A3C6; /* rose: the stopwatch */
+  --bot-messenger: #8CDFD8; /* aqua: the speech bubble */
+}
+
+.bot-avatar {
+  --bot-edge-width: 1.5px;
+}
+
+.relay-face {
+  --bot-edge-width: 2px;
+}
+
+.bot-avatar--hero {
+  --bot-edge-width: 3px;
+}
+
+.bot-glyph {
+  --bot-tint: var(--bot-case);
+  --bot-edge: #0A0A0A;
+  --bot-face: #0A0A0A;
+  --bot-off: #EBEBEB;
+}
+
+.bot-glyph--intake {
+  --bot-tint: var(--bot-intake);
+}
+
+.bot-glyph--case {
+  --bot-tint: var(--bot-case);
+}
+
+.bot-glyph--policy {
+  --bot-tint: var(--bot-policy);
+}
+
+.bot-glyph--inbox {
+  --bot-tint: var(--bot-inbox);
+}
+
+.bot-glyph--keeper {
+  --bot-tint: var(--bot-keeper);
+}
+
+.bot-glyph--messenger {
+  --bot-tint: var(--bot-messenger);
+}
+
+.bot-fill,
+.bot-dot {
+  fill: var(--bot-tint);
+  stroke: var(--bot-edge);
+  stroke-width: var(--bot-edge-width);
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+
+.bot-line {
+  stroke: var(--bot-edge);
+  stroke-width: var(--bot-edge-width);
+  vector-effect: non-scaling-stroke;
+}
+
+.bot-cut {
+  stroke: var(--bot-face);
+  stroke-width: var(--bot-edge-width);
+  vector-effect: non-scaling-stroke;
+}
+
+.bot-eye {
+  fill: var(--bot-face);
+}
+
+/* Not connected: grey, with a grey edge and shut grey eyes. */
+.bot-avatar[data-state='asleep'] .bot-glyph {
+  --bot-tint: var(--bot-off);
+  --bot-edge: #8A8A8A;
+  --bot-face: #8A8A8A;
+}
+
+/* On black the edge takes the body's colour, and details are cut at full weight. */
+.band--ink .bot-glyph,
+.auth-pitch .bot-glyph,
+.land-cta .bot-glyph {
+  --bot-edge: var(--bot-tint);
+  --bot-off: #555555;
+}
+
+.band--ink .bot-avatar[data-state='asleep'] .bot-glyph,
+.auth-pitch .bot-avatar[data-state='asleep'] .bot-glyph,
+.land-cta .bot-avatar[data-state='asleep'] .bot-glyph {
+  --bot-edge: var(--bot-tint);
+  --bot-face: #0A0A0A;
+}
+
+.band--ink .bot-line,
+.auth-pitch .bot-line,
+.land-cta .bot-line {
+  stroke-width: 1.8;
+  vector-effect: none;
+}
+
+.band--ink .bot-cut,
+.auth-pitch .bot-cut,
+.land-cta .bot-cut {
+  stroke-width: 1.5;
+  vector-effect: none;
+}

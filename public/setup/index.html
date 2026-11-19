@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Your details · Waypoint</title>
+    <meta name="description" content="Tell Waypoint your visa type and dates so it can count your deadlines.">
+    <link rel="icon" href="/logo.svg" type="image/svg+xml">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:wght@400;500;600&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600&text=waypoint&display=swap">
+    <link rel="stylesheet" href="/css/app.css">
+    <script src="/js/flow.js"></script>
+  </head>
+  <body data-page="setup">
+    <a class="skip" href="#main">Skip to content</a>
+
+    <header class="topbar">
+      <div class="topbar-inner">
+        <span class="wordmark">
+          <svg class="logo-mark" viewBox="0 0 32 32" width="22" height="22" aria-hidden="true"><circle class="logo-stop logo-stop--1" cx="5" cy="26" r="2"/><circle class="logo-stop logo-stop--2" cx="11.5" cy="20.5" r="2.7"/><circle class="logo-ring" pathLength="1" cx="22" cy="11" r="6.5" transform="rotate(135 22 11)"/><circle class="logo-stop logo-stop--3" cx="22" cy="11" r="2.6"/></svg>
+          Waypoint
+        </span>
+        <div class="topbar-tools">
+          <a class="help-link" id="cancel-link" href="/settings/" hidden>Cancel</a>
+          <button class="btn btn--quiet" type="button" id="sign-out">Sign out</button>
+        </div>
+      </div>
+    </header>
+
+    <main id="main" class="bands" tabindex="-1">
+      <section class="band band--setup">
+        <div class="band-inner split">
+          <div class="split-label">
+            <ol class="steps-progress" id="progress" aria-hidden="true"><li></li><li></li><li></li></ol>
+            <p class="step-count" id="step-count"></p>
+            <h1 id="step-title" tabindex="-1"></h1>
+            <p class="lede" id="step-lede"></p>
+          </div>
+          <div class="split-body">
+            <form id="setup-form" novalidate>
+              <section id="step-1" hidden>
+                <div class="field">
+                  <label for="name">Your name</label>
+                  <input type="text" id="name" autocomplete="name" maxlength="80">
+                </div>
+                <fieldset class="plain field">
+                  <legend>Visa type</legend>
+                  <div class="visa-list" id="visa-list"></div>
+                </fieldset>
+              </section>
+
+              <section id="step-2" hidden>
+                <div id="date-fields"></div>
+                <div class="field">
+                  <label for="receipts">Case receipt numbers</label>
+                  <span class="hint" id="receipts-hint">From a USCIS receipt notice, like IOE0912345678. Separate several with commas. Optional.</span>
+                  <input type="text" id="receipts" maxlength="200" autocomplete="off" aria-describedby="receipts-hint">
+                </div>
+                <div class="preview" id="preview" aria-live="polite"></div>
+              </section>
+
+              <section id="step-3" hidden>
+                <div class="field">
+                  <label for="phone">Mobile number</label>
+                  <span class="hint" id="phone-hint">For text alerts. Optional.</span>
+                  <input type="tel" id="phone" autocomplete="tel" maxlength="24" aria-describedby="phone-hint">
+                </div>
+                <fieldset class="plain field">
+                  <legend>Tell me by</legend>
+                  <label class="check"><input type="checkbox" id="ch-sms" checked><span>Text message, when a deadline gets closer or a case status changes</span></label>
+                  <label class="check"><input type="checkbox" id="ch-calendar" checked><span>Google Calendar, one event per deadline</span></label>
+                  <label class="check"><input type="checkbox" id="ch-gmail" checked><span>Gmail drafts, for emails to other people that I approve first</span></label>
+                </fieldset>
+                <p class="fine">These are your preferences. Texts, calendar events and Gmail drafts start once a Messenger Bot is connected.</p>
+              </section>
+
+              <p class="form-error" id="setup-error" role="alert" hidden></p>
+              <div class="form-actions">
+                <button class="btn" type="button" id="back" hidden>Back</button>
+                <button class="btn btn--primary" type="submit" id="next">Continue</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script type="module" src="/js/setup.js"></script>
+  </body>
+</html>

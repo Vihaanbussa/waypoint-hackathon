@@ -1,0 +1,28 @@
+# Render blueprint: one web service, no build step.
+# Render generates WAYPOINT_SECRET and WAYPOINT_BOT_KEY once and keeps them, so
+# sign-ins and the Bots' key survive restarts (the free plan's disk is wiped each
+# time). Copy WAYPOINT_BOT_KEY from the service's Environment tab into Grok Bot's
+# connector header as: Bearer <value>
+#
+# To keep accounts and what the Bots write, add two more variables by hand in the
+# Environment tab, from a free Upstash Redis database: UPSTASH_REDIS_REST_URL and
+# UPSTASH_REDIS_REST_TOKEN. Without them, data lasts only until the service sleeps.
+#
+# To send real text messages, add three more from a Twilio account:
+# TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN and TWILIO_FROM_NUMBER (like +15551234567).
+# Optional: SMS_DEMO_TO, a real phone that gets the sample people's texts in a demo.
+services:
+  - type: web
+    name: waypoint
+    runtime: node
+    plan: free
+    buildCommand: "true"
+    startCommand: node server.js
+    healthCheckPath: /healthz
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      - key: WAYPOINT_SECRET
+        generateValue: true
+      - key: WAYPOINT_BOT_KEY
+        generateValue: true

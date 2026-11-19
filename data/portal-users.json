@@ -1,0 +1,6 @@
+{
+  "note": "Fake sign-in for the mock portal. Demo only. Give these to the Case Clerk Bot.",
+  "users": [
+    { "username": "priya.sharma", "password": "waypoint-demo-2026", "receipts": ["IOE0912345678"] }
+  ]
+}

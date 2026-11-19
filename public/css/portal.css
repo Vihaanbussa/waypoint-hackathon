@@ -1,0 +1,181 @@
+/* The mock portal and the Bot report form. Deliberately plain and unlike
+   Waypoint: this stands in for someone else's website that a Bot reads.
+   Flat fills only, black and white. */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: #FFFFFF;
+  color: #0A0A0A;
+  font: 16px/1.5 system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+}
+
+.demo-banner {
+  margin: 0;
+  padding: 8px 20px;
+  background: #F0F0F0;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.portal-bar {
+  padding: 14px 20px;
+  background: #0A0A0A;
+  color: #FFFFFF;
+}
+
+.portal-name {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+main {
+  max-width: 720px;
+  padding: 28px 20px 64px;
+}
+
+h1 {
+  margin: 0 0 16px;
+  font-size: 28px;
+  line-height: 1.2;
+}
+
+h2 {
+  margin: 32px 0 10px;
+  font-size: 20px;
+}
+
+h1,
+h2 {
+  text-wrap: balance;
+}
+
+p {
+  margin: 0 0 12px;
+  max-width: 68ch;
+  text-wrap: pretty;
+}
+
+a {
+  color: #0A0A0A;
+}
+
+:focus-visible {
+  outline: 3px solid #0A0A0A;
+  outline-offset: 2px;
+}
+
+label {
+  display: block;
+  margin-top: 16px;
+  font-weight: 700;
+}
+
+.hint {
+  display: block;
+  font-size: 14px;
+  font-weight: 400;
+}
+
+input,
+select,
+textarea {
+  display: block;
+  width: 100%;
+  max-width: 480px;
+  margin-top: 6px;
+  padding: 10px;
+  font: inherit;
+  color: #0A0A0A;
+  background: #FFFFFF;
+  border: 1px solid #0A0A0A;
+  border-radius: 2px;
+}
+
+textarea {
+  max-width: 640px;
+  min-height: 180px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 14px;
+}
+
+button {
+  margin-top: 20px;
+  margin-right: 8px;
+  min-height: 44px;
+  padding: 10px 20px;
+  font: inherit;
+  font-weight: 700;
+  color: #FFFFFF;
+  background: #0A0A0A;
+  border: 1px solid #0A0A0A;
+  border-radius: 2px;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #2E2E2E;
+}
+
+button.plain {
+  color: #0A0A0A;
+  background: #FFFFFF;
+  border-color: #0A0A0A;
+}
+
+button.plain:hover {
+  background: #E6E6E6;
+}
+
+.case {
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid #D4D4D4;
+}
+
+.case div {
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  gap: 4px 16px;
+  padding: 12px 0;
+  border-bottom: 1px solid #D4D4D4;
+}
+
+.case dt {
+  font-weight: 700;
+}
+
+.case dd {
+  margin: 0;
+}
+
+#case-status {
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.message {
+  min-height: 24px;
+  margin-top: 16px;
+  font-weight: 700;
+}
+
+pre {
+  max-width: 640px;
+  padding: 12px;
+  overflow-x: auto;
+  background: #F0F0F0;
+  font-size: 14px;
+}
+
+@media (max-width: 560px) {
+  .case div {
+    grid-template-columns: 1fr;
+  }
+}

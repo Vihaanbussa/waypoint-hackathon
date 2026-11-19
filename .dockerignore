@@ -1,0 +1,9 @@
+data/store.json
+data/store.json.tmp
+data/accounts.json
+data/accounts.json.tmp
+data/bot-key.txt
+data/config.json
+node_modules
+tests
+.git

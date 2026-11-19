@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Settings · Waypoint</title>
+    <meta name="description" content="Your profile, your notification channels and the rules Waypoint applies.">
+    <link rel="icon" href="/logo.svg" type="image/svg+xml">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:wght@400;500;600&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600&text=waypoint&display=swap">
+    <link rel="stylesheet" href="/css/app.css">
+    <script src="/js/flow.js"></script>
+  </head>
+  <body data-page="settings">
+    <a class="skip" href="#main">Skip to content</a>
+
+    <header class="topbar">
+      <div class="topbar-inner">
+        <a class="wordmark" href="/">
+          <svg class="logo-mark" viewBox="0 0 32 32" width="22" height="22" aria-hidden="true"><circle class="logo-stop logo-stop--1" cx="5" cy="26" r="2"/><circle class="logo-stop logo-stop--2" cx="11.5" cy="20.5" r="2.7"/><circle class="logo-ring" pathLength="1" cx="22" cy="11" r="6.5" transform="rotate(135 22 11)"/><circle class="logo-stop logo-stop--3" cx="22" cy="11" r="2.6"/></svg>
+          Waypoint
+        </a>
+        <nav class="places" aria-label="Places">
+          <a href="/" data-place="brief">Brief</a>
+          <a href="/activity/" data-place="activity">Activity</a>
+          <a href="/settings/" data-place="settings" aria-current="page">Settings</a>
+        </nav>
+        <div class="topbar-tools">
+          <a class="help-link" id="help-link" href="/?guide=1">Help</a>
+          <div class="profile-switch" id="profile-switch" hidden>
+            <span class="profile-label" id="profile-label">Viewing</span>
+            <div class="picker" id="profile-picker"></div>
+          </div>
+          <span class="account-name" id="account-name" hidden></span>
+          <button class="btn btn--quiet" type="button" id="sign-out">Sign out</button>
+        </div>
+      </div>
+    </header>
+
+    <main id="main" class="bands" tabindex="-1">
+      <section class="band band--hero">
+        <div class="band-inner hero">
+          <div class="hero-text">
+            <h1>Settings</h1>
+            <p class="lede">Your details, how Waypoint reaches you, and the official rules behind each deadline.</p>
+            <p class="notice" id="notice" hidden></p>
+          </div>
+          <div class="hero-bot" id="hero-bot"></div>
+        </div>
+      </section>
+      <section class="band band--ink" aria-labelledby="connect-heading">
+        <div class="band-inner split">
+          <div class="split-label">
+            <h2 id="connect-heading">Connect your Bots</h2>
+          </div>
+          <div class="split-body">
+            <p class="with-bot" id="connect-line"></p>
+            <p class="section-action"><a class="btn" href="/connect/" id="connect-link">Set up your Bots</a></p>
+          </div>
+        </div>
+      </section>
+      <section class="band" aria-labelledby="profile-heading">
+        <div class="band-inner split">
+          <div class="split-label">
+            <h2 id="profile-heading">Your details</h2>
+            <p>Every deadline is counted from these dates.</p>
+          </div>
+          <div class="split-body">
+            <dl class="facts" id="profile-facts"></dl>
+            <p class="section-action" id="profile-action"></p>
+          </div>
+        </div>
+      </section>
+      <section class="band" aria-labelledby="own-heading">
+        <div class="band-inner split">
+          <div class="split-label">
+            <h2 id="own-heading">Deadlines you added</h2>
+            <p class="after-log" id="own-note"></p>
+          </div>
+          <div class="split-body">
+            <ul class="own-list" id="own-list"></ul>
+          </div>
+        </div>
+      </section>
+      <section class="band band--wash" aria-labelledby="notify-heading">
+        <div class="band-inner split">
+          <div class="split-label">
+            <h2 id="notify-heading">How you are told</h2>
+            <p>Messages to you are sent automatically. A message to anyone else waits for your approval.</p>
+          </div>
+          <div class="split-body">
+            <form id="notify-form">
+              <fieldset class="channels" id="channels">
+                <legend class="visually-hidden">Channels</legend>
+              </fieldset>
+              <div class="quiet">
+                <span id="quiet-label">Quiet hours</span>
+                <label>From <input type="time" id="quiet-from" aria-describedby="quiet-help"></label>
+                <label>To <input type="time" id="quiet-to" aria-describedby="quiet-help"></label>
+              </div>
+              <p class="fine" id="quiet-help">No texts during quiet hours, unless something turns Act now.</p>
+              <p class="save-status" id="save-status" role="status"></p>
+            </form>
+          </div>
+        </div>
+      </section>
+      <section class="band" aria-labelledby="rules-heading">
+        <div class="band-inner split">
+          <div class="split-label">
+            <h2 id="rules-heading">Rules behind your deadlines</h2>
+            <p id="rules-intro"></p>
+            <p class="fine">Rules come from the linked official pages.</p>
+          </div>
+          <div class="split-body">
+            <ul class="rule-list" id="rules"></ul>
+          </div>
+        </div>
+      </section>
+      <section class="band" aria-labelledby="account-heading">
+        <div class="band-inner split">
+          <div class="split-label">
+            <h2 id="account-heading">Account</h2>
+          </div>
+          <div class="split-body">
+            <p id="account-line"></p>
+            <p class="section-action" id="account-action"></p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-foot">
+      <div class="site-foot-inner">
+        <nav class="foot-group" aria-labelledby="foot-visa">
+          <h2 id="foot-visa">Your visa</h2>
+          <a href="/" data-keep>Brief</a>
+          <a href="/activity/" data-keep>Activity</a>
+          <a href="/settings/" data-keep>Settings</a>
+        </nav>
+        <nav class="foot-group" aria-labelledby="foot-bots">
+          <h2 id="foot-bots">Your Bots</h2>
+          <a href="/connect/" data-keep>Connect your Bots</a>
+          <a href="/portal/">Mock case portal</a>
+        </nav>
+        <nav class="foot-group" aria-labelledby="foot-help">
+          <h2 id="foot-help">Help</h2>
+          <a href="/?guide=1" data-keep>Show the first-visit guide</a>
+        </nav>
+      </div>
+    </footer>
+
+    <script type="module" src="/js/settings.js"></script>
+  </body>
+</html>

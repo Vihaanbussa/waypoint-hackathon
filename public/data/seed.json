@@ -1,0 +1,137 @@
+{
+  "profiles": [
+    {
+      "id": "priya",
+      "name": "Priya Sharma",
+      "visa_type": "f1_opt",
+      "visa_label": "F-1 on OPT",
+      "ead_start": "2025-12-02",
+      "ead_end": "2026-12-01",
+      "stem_received": "2026-11-10",
+      "stem_approved": false,
+      "employed": true,
+      "employed_since": "2026-02-01",
+      "unemployment_days_used": 61,
+      "passport_end": "2027-08-20",
+      "receipts": ["IOE0912345678"],
+      "phone": "(555) 010-0142",
+      "channels": { "sms": true, "calendar": true, "gmail": true },
+      "quiet_hours": { "from": "22:00", "to": "07:00" },
+      "accounts": { "calendar": "priya.sharma@example.com", "gmail": "priya.sharma@example.com" }
+    },
+    {
+      "id": "wei",
+      "name": "Wei Chen",
+      "visa_type": "h1b",
+      "visa_label": "H-1B",
+      "h1b_start": "2024-10-01",
+      "i94_end": "2027-09-30",
+      "employment_end": "2026-10-26",
+      "moved_on": "2026-11-14",
+      "address_reported": false,
+      "receipts": [],
+      "phone": "(555) 010-0187",
+      "channels": { "sms": true, "calendar": true, "gmail": true },
+      "quiet_hours": { "from": "22:00", "to": "07:00" },
+      "accounts": { "calendar": "wei.chen@example.com", "gmail": "wei.chen@example.com" }
+    }
+  ],
+  "portal": {
+    "IOE0912345678": {
+      "person": "priya",
+      "form": "I-765",
+      "title": "STEM OPT case",
+      "status": "Case Was Received",
+      "detail": "We received your Form I-765, Application for Employment Authorization.",
+      "last_changed": "2026-11-10",
+      "response_due": null
+    }
+  },
+  "case_status": [
+    {
+      "id": "cs-seed-1",
+      "person": "priya",
+      "receipt": "IOE0912345678",
+      "title": "STEM OPT case",
+      "portal": "Mock case status portal",
+      "status": "Case Was Received",
+      "last_changed": "2026-11-10",
+      "response_due": null,
+      "checked_at": "2026-11-18T02:03:00",
+      "sample": true
+    }
+  ],
+  "alerts": [
+    {
+      "id": "ds-ruling",
+      "visa_types": ["f1_opt", "j1"],
+      "title": "duration of status stays",
+      "why": "A court vacated the rule on Nov 16. As of Nov 18 nothing changes for you. Watching for an appeal.",
+      "date": "2026-11-16",
+      "risk": "clear",
+      "source_label": "AILA",
+      "source_url": "https://www.aila.org/library/district-court-vacates-dhs-rule-eliminating-duration-of-status-for-f-j-and-i-nonimmigrants",
+      "seen_on_x": true,
+      "sample": true
+    },
+    {
+      "id": "h1b-payment",
+      "visa_types": ["h1b"],
+      "title": "$100,000 payment guidance vacated",
+      "why": "This may change what a new employer pays to file for you. Ask the employer's attorney.",
+      "date": "2026-06-08",
+      "risk": "watch",
+      "source_label": "USCIS H-1B",
+      "source_url": "https://www.uscis.gov/working-in-the-united-states/h-1b-specialty-occupations",
+      "sample": true
+    }
+  ],
+  "inbox_facts": [],
+  "clock_notes": [],
+  "runs": [
+    { "id": "run-seed-1", "person": "priya", "bot": "Case Clerk", "status": "ok", "summary": "Read status: \"Case Was Received\"", "at": "2026-11-18T02:03:00", "sample": true },
+    { "id": "run-seed-2", "person": "priya", "bot": "Inbox Scout", "status": "ok", "summary": "No new notices", "at": "2026-11-18T02:04:00", "sample": true },
+    { "id": "run-seed-3", "person": "priya", "bot": "Policy Watcher", "status": "ok", "summary": "Checked X and the official pages: 1 relevant notice", "x_searches": ["from:USCIS OPT", "STEM OPT rule", "F-1 duration of status"], "x_posts_read": 18, "at": "2026-11-18T02:05:00", "sample": true },
+    { "id": "run-seed-4", "person": "priya", "bot": "Deadline Keeper", "status": "ok", "summary": "Updated 5 deadlines, drafted 1 email", "at": "2026-11-18T02:06:00", "sample": true },
+    { "id": "run-seed-5", "person": "priya", "bot": "Messenger", "status": "ok", "summary": "Synced 3 calendar events, sent 1 text", "at": "2026-11-18T02:07:00", "sample": true },
+    { "id": "run-seed-6", "person": "wei", "bot": "Case Clerk", "status": "ok", "summary": "Read I-94 record: valid to Sep 30, 2027", "at": "2026-11-18T02:03:00", "sample": true },
+    { "id": "run-seed-7", "person": "wei", "bot": "Inbox Scout", "status": "ok", "summary": "No new notices", "at": "2026-11-18T02:04:00", "sample": true },
+    { "id": "run-seed-8", "person": "wei", "bot": "Policy Watcher", "status": "ok", "summary": "Checked X and the official pages: 1 relevant notice", "x_searches": ["from:USCIS H-1B", "H-1B $100,000 payment", "H-1B grace period"], "x_posts_read": 21, "at": "2026-11-18T02:05:00", "sample": true },
+    { "id": "run-seed-9", "person": "wei", "bot": "Deadline Keeper", "status": "ok", "summary": "Updated 4 deadlines, drafted 1 email", "at": "2026-11-18T02:06:00", "sample": true },
+    { "id": "run-seed-10", "person": "wei", "bot": "Messenger", "status": "ok", "summary": "Synced 4 calendar events, sent 1 text", "at": "2026-11-18T02:07:00", "sample": true }
+  ],
+  "actions": [
+    {
+      "id": "act-priya-hr",
+      "person": "priya",
+      "clock": "work_permit_expiry",
+      "recipient_label": "HR at your employer",
+      "to": "hr@example.com",
+      "subject": "Updating my I-9 before Dec 1",
+      "body": "Hello,\n\nMy OPT card expires on Dec 1. My STEM OPT extension was received on Nov 10, which lets me keep working for up to 180 days while it is pending.\n\nWhat do you need from me to update my I-9?\n\nThank you,\nPriya Sharma",
+      "state": "drafted",
+      "drafted_by": "Deadline Keeper",
+      "at": "2026-11-18T02:06:00",
+      "sample": true
+    },
+    {
+      "id": "act-wei-attorney",
+      "person": "wei",
+      "clock": "h1b_grace",
+      "recipient_label": "an immigration attorney",
+      "to": "attorney@example.com",
+      "subject": "Consultation this week: my H-1B grace period ends Dec 25",
+      "body": "Hello,\n\nMy last day of work on H-1B was Oct 26, so my 60-day grace period ends on Dec 25. I would like to talk through my options this week.\n\nWhen are you available?\n\nThank you,\nWei Chen",
+      "state": "drafted",
+      "drafted_by": "Deadline Keeper",
+      "at": "2026-11-18T02:06:00",
+      "sample": true
+    }
+  ],
+  "notifications": [
+    { "id": "n-seed-1", "person": "priya", "channel": "sms", "text": "Waypoint: your work permit card expires in 13 days. 1 action needs your approval. See your brief.", "state": "sent", "at": "2026-11-18T02:07:00", "sample": true },
+    { "id": "n-seed-2", "person": "priya", "channel": "calendar", "text": "Synced 3 events: Dec 1, May 30 and Aug 20", "state": "synced", "at": "2026-11-18T02:07:00", "sample": true },
+    { "id": "n-seed-3", "person": "wei", "channel": "sms", "text": "Waypoint: your address change is due in 6 days, and your grace period ends in 37. See your brief.", "state": "sent", "at": "2026-11-18T02:07:00", "sample": true },
+    { "id": "n-seed-4", "person": "wei", "channel": "calendar", "text": "Synced 4 events: Nov 24, Dec 25, Sep 30, 2027 and Sep 30, 2030", "state": "synced", "at": "2026-11-18T02:07:00", "sample": true }
+  ]
+}

@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="Waypoint">
+  <style>
+    .stop { fill: #0A0A0A; }
+    .ring { fill: none; stroke: #0A0A0A; stroke-width: 3; }
+    .here { fill: #0B8043; }
+    @media (prefers-color-scheme: dark) {
+      .stop { fill: #FFFFFF; }
+      .ring { stroke: #FFFFFF; }
+      .here { fill: #2FCB73; }
+    }
+  </style>
+  <!-- Stops along a path, each a little larger, ending at the target. The
+       point you arrive at is the one green thing. -->
+  <circle class="stop" cx="5" cy="26" r="2"/>
+  <circle class="stop" cx="11.5" cy="20.5" r="2.7"/>
+  <circle class="ring" cx="22" cy="11" r="6.5"/>
+  <circle class="here" cx="22" cy="11" r="2.6"/>
+</svg>

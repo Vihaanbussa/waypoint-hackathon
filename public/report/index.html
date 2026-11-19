@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Waypoint Bot report</title>
+    <meta name="robots" content="noindex">
+    <link rel="stylesheet" href="/css/portal.css">
+  </head>
+  <body>
+    <header class="portal-bar">
+      <p class="portal-name">Waypoint Bot report</p>
+    </header>
+
+    <main>
+      <h1>Report a run</h1>
+      <p>A Bot fills in this form after each run. It works without JavaScript. Fill in the run, a data row, or both.</p>
+
+      <form method="post" action="/api/report">
+        <label for="key">Bot key <span class="hint">From Waypoint, under Settings, Connect your Bots. Not needed if you are signed in to Waypoint in this browser.</span></label>
+        <input id="key" name="key" type="password" autocomplete="off" maxlength="120">
+
+        <h2>The run</h2>
+
+        <label for="bot">Bot</label>
+        <select id="bot" name="bot">
+          <option>Case Clerk</option>
+          <option>Policy Watcher</option>
+          <option>Inbox Scout</option>
+          <option>Deadline Keeper</option>
+          <option>Messenger</option>
+          <option>Intake Clerk</option>
+        </select>
+
+        <label for="person">Person</label>
+        <select id="person" name="person">
+          <option value="priya">Priya Sharma (priya)</option>
+          <option value="wei">Wei Chen (wei)</option>
+        </select>
+
+        <label for="status">Run status</label>
+        <select id="status" name="status">
+          <option value="ok">ok</option>
+          <option value="failed">failed</option>
+          <option value="running">running</option>
+        </select>
+
+        <label for="summary">One-line summary <span class="hint">For example: Read status: "Case Was Received"</span></label>
+        <input id="summary" name="summary" maxlength="200">
+
+        <h2>One data row (optional)</h2>
+
+        <label for="table">Table</label>
+        <select id="table" name="table">
+          <option value="">No data row</option>
+          <option value="case_status">case_status (Case Clerk)</option>
+          <option value="alerts">alerts (Policy Watcher)</option>
+          <option value="inbox_facts">inbox_facts (Inbox Scout)</option>
+          <option value="clock_notes">clock_notes (Deadline Keeper)</option>
+          <option value="actions">actions (Deadline Keeper)</option>
+          <option value="notifications">notifications (Messenger)</option>
+        </select>
+
+        <label for="row">Row, as JSON <span class="hint">The person above is added if the row has none.</span></label>
+        <textarea id="row" name="row" spellcheck="false"></textarea>
+
+        <button type="submit" id="save-report">Save report</button>
+      </form>
+
+      <h2>Row examples</h2>
+      <p>case_status</p>
+      <pre>{"receipt": "IOE0912345678", "title": "STEM OPT case", "portal": "Mock case status portal", "status": "Request for Evidence Was Sent", "last_changed": "2026-11-18", "response_due": "2027-02-10"}</pre>
+      <p>alerts</p>
+      <pre>{"title": "duration of status stays", "why": "A court vacated the rule on Nov 16. Nothing changes for you.", "risk": "clear", "visa_types": "f1_opt;j1", "source_label": "AILA", "source_url": "https://www.aila.org/"}</pre>
+      <p>inbox_facts</p>
+      <pre>{"label": "Biometrics appointment", "due_date": "2026-12-09", "sender": "USCIS", "subject": "Appointment notice"}</pre>
+      <p>clock_notes</p>
+      <pre>{"clock": "work_permit_expiry", "reason": "Your employer needs your endorsed I-20 by Dec 1."}</pre>
+      <p>actions</p>
+      <pre>{"clock": "notice-ioe0912345678", "recipient_label": "your international office", "to": "iso@example.edu", "subject": "Help with an evidence request", "body": "Hello, ..."}</pre>
+      <p>notifications</p>
+      <pre>{"channel": "sms", "text": "Waypoint: your STEM OPT case changed. A response is due Feb 10.", "state": "sent"}</pre>
+    </main>
+  </body>
+</html>

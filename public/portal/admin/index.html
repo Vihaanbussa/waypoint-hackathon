@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Change the portal status · Mock Case Status Portal</title>
+    <meta name="robots" content="noindex">
+    <link rel="stylesheet" href="/css/portal.css">
+  </head>
+  <body>
+    <p class="demo-banner">Demo controls. This page is for the team, not for the Bots.</p>
+    <header class="portal-bar">
+      <p class="portal-name">Mock Case Status Portal: demo controls</p>
+    </header>
+
+    <main>
+      <h1>Change the portal status</h1>
+      <p>Change what the mock portal shows. The brief updates after the Case Clerk reads the portal again.</p>
+
+      <form id="status-form">
+        <label for="receipt">Case</label>
+        <select id="receipt" name="receipt"></select>
+
+        <label for="status">Status</label>
+        <select id="status" name="status"></select>
+
+        <label for="detail">Details shown on the portal</label>
+        <input id="detail" name="detail">
+
+        <label for="response-due">Response due <span class="hint">Only for a request for evidence. Leave empty otherwise.</span></label>
+        <input id="response-due" name="response_due" type="date">
+
+        <button type="submit">Save status</button>
+      </form>
+      <p class="message" id="status-message" role="status"></p>
+
+      <h2>Rehearsal</h2>
+      <p>No Bot connected yet? This copies what the portal shows into the store, the way a Case Clerk run would. The run is marked "simulated" in the brief.</p>
+      <button type="button" class="plain" id="simulate">Run a simulated Case Clerk check</button>
+      <p class="message" id="simulate-message" role="status"></p>
+
+      <h2>Start over</h2>
+      <p>Puts every table back to the sample data, including approvals.</p>
+      <button type="button" class="plain" id="reset">Reset demo data</button>
+      <p class="message" id="reset-message" role="status"></p>
+
+      <p><a href="/portal/">Open the portal</a> · <a href="/">Open the brief</a></p>
+    </main>
+
+    <script type="module" src="/js/portal-admin.js"></script>
+  </body>
+</html>

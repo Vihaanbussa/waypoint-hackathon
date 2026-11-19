@@ -1,0 +1,14 @@
+{
+  "name": "waypoint",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Waypoint: Grok Bot teammates for life on a visa. Hackathon demo site.",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}
