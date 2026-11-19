@@ -1,210 +1,188 @@
 <div align="center">
 
-# 🧭 waypoint
+# waypoint
 
 ### Your visa deadlines, watched for you.
 
-A team of Grok Bots that keeps international students on track with the immigration deadlines that can cost them their status. It checks the portal, the inbox and X overnight, then texts you only what needs you.
+**A team of Grok Bots that keeps international students from missing the immigration deadlines that can cost them their status.**
 
-**[Live demo](https://waypoint-5o4r.onrender.com)** · **[2-min video]([VIDEO LINK])** · **[Pitch deck]([DECK LINK])** · **[Grok Bot session export]([SESSION EXPORT LINK])**
+[**Try the live demo →**](https://waypoint-5o4r.onrender.com)
 
-Berkeley × Stanford Grok Bot Hackathon · Best Student Use Case
+<sub>Berkeley × Stanford Grok Bot Hackathon · Best Student Use Case · Ria Sethi, Vihaan Bussa, Abhi Mokkapati, Bhargav Nemani</sub>
 
-Ria Sethi · Vihaan Bussa · Abhi Mokkapati · Bhargav Nemani
+</div>
+
+<br>
+
+> [!IMPORTANT]
+> **For most students, a missed deadline costs points. For an international student, it can cost the right to stay in the country.**
+> Waypoint watches every deadline for them, so they never find out too late.
+
+<br>
+
+<div align="center">
+
+| **1,146,163** | **335,785** | **90 days** | **168,000 hours** |
+|:---:|:---:|:---:|:---:|
+| international students in the US this year | of them on OPT, where the clock is strictest | of unemployment allowed on OPT before status is at risk | back every week if Waypoint saves each OPT student just 30 minutes |
+
+<sub>Student counts: IIE Open Doors 2026. The 30 minutes is a conservative example, not a measurement.</sub>
 
 </div>
 
 ---
 
-## At a glance
+## Inspiration
 
-| | |
-|---|---|
-| **Who it's for** | International students on F-1, especially on OPT, where the clock is strictest |
-| **The pain** | Strict, unforgiving deadlines spread across government portals with no alerts, an overflowing inbox and rule changes on X |
-| **What it does** | 1 manager + 4 worker Grok Bots check everything overnight, compute every deadline, text you, add it to your calendar, and draft emails that wait for your approval |
-| **Time saved** | Even 30 minutes a week × 335,785 students on OPT ≈ **168,000 hours back every week** |
-| **Try it** | [waypoint-5o4r.onrender.com](https://waypoint-5o4r.onrender.com) → **Show me the demo** (no account needed) |
+We've watched our own friends live with this pressure. They weren't careless. The deadline lived in a PDF, a USCIS email or a portal nobody checks, and nothing warned them.
 
----
+> *"If I mess one thing up, I'm gonna be deported."*
+> — an international student on OPT, interviewed by the East-West Center
 
-## 💡 Inspiration
+And it isn't one set of rules. Every visa runs on its own clock, and the rules change the moment your status does. A student on OPT can be unemployed for 90 days. Lose an H-1B job and you get 60. Most people learn these numbers the hard way.
 
-For most college students, missing a deadline means losing points on an assignment. For an international student, it can mean losing the right to stay in the country.
+## What it does
 
-We've watched our own friends live with that. [One or two sentences on what happened to them, in your own words.]
+Waypoint gives each student a team of five Grok Bots that works overnight. The student never has to open a dashboard. What matters comes to them:
 
-They weren't careless. The deadline lived in a PDF, a USCIS email or a portal nobody checks, and nothing warned them. One student told East-West Center researchers, *"if I mess one thing up, I'm gonna be deported."*
+- **A text** when something changes: what changed, and how many days are left
+- **A calendar event** for every deadline, moved automatically when the date moves
+- **A drafted email** to their school, employer or attorney, sent **only after they approve it**
 
-It isn't rare. Open Doors 2026 counted **1,146,163 international students** in the US this year, and **335,785 of them on OPT**, up 14% in a year. Every one of them is tracking these dates by hand.
+### One manager, four workers
 
-## 🧭 What it does
-
-Waypoint gives each student a team of Grok Bots that works while they sleep. You never have to open a dashboard; the important things come to you:
-
-- 📱 **A text** when something changes: what changed, and how many days are left
-- 📅 **A calendar event** for every deadline, moved when its date moves
-- ✉️ **A drafted email** to your school, employer or attorney that is **only sent after you approve it**
-
-### The Bot team: 1 manager, 4 workers
-
-| Bot | Role | What it does | Grok Bot feature |
-|---|---|---|---|
-| ⏱️ **Deadline Keeper** | **Manager** | Takes the workers' reports, runs your visa's rules, decides what you need to know, drafts the next step | Handoffs, drafting |
-| 🤖 **Case Clerk** | Worker | Logs into the case-status portal like a person and reads your status | The Bot's own computer |
-| ✉️ **Inbox Scout** | Worker | Pulls receipt numbers, due dates and appointments out of USCIS, school and employer email | Gmail connector |
-| 🦉 **Policy Watcher** | Worker | Watches X for rule changes, keeps only the ones that match your visa, confirms each on an official page | X search |
-| 💬 **Messenger** | Worker | Texts you, syncs Google Calendar, saves approved emails to Gmail | Calendar connector, Twilio |
-
-### One night, start to finish
+| Bot | Role | Job |
+|---|---|---|
+| **Deadline Keeper** | Manager | Combines the workers' reports, runs the student's visa rules, decides what matters and drafts the next step |
+| **Case Clerk** | Worker | Logs into the case-status portal on its own computer and reads the status, like a person would |
+| **Inbox Scout** | Worker | Finds receipt numbers, due dates and appointments in USCIS, school and employer email |
+| **Policy Watcher** | Worker | Watches X for rule changes, keeps only the ones that affect this visa, and confirms each on an official page |
+| **Messenger** | Worker | Texts the student, updates Google Calendar and saves approved emails to Gmail |
 
 ```mermaid
 flowchart LR
-    CC["🤖 Case Clerk<br/>2:00 AM · reads the portal"] --> DK
-    IS["✉️ Inbox Scout<br/>2:10 AM · reads new mail"] --> DK
-    PW["🦉 Policy Watcher<br/>7:00 AM · checks X + official pages"] --> DK
-    DK["⏱️ Deadline Keeper (manager)<br/>2:30 AM · counts the days, decides, drafts"] --> MS["💬 Messenger<br/>3:00 AM · text + calendar"]
-    DK --> AP{"🙋 You approve?"}
-    AP -- yes --> GM["Gmail draft, ready to send"]
-    AP -- no --> RJ["Nothing is sent"]
+    CC["Case Clerk<br/>reads the portal"] --> DK
+    IS["Inbox Scout<br/>reads email"] --> DK
+    PW["Policy Watcher<br/>reads X"] --> DK
+    DK["Deadline Keeper<br/>MANAGER<br/>counts, decides, drafts"] --> MS["Messenger<br/>text + calendar"]
+    DK --> AP{"Student<br/>approves?"}
+    AP -- yes --> GM["Email saved<br/>to Gmail"]
+    AP -- no --> NO["Nothing<br/>is sent"]
 ```
 
 ### Every visa runs on its own clock
 
-Each visa type is a **rule pack**: rows of clocks, limits and official sources. Change your status and Waypoint switches rule packs with you.
+Each visa type is a **rule pack** of deadlines, limits and official sources. When a student's status changes, Waypoint switches packs with them.
 
-| Visa | Example clock | Status |
+| Visa | A rule people miss | |
 |---|---|---|
-| F-1 | Apply for OPT from 90 days before your program ends to 60 days after | ✅ Built |
-| OPT / STEM OPT | 90 days of unemployment allowed, 150 in total on STEM OPT | ✅ Built |
-| H-1B | Up to 60 days to find a new sponsor, change status or leave after a layoff | ✅ Built |
-| J-1 | 30 days to leave after your program ends | 🔜 Next |
-| Green card | File Form I-751 in the 90 days before a two-year card expires | 🔜 Next |
+| F-1 | Apply for OPT from 90 days before your program ends to 60 days after | **Built** |
+| OPT / STEM OPT | 90 days of unemployment allowed, 150 in total on STEM OPT | **Built** |
+| H-1B | Up to 60 days to find a new sponsor, change status or leave after a layoff | **Built** |
+| J-1 | 30 days to leave after your program ends | Next |
+| Green card | File Form I-751 in the 90 days before a two-year card expires | Next |
 
-### Safe by design
+> [!NOTE]
+> **Built to be trusted.** AI never does the date math: plain code computes every deadline from the official rule. No Bot can send anything to another person; it waits for the student's tap, and after that it can only record a Gmail draft. A rule change needs an https link to the official page. A text with a receipt number, over 300 characters, or during quiet hours is refused, unless a deadline is already Act now. Case Clerk can only record a receipt number already on the student's profile. The report form and `/api/rows` use the same checks as the connector. Waypoint organizes, alerts and drafts. It is not legal advice.
 
-- 🧮 **AI never does the date math.** Plain code turns your dates and the official rules into days left, so the number is the same every time.
-- 🙋 **Nothing reaches another person without your tap.** Texts and calendar events go only to you; emails wait as drafts until you approve.
-- 🔒 **No ID numbers in texts.** Waypoint refuses any text that contains a receipt number or runs over 300 characters.
-- 🔕 **No noise.** At most 6 texts a day, with quiet hours unless something is urgent.
-- ⚖️ **Not legal advice.** Waypoint organizes, alerts and drafts. The demo uses made-up people and a mock portal.
+## How we built it
 
-## 🛠️ How we built it
-
-| Layer | What we used |
+| | |
 |---|---|
-| **Bots** | 5 Grok Bots built as shareable templates, running on daily schedules |
-| **Connector** | Our own MCP server at `/mcp` (JSON-RPC over POST) with 12 tools and one key per account |
-| **Server** | One Node 22 program with no dependencies: serves the pages, the connector, the mock portal and the report form |
-| **Deadlines** | Rule packs as data in `public/js/rules.js`; a pure clock function in `public/js/clocks.js` |
-| **Data** | JSON tables saved to Upstash Redis on every change |
-| **Notifications** | Twilio for texts; Grok Bot's Google Calendar and Gmail connectors |
-| **Hosting** | Render, redeployed on every push to `main` |
-| **Accounts** | scrypt-hashed passwords, signed HttpOnly cookies, each account sees only its own rows |
-| **Design** | Built in Cursor, checked with Impeccable's critique and detect tools |
-| **Tests** | 39 tests covering the day counts, the rule packs, the connector, texting and the server end to end |
+| **Bots** | Five Grok Bots, each a shareable template with its own job, schedule and connectors |
+| **Connector** | Our own MCP server with 12 tools, so every Bot writes structured data and the server can refuse a bad write |
+| **Server** | One Node 22 program with no dependencies: the app, the connector and a mock case-status portal |
+| **Deadlines** | Rule packs stored as data, and a pure function that turns dates and rules into days left |
+| **Data** | Upstash Redis |
+| **Notifications** | Twilio for texts, Grok Bot's Google Calendar and Gmail connectors |
+| **Hosting** | Render, redeployed on every push |
+| **Quality** | 39 automated tests; design checked with Impeccable |
 
 <details>
-<summary><b>The 12 connector tools</b></summary>
+<summary><b>See the 12 connector tools</b></summary>
+<br>
 
 | Tool | Used by | What it does |
 |---|---|---|
 | `list_people` | Every Bot | Who the key speaks for and how they want to be told |
-| `get_brief` | Every Bot | Every deadline with days left and risk, already worked out |
-| `report_run` | Every Bot | One plain line at the end of each run, even a failed one |
-| `save_case_status` | Case Clerk | The status as worded, when it changed, any response date |
-| `save_policy_alert` | Policy Watcher | A rule change, why it matters, the official link, the X post where it was first seen |
-| `save_inbox_date` | Inbox Scout | A date from an email, with sender and subject |
-| `set_deadline_note` | Deadline Keeper | A clearer reason under a deadline |
+| `get_brief` | Every Bot | Every deadline with days left and risk, already computed |
+| `report_run` | Every Bot | One plain line at the end of each run |
+| `save_case_status` | Case Clerk | The status as worded, only for a receipt already on the profile |
+| `save_policy_alert` | Policy Watcher | A rule change with an https link to the official page. An X post alone is refused |
+| `save_inbox_date` | Inbox Scout | A date found in an email, with sender and subject |
+| `set_deadline_note` | Deadline Keeper | A plain-language reason under a deadline |
 | `draft_email` | Deadline Keeper | Saves a draft. It can never send |
 | `list_emails` | Deadline Keeper, Messenger | Drafted and approved emails, so nothing is written twice |
-| `mark_email_delivered` | Messenger | Records the Gmail draft. Refused unless the person approved it |
-| `log_message` | Messenger | Records a calendar event or a message |
-| `send_text` | Messenger | Sends one text through Twilio and records it |
+| `mark_email_delivered` | Messenger | Records the Gmail draft id. Refused until the student approves, and it cannot mark the email sent |
+| `log_message` | Messenger | Records a calendar event or message. Same 300-character and receipt-number rules as a text |
+| `send_text` | Messenger | Sends one text through Twilio. Waits during quiet hours unless a deadline is Act now |
 
-No tool accepts a day count: days left and risk only ever come out of `get_brief`.
+No tool accepts a day count. Deadlines only ever come from `get_brief`.
 
 </details>
 
-## 🤖 How Grok Bot helped build it
+## How Grok Bot helped build it
 
-- **Research:** [Real examples from the session export, e.g. Grok Bot checking each rule against the official USCIS and Study in the States pages, and reading X for current policy changes.]
-- **Build:** [Real examples, e.g. coding tasks handed to Cursor, writing each Bot's first message, designing the connector's tools.]
-- **Ship:** The Bots *are* the product. Each one is a Grok Bot template with its own job, schedule and connectors, writing through our MCP connector. Grok Bot's own computer lets Case Clerk operate a portal that has no API.
+Grok Bot is both how we built Waypoint and what Waypoint runs on.
 
-Full session export: **[SESSION EXPORT LINK]**
+- **Research.** We used Grok Bot to pull each visa rule from official USCIS, State Department and Study in the States pages, and to see how rule changes surface on X before anywhere else.
+- **Build.** Grok Bot handed coding tasks to Cursor, helped design the connector's tools, and drafted each Bot's instructions: its job, where it looks, and what it must never do.
+- **Ship.** The Bots are the product. Each one runs on a schedule inside Grok Bot. Case Clerk uses Grok Bot's own computer to operate a portal with no API, Policy Watcher uses X search, and Messenger uses the Calendar and Gmail connectors.
 
-### Bot templates
+## Challenges we ran into
 
-| Bot | Template link |
-|---|---|
-| ⏱️ Deadline Keeper (manager) | [link] |
-| 🤖 Case Clerk | [link] |
-| ✉️ Inbox Scout | [link] |
-| 🦉 Policy Watcher | [link] |
-| 💬 Messenger | [link] |
+- **Government portals have no APIs.** We built a mock portal and had Case Clerk log in on its own computer and read it like a person.
+- **Getting Bots to write data reliably.** A shared spreadsheet was too fragile, so we built our own MCP connector with named tools.
+- **Keeping AI away from the math.** A wrong day count is worse than none, so the Bots only read and draft, and code does every calculation.
+- **Texts are sensitive.** We added hard limits so a text can never include a receipt or ID number.
 
-## 🧗 Challenges we ran into
+## Accomplishments we're proud of
 
-- **Government portals have no APIs.** We built a mock case-status portal and had Case Clerk use its own computer to log in and read it, the way a person would.
-- **Getting Bots to write data reliably.** Our first plan used a shared Google Sheet. We replaced it with our own MCP connector, so every Bot gets named tools and the server can refuse a bad write.
-- **Keeping AI away from the math.** A wrong day count is worse than none, so the Bots only read and draft. A small deterministic function computes every deadline.
-- **Texts are sensitive.** We added hard limits so a text can never carry a receipt or ID number.
-- **The free host sleeps.** The server takes up to a minute to wake, so the Bots wait and retry once.
-
-## 🏆 Accomplishments we're proud of
-
-- A live site where five scheduled Grok Bots hand off work end to end, from the portal to your phone
-- Our own 12-tool MCP connector that any Grok Bot can plug into
+- A live app where five scheduled Grok Bots hand off work end to end, from the portal to the student's phone
+- Our own 12-tool connector that any Grok Bot can plug into
 - Rule packs that make a new visa type a matter of new rows, not new code
-- A human approval step that no Bot can skip
-- 39 passing tests and a design checked against Impeccable's rules
+- An approval step no Bot can skip
+- 39 passing tests
 
-## 📚 What we learned
+## What we learned
 
-- AI is great at reading messy inputs and writing clear explanations, and should never be trusted with the date math.
-- The manager Bot is what makes a team of Bots useful: workers collect, the manager decides, and only one Bot talks to the person.
-- For high-stakes tools, the human check matters as much as the automation.
-- The people with the strictest deadlines are often the ones with the least support.
+- AI is excellent at reading messy inputs and explaining them clearly. It should never be trusted with the date math.
+- A manager Bot is what makes a team of Bots useful: workers collect, the manager decides, and only one Bot talks to the person.
+- In high-stakes tools, the human check matters as much as the automation.
 
-## 🔭 What's next
+## What's next
 
-- **More visa types:** J-1, O-1, L-1 and the green card path
-- **New Bots:** Travel Checker (passport, visa stamp and travel signature before a trip), Form Drafter (prefills forms for you to review) and Advisor Liaison (a one-page case summary before you meet your school or attorney)
-- **Approve by text:** reply YES to approve a drafted email
-- **Real-world readiness:** encrypted storage for documents, attorney-reviewed rule packs with "last checked" dates, and carrier registration for texting at scale
+- **More visas:** J-1, O-1, L-1 and the green card path
+- **New Bots:** a Travel Checker before trips, a Form Drafter that prefills forms for review, and an Advisor Liaison that writes a one-page case summary before meetings
+- **Approve by text:** reply YES to approve a draft
+- **Real-world readiness:** encrypted storage, attorney-reviewed rules, and carrier registration for texting at scale
 
-## ▶️ How to run it
+## How to run it
 
-**Fastest:** open **[waypoint-5o4r.onrender.com](https://waypoint-5o4r.onrender.com)** and click **Show me the demo**. It shows two made-up people, one on F-1 OPT and one on H-1B, with no account needed. (The free host may take up to a minute to wake.)
+**Fastest:** open [waypoint-5o4r.onrender.com](https://waypoint-5o4r.onrender.com) and click **Show me the demo**. No account needed. The free host can take up to a minute to wake.
 
-**Locally** (Node 22, no dependencies to install):
+**Locally** (Node 22, nothing to install):
 
 ```bash
 git clone https://github.com/Vihaanbussa/waypoint-hackathon.git
 cd waypoint-hackathon
-npm start      # then open http://localhost:3000
-npm test       # runs the 39 tests
+npm start
 ```
 
-**Optional settings** (environment variables):
+Run the tests with `npm test`.
 
-| Variable | What it's for |
+**Optional environment variables**
+
+| Variable | Turns on |
 |---|---|
-| `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN` | Keeps accounts and Bot runs across restarts |
-| `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_FROM` | Turns on texting. Without them, `send_text` says texting is off |
-| `SMS_DEMO_TO` | Sends the sample people's texts to the presenter's phone without showing the number |
+| `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN` | Saving accounts and Bot runs across restarts |
+| `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_FROM` | Text messages |
+| `SMS_DEMO_TO` | Sending the demo's texts to the presenter's phone |
 
 **Connect your own Grok Bots:** create an account, open **Connect your Bots**, copy the connector address and your Bot key, and paste each Bot's first message into Grok Bot.
-
-**Try the live change:** open `/portal/admin/`, set the status to *Request for Evidence Was Sent* with a due date, run Case Clerk, and watch the new deadline appear on the brief.
 
 ---
 
 <div align="center">
-
-**Waypoint organizes, alerts and drafts. It is not legal advice.**
-
-Sources: [IIE Open Doors 2026](https://opendoorsdata.org) · East-West Center interviews with international students · Rules from USCIS and State Department pages
-
+<sub>Waypoint organizes, alerts and drafts. It is not legal advice. Demo data is made up.</sub>
 </div>
