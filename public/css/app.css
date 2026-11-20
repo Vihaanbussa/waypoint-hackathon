@@ -3914,3 +3914,50 @@ body {
   stroke-width: 1.5;
   vector-effect: none;
 }
+
+.school-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.school-card {
+  display: grid;
+  grid-template-columns: 4.5rem 1fr;
+  gap: 8px 24px;
+  align-items: start;
+  padding: 20px 0;
+  border-top: 1px solid var(--line);
+}
+
+.school-score {
+  margin: 0;
+  font-size: 40px;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.school-card h3,
+.school-alert h4 {
+  margin: 0 0 8px;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.school-why {
+  margin: 0;
+  padding-left: 1.2rem;
+}
+
+.school-why li + li {
+  margin-top: 4px;
+}
+
+.school-alert {
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+}
+
+.school-alert .risk {
+  margin-right: 8px;
+}

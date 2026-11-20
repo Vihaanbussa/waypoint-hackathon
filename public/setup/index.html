@@ -74,6 +74,12 @@
                   <label class="check"><input type="checkbox" id="ch-calendar" checked><span>Google Calendar, one event per deadline</span></label>
                   <label class="check"><input type="checkbox" id="ch-gmail" checked><span>Gmail drafts, for emails to other people that I approve first</span></label>
                 </fieldset>
+                <div class="field">
+                  <label for="schools">Schools</label>
+                  <span class="hint" id="schools-hint">Optional. One per line: name, then target, enrolled, or alumni, then a state. Example: Stanford University, target, CA</span>
+                  <textarea id="schools" rows="4" maxlength="2000" aria-describedby="schools-hint"></textarea>
+                </div>
+                <label class="check"><input type="checkbox" id="track-schools" checked><span>Rank target schools and watch the one I am enrolled at</span></label>
                 <p class="fine">These are your preferences. Texts, calendar events and Gmail drafts start once a Messenger Bot is connected.</p>
               </section>
 

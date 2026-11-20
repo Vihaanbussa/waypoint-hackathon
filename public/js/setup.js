@@ -83,6 +83,17 @@ function drawFields() {
   drawPreview();
 }
 
+function schoolsFromText(text) {
+  return text
+    .split('\n')
+    .map((line) => {
+      const [name, status, state] = line.split(',').map((part) => part.trim());
+      if (!name) return null;
+      return { name, status: (status || 'target').toLowerCase(), ...(state ? { state } : {}) };
+    })
+    .filter(Boolean);
+}
+
 function draftProfile() {
   const profile = { id: 'draft', name: $('name').value.trim(), visa_type: visa };
   for (const field of fieldsFor(visa)) {
@@ -178,6 +189,8 @@ $('setup-form').addEventListener('submit', async (event) => {
       // So the server counts days from the person's own today, not the server's.
       timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
       channels: { sms: $('ch-sms').checked, calendar: $('ch-calendar').checked, gmail: $('ch-gmail').checked },
+      schools: schoolsFromText($('schools').value),
+      track_schools: $('track-schools').checked,
     });
     location.assign(editing ? '/settings/' : '/');
   } catch (err) {
@@ -210,6 +223,8 @@ try {
     $('ch-sms').checked = profile.channels?.sms !== false;
     $('ch-calendar').checked = profile.channels?.calendar !== false;
     $('ch-gmail').checked = profile.channels?.gmail !== false;
+    $('schools').value = (profile.schools || []).map((school) => [school.name, school.status, school.state].filter(Boolean).join(', ')).join('\n');
+    $('track-schools').checked = profile.track_schools !== false;
   }
   $('cancel-link').hidden = !editing;
   drawVisaList();

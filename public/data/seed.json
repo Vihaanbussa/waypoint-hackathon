@@ -17,7 +17,13 @@
       "phone": "(555) 010-0142",
       "channels": { "sms": true, "calendar": true, "gmail": true },
       "quiet_hours": { "from": "22:00", "to": "07:00" },
-      "accounts": { "calendar": "priya.sharma@example.com", "gmail": "priya.sharma@example.com" }
+      "accounts": { "calendar": "priya.sharma@example.com", "gmail": "priya.sharma@example.com" },
+      "track_schools": true,
+      "schools": [
+        { "id": "university-of-california-berkeley", "name": "University of California, Berkeley", "status": "enrolled", "state": "CA", "added_at": "2026-09-01" },
+        { "id": "stanford-university", "name": "Stanford University", "status": "target", "state": "CA", "unitid": "243744", "added_at": "2026-11-01" },
+        { "id": "university-of-michigan", "name": "University of Michigan", "status": "target", "state": "MI", "added_at": "2026-11-01" }
+      ]
     },
     {
       "id": "wei",
@@ -33,7 +39,11 @@
       "phone": "(555) 010-0187",
       "channels": { "sms": true, "calendar": true, "gmail": true },
       "quiet_hours": { "from": "22:00", "to": "07:00" },
-      "accounts": { "calendar": "wei.chen@example.com", "gmail": "wei.chen@example.com" }
+      "accounts": { "calendar": "wei.chen@example.com", "gmail": "wei.chen@example.com" },
+      "track_schools": true,
+      "schools": [
+        { "id": "carnegie-mellon-university", "name": "Carnegie Mellon University", "status": "alumni", "state": "PA", "added_at": "2024-05-01" }
+      ]
     }
   ],
   "portal": {
@@ -123,6 +133,48 @@
       "state": "drafted",
       "drafted_by": "Manager",
       "at": "2026-11-18T02:06:00",
+      "sample": true
+    },
+    {
+      "id": "act-priya-isss",
+      "person": "priya",
+      "clock": "school-berkeley-travel",
+      "recipient_label": "Berkeley International Office",
+      "to": "isss@example.edu",
+      "subject": "Travel signature hours next week",
+      "body": "Hello,\n\nI saw the new walk-in hours for travel signatures. I would like to book a time next week before I travel.\n\nThank you,\nPriya Sharma",
+      "state": "drafted",
+      "drafted_by": "Manager",
+      "at": "2026-11-18T02:06:00",
+      "sample": true
+    }
+  ],
+  "school_signals": [
+    { "id": "sig-stanford-advisor", "person": "priya", "school_id": "stanford-university", "school_name": "Stanford University", "signal": "advisor_ratio", "value": 120, "source_label": "Bechtel International Center (sample)", "source_url": "https://bechtel.stanford.edu/", "at": "2026-11-18T02:04:00", "sample": true },
+    { "id": "sig-stanford-isss", "person": "priya", "school_id": "stanford-university", "school_name": "Stanford University", "signal": "isss_office", "value": true, "source_label": "Bechtel International Center (sample)", "source_url": "https://bechtel.stanford.edu/", "at": "2026-11-18T02:04:00", "sample": true },
+    { "id": "sig-stanford-cpt", "person": "priya", "school_id": "stanford-university", "school_name": "Stanford University", "signal": "cpt_opt", "value": true, "source_label": "Bechtel International Center (sample)", "source_url": "https://bechtel.stanford.edu/", "at": "2026-11-18T02:04:00", "sample": true },
+    { "id": "sig-stanford-fund", "person": "priya", "school_id": "stanford-university", "school_name": "Stanford University", "signal": "emergency_fund", "value": true, "source_label": "Bechtel International Center (sample)", "source_url": "https://bechtel.stanford.edu/", "at": "2026-11-18T02:04:00", "sample": true },
+    { "id": "sig-stanford-state", "person": "priya", "school_id": "stanford-university", "school_name": "Stanford University", "signal": "state_policy", "value": "supportive", "source_label": "Bechtel International Center (sample)", "source_url": "https://bechtel.stanford.edu/", "at": "2026-11-18T02:04:00", "sample": true },
+    { "id": "sig-michigan-advisor", "person": "priya", "school_id": "university-of-michigan", "school_name": "University of Michigan", "signal": "advisor_ratio", "value": 700, "source_label": "U-M International Center (sample)", "source_url": "https://internationalcenter.umich.edu/", "at": "2026-11-18T02:04:00", "sample": true },
+    { "id": "sig-michigan-isss", "person": "priya", "school_id": "university-of-michigan", "school_name": "University of Michigan", "signal": "isss_office", "value": true, "source_label": "U-M International Center (sample)", "source_url": "https://internationalcenter.umich.edu/", "at": "2026-11-18T02:04:00", "sample": true },
+    { "id": "sig-michigan-cpt", "person": "priya", "school_id": "university-of-michigan", "school_name": "University of Michigan", "signal": "cpt_opt", "value": false, "source_label": "U-M International Center (sample)", "source_url": "https://internationalcenter.umich.edu/", "at": "2026-11-18T02:04:00", "sample": true },
+    { "id": "sig-michigan-fund", "person": "priya", "school_id": "university-of-michigan", "school_name": "University of Michigan", "signal": "emergency_fund", "value": false, "source_label": "U-M International Center (sample)", "source_url": "https://internationalcenter.umich.edu/", "at": "2026-11-18T02:04:00", "sample": true },
+    { "id": "sig-michigan-state", "person": "priya", "school_id": "university-of-michigan", "school_name": "University of Michigan", "signal": "state_policy", "value": "restrictive", "source_label": "U-M International Center (sample)", "source_url": "https://internationalcenter.umich.edu/", "at": "2026-11-18T02:04:00", "sample": true },
+    { "id": "sig-berkeley-isss", "person": "priya", "school_id": "university-of-california-berkeley", "school_name": "University of California, Berkeley", "signal": "isss_office", "value": true, "source_label": "Berkeley International Office (sample)", "source_url": "https://internationaloffice.berkeley.edu/", "at": "2026-11-18T02:04:00", "sample": true }
+  ],
+  "school_alerts": [
+    {
+      "id": "school-berkeley-travel",
+      "person": "priya",
+      "school_id": "university-of-california-berkeley",
+      "school_name": "University of California, Berkeley",
+      "title": "Travel signature hours change next week",
+      "why": "Berkeley's international office posted new walk-in hours for travel signatures. This is a sample notice for the demo, not a live announcement.",
+      "risk": "watch",
+      "source_label": "Berkeley International Office (sample)",
+      "source_url": "https://internationaloffice.berkeley.edu/",
+      "date": "2026-11-25",
+      "at": "2026-11-18T02:05:00",
       "sample": true
     }
   ],

@@ -48,6 +48,11 @@ test('each kind of text says what it is, what to do or by when, and where to loo
 
 test('a kind that lacks what it needs says so instead of sending something vague', () => {
   assert.throws(() => composeText('act_now', { today, link }), /deadline_id/);
+  assert.equal(
+    composeText('school_alert', { alert: { title: 'Travel signature hours change next week', school_name: 'UC Berkeley' }, today, link }),
+    'Waypoint: a notice from your school at UC Berkeley: Travel signature hours change next week. See it: https://waypoint.example/',
+  );
+  assert.throws(() => composeText('school_alert', { today, link }), /alert_id/);
   assert.throws(() => composeText('approval', { waiting: 0, today }), /No emails are waiting/);
   assert.throws(() => composeText('status_change', { today }), /No case status/);
   assert.throws(() => composeText('problem', { today }), /which Bot/);

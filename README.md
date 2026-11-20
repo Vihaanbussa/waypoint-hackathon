@@ -152,6 +152,7 @@ Grok Bot is both how we built Waypoint and what Waypoint runs on.
 
 ## What's next
 
+- **School-by-school tracking:** target schools are ranked from signals Scout saves, and the enrolled school gets campus notices on the Brief. Scores stay in `public/js/schools.js`. A Bot never supplies a score.
 - **More visas:** J-1, O-1, L-1 and the green card path
 - **New Bots:** a Travel Checker before trips, a Form Drafter that prefills forms for review, and an Advisor Liaison that writes a one-page case summary before meetings
 - **Approve by text:** reply YES to approve a draft

@@ -222,7 +222,7 @@ test('does not serve files outside public', async () => {
 test('the store starts from the sample data', async () => {
   const store = await getJson('/api/store');
   assert.equal(store.profiles.length, 2);
-  assert.equal(store.actions.filter((a) => a.state === 'drafted').length, 2);
+  assert.equal(store.actions.filter((a) => a.state === 'drafted').length, 3);
 });
 
 test('portal sign-in checks the username and password', async () => {
@@ -334,7 +334,7 @@ test('the report form works as a plain form post, and escapes what it echoes', a
 test('reset puts the sample data back', async () => {
   assert.equal((await postJson('/api/reset', {})).status, 200);
   const store = await getJson('/api/store');
-  assert.equal(store.actions.length, 2);
+  assert.equal(store.actions.length, 3);
   assert.ok(store.actions.every((a) => a.state === 'drafted'));
   assert.equal(store.portal.IOE0912345678.status, 'Case Was Received');
 });
@@ -700,4 +700,71 @@ test('the mock portal works without scripts: the sign-in is printed, and a plain
   const html = await ok.text();
   assert.match(html, /id="case-receipt">IOE0912345678</);
   assert.match(html, /id="case-status">Case Was Received</);
+});
+
+test('school signals are scored by Waypoint, and a school alert is on the brief', async () => {
+  const demo = await callTool(sampleKey, 'get_brief', { person: 'priya', today: '2026-11-18' });
+  assert.equal(demo.isError, false);
+  const stanford = demo.value.schools.targets.find((school) => school.id === 'stanford-university');
+  const michigan = demo.value.schools.targets.find((school) => school.id === 'university-of-michigan');
+  assert.equal(stanford.rank, 1);
+  assert.ok(stanford.score > michigan.score);
+  assert.equal(demo.value.schools.alerts[0].alert_id, 'school-berkeley-travel');
+  assert.equal(demo.value.deadlines.find((d) => d.deadline_id === 'work_permit_expiry').days_left, 13);
+
+  const cookie = await signUp('Noor Ali', 'noor@example.com');
+  const noor = as(cookie);
+  const saved = await noor.postJson('/api/profile', {
+    name: 'Noor Ali',
+    visa_type: 'f1_opt',
+    ead_end: '2027-06-01',
+    schools: [
+      { name: 'Stanford University', status: 'target', state: 'CA' },
+      { name: 'UC Berkeley', status: 'enrolled', state: 'CA' },
+    ],
+  });
+  assert.equal(saved.status, 200);
+  const doubled = await noor.postJson('/api/profile', {
+    name: 'Noor Ali',
+    visa_type: 'f1_opt',
+    ead_end: '2027-06-01',
+    schools: [
+      { name: 'Stanford University', status: 'enrolled' },
+      { name: 'UC Berkeley', status: 'enrolled' },
+    ],
+  });
+  assert.equal(doubled.status, 400);
+
+  const key = (await noor.getJson('/api/connect')).bot_key;
+  const rumour = await callTool(key, 'save_school_signal', {
+    school_name: 'Stanford University',
+    signal: 'isss_office',
+    value: true,
+    source_url: 'https://x.com/Stanford/status/1',
+  });
+  assert.equal(rumour.isError, true);
+  assert.match(rumour.value, /official page/);
+  const signal = await callTool(key, 'save_school_signal', {
+    school_name: 'Stanford University',
+    signal: 'isss_office',
+    value: true,
+    source_label: 'Bechtel',
+    source_url: 'https://bechtel.stanford.edu/',
+  });
+  assert.equal(signal.isError, false);
+  const ranked = await callTool(key, 'get_school_ranking', {});
+  assert.equal(ranked.value.targets[0].id, 'stanford-university');
+  assert.equal(ranked.value.targets[0].score, 100);
+  assert.equal(ranked.value.targets[0].rank, 1);
+  const alert = await callTool(key, 'save_school_alert', {
+    school_name: 'UC Berkeley',
+    title: 'Travel signatures',
+    why: 'Walk-in hours changed.',
+    risk: 'watch',
+    source_url: 'https://internationaloffice.berkeley.edu/',
+  });
+  assert.equal(alert.isError, false);
+  const brief = await callTool(key, 'get_brief', {});
+  assert.equal(brief.value.schools.alerts[0].title, 'Travel signatures');
+  assert.ok(brief.value.deadlines.length > 0);
 });

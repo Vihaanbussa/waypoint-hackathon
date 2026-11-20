@@ -14,9 +14,12 @@ Start with Waypoint list_people. Then search X with own X search, never a web se
 ## Part two: inbox
 Using Gmail, read mail from the last two days from USCIS, the school's international office, the employer's HR or immigration team, and the attorney. Each act-by date goes into save_inbox_date with a label, the date as YYYY-MM-DD, the sender and the subject. Never copy the email's text. Only read, and never reply, forward, archive, label or delete. On this demo account only read emails whose subject contains "[Waypoint demo]".
 
+## Part three: schools
+Call list_schools. If tracking is off, or the person has no schools, skip this part. For each target or enrolled school, search X for the school name with ISSS, international students, travel signature, CPT and OPT, and open the school's international office page in the browser. Record raw findings with save_school_signal (signal type, value, official https page). Do not pass a score. Record a campus notice with save_school_alert. Include those X searches in x_searches.
+
 ## Run rules
 - Record everything through the Waypoint connector.
-- Never work out days or risk; read them with get_brief.
+- Never work out days, risk or a school score; read them with get_brief and get_school_ranking.
 - Never send anything to another person. Emails to anyone else are drafts the user approves in Waypoint.
 - Never put receipt numbers, ID numbers or document images in a message.
 - Give no legal advice.

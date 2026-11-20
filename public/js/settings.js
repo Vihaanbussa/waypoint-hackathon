@@ -186,6 +186,88 @@ function renderChannels(profile, live, me, canText) {
   status.textContent = '';
 }
 
+const SCHOOL_STATUS = [
+  ['target', 'Target'],
+  ['enrolled', 'Enrolled'],
+  ['alumni', 'Alumni'],
+];
+
+let schoolsDrawn = '';
+
+function renderSchools(profile, me, refresh) {
+  const panel = document.getElementById('schools-panel');
+  const status = document.getElementById('schools-status');
+  const schools = Array.isArray(profile.schools) ? profile.schools : [];
+  const signature = `${profile.id}:${JSON.stringify(schools)}:${profile.track_schools !== false}:${me.demo}`;
+  if (schoolsDrawn === signature) return;
+  schoolsDrawn = signature;
+
+  const list = schools.length
+    ? el(
+        'ul',
+        { class: 'school-list' },
+        ...schools.map((school) => el('li', { class: 'school-card' }, el('span', { text: SCHOOL_STATUS.find((item) => item[0] === school.status)?.[1] || school.status }), el('span', {}, school.name, school.state ? el('span', { class: 'muted', text: ` · ${school.state}` }) : null))),
+      )
+    : el('p', { text: 'No schools yet.' });
+
+  if (me.demo) {
+    panel.replaceChildren(list, el('p', { class: 'muted', text: 'This is a sample person. Create an account to add your own schools.' }));
+    return;
+  }
+
+  const track = el('input', { type: 'checkbox', id: 'track-schools' });
+  track.checked = profile.track_schools !== false;
+  const name = el('input', { type: 'text', id: 'school-name', maxlength: '120', placeholder: 'School name' });
+  const state = el('input', { type: 'text', id: 'school-state', maxlength: '2', placeholder: 'CA' });
+  const select = el('select', { id: 'school-status' }, ...SCHOOL_STATUS.map(([id, label]) => el('option', { value: id, text: label })));
+  const add = el('button', { class: 'btn', type: 'button', text: 'Add school' });
+  const error = el('p', { class: 'form-error', role: 'alert', hidden: true });
+
+  async function save(next, trackOn) {
+    error.hidden = true;
+    try {
+      await post(`/api/profiles/${encodeURIComponent(profile.id)}/schools`, { schools: next, track_schools: trackOn });
+      status.classList.remove('is-error');
+      status.textContent = 'Saved.';
+      schoolsDrawn = '';
+      await refresh?.();
+    } catch (err) {
+      status.classList.add('is-error');
+      status.textContent = err.message;
+      error.hidden = false;
+      error.textContent = err.message;
+    }
+  }
+
+  track.addEventListener('change', () => save(schools, track.checked));
+  add.addEventListener('click', () => {
+    const schoolName = name.value.trim();
+    if (!schoolName) {
+      error.hidden = false;
+      error.textContent = 'Add the school’s name.';
+      name.focus();
+      return;
+    }
+    save([...schools, { name: schoolName, status: select.value, state: state.value.trim() }], track.checked);
+  });
+
+  const rows = schools.map((school) => {
+    const remove = el('button', { class: 'link-button', type: 'button', text: 'Remove', 'aria-label': `Remove ${school.name}` });
+    remove.addEventListener('click', () => save(schools.filter((item) => item.id !== school.id), track.checked));
+    return el('li', {}, el('span', {}, `${school.name} · ${SCHOOL_STATUS.find((item) => item[0] === school.status)?.[1] || school.status}`), remove);
+  });
+
+  panel.replaceChildren(
+    el('label', { class: 'check', for: 'track-schools' }, track, el('span', { text: 'Track these schools on the Brief' })),
+    el('ul', { class: 'rule-list', id: 'school-edit-list' }, ...rows),
+    el('div', { class: 'field' }, el('label', { for: 'school-name', text: 'Add a school' }), name),
+    el('div', { class: 'field' }, el('label', { for: 'school-status', text: 'Status' }), select),
+    el('div', { class: 'field' }, el('label', { for: 'school-state', text: 'State' }), state),
+    error,
+    el('div', { class: 'form-actions' }, add),
+  );
+}
+
 function renderRules(profile) {
   const rules = rulesFor(profile);
   document.getElementById('rules-intro').textContent =
@@ -213,6 +295,7 @@ initPage((ctx) => {
   // Step three of the first-visit guide: this person has seen where Settings lives.
   remember(`waypoint.guide.v1.${me.id}.settings`, '1');
   renderProfile(profile, today, me);
+  renderSchools(profile, me, ctx.refresh);
   renderOwn(ctx);
   renderAccount(ctx);
   renderRules(profile);

@@ -4,6 +4,7 @@
 
 import { initPage, el, safeUrl, formatTime, riskMark, rowsOf, recall, remember, xChecked } from './common.js';
 import { buildClocks, overall, formatDate, addDays, RISK_LABEL } from './clocks.js';
+import { rankSchools, scoreSchool } from './schools.js';
 import { updateAction, post } from './store.js';
 import { BOTS, botRelay, playRelay, botAvatar, botByName, botName, setBotState, sendPacket, heroBot } from './bots.js';
 import { arriveOnView, arriveBands } from './motion.js';
@@ -407,6 +408,73 @@ function stopItem(clock, ctx, { isNew, actions }) {
   return item;
 }
 
+function whyLine(line) {
+  const url = line.source_url && safeUrl(line.source_url);
+  const source = !line.source_label
+    ? null
+    : url
+      ? el('a', { href: url, target: '_blank', rel: 'noopener', text: line.source_label })
+      : el('span', { text: line.source_label });
+  return el('li', {}, line.text, source ? el('span', { class: 'muted', text: ' · ' }, source) : null);
+}
+
+function renderSchools(ctx, actions) {
+  const { profile, store } = ctx;
+  const rankBand = document.getElementById('school-rankings');
+  const alertBand = document.getElementById('school-alerts');
+  if (!rankBand || !alertBand) return;
+  const tracking = profile.track_schools !== false;
+  const schools = tracking && Array.isArray(profile.schools) ? profile.schools : [];
+  const signals = rowsOf(store.school_signals).filter((row) => row.person === profile.id);
+  const targets = rankSchools(schools, signals);
+  const enrolled = schools.find((school) => school.status === 'enrolled') || null;
+  const alerts = rowsOf(store.school_alerts).filter((row) => row.person === profile.id && (!enrolled || row.school_id === enrolled.id));
+
+  rankBand.hidden = !targets.length;
+  if (targets.length) {
+    document.getElementById('school-rank-list').replaceChildren(
+      ...targets.map((school) =>
+        el(
+          'li',
+          { class: 'school-card' },
+          el('p', { class: 'school-score', text: school.score == null ? '—' : String(school.score) }),
+          el(
+            'div',
+            {},
+            el('h3', {}, school.rank ? `${school.rank}. ${school.name}` : school.name, school.state ? el('span', { class: 'muted', text: ` · ${school.state}` }) : null),
+            school.score == null
+              ? el('p', { class: 'muted', text: 'Waiting for Scout to collect signals. No score until then.' })
+              : el('ol', { class: 'school-why' }, ...school.why.map(whyLine)),
+          ),
+        ),
+      ),
+    );
+  }
+
+  alertBand.hidden = !enrolled;
+  if (!enrolled) return;
+  const scored = scoreSchool(signals.filter((row) => row.school_id === enrolled.id));
+  const body = [
+    el('h3', {}, enrolled.name, enrolled.state ? el('span', { class: 'muted', text: ` · ${enrolled.state}` }) : null),
+    el('p', { class: 'muted', text: scored.score == null ? 'No support score yet.' : `Support score ${scored.score}, from the signals Scout has saved.` }),
+  ];
+  if (!alerts.length) body.push(el('p', { text: 'No school notices yet. They show up here after Scout checks this campus.' }));
+  for (const alert of alerts) {
+    const url = alert.source_url && safeUrl(alert.source_url);
+    body.push(
+      el(
+        'article',
+        { class: 'school-alert', id: `school-${alert.id}` },
+        el('h4', {}, riskMark(alert.risk || 'watch', 14), alert.title),
+        el('p', { text: alert.why }),
+        url ? el('p', {}, el('a', { href: url, target: '_blank', rel: 'noopener', text: alert.source_label || 'Source' })) : null,
+      ),
+    );
+    for (const action of actions.filter((item) => item.clock === alert.id)) body.push(approvalCard(action, ctx));
+  }
+  document.getElementById('school-alert-list').replaceChildren(...body);
+}
+
 function renderGroups(ctx, clocks, actions) {
   const { profile } = ctx;
   if (!seen.has(profile.id)) seen.set(profile.id, new Set(clocks.map((c) => c.id)));
@@ -439,7 +507,9 @@ function renderGroups(ctx, clocks, actions) {
   }
 
   // A draft whose deadline has closed still needs an answer; keep it reachable.
-  const loose = actions.filter((a) => !clocks.some((c) => c.id === a.clock));
+  // A draft for a school alert is shown on that alert, not here.
+  const schoolAlertIds = new Set(rowsOf(ctx.store.school_alerts).filter((row) => row.person === profile.id).map((row) => row.id));
+  const loose = actions.filter((a) => !clocks.some((c) => c.id === a.clock) && !schoolAlertIds.has(a.clock));
   if (loose.length) {
     sections.push(
       el(
@@ -736,6 +806,7 @@ initPage((ctx) => {
     guide.focus({ preventScroll: true });
   };
   renderGroups(ctx, clocks, actions);
+  renderSchools(ctx, actions);
   renderBots(ctx);
 });
 

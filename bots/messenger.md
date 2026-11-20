@@ -16,6 +16,7 @@ Runs only when the Manager or the user asks. Keeps no schedule of its own.
    - "status_change" when case status changed since the last run
    - "approval" when emails are waiting for approval
    - "rule_change" with the alert's deadline_id when Scout saved a rule change
+   - "school_alert" with the alert_id when Scout saved a notice about the person's school
    - "problem" with the Bot's name when a Bot couldn't finish its check
 
    Respect quiet hours unless it's "act_now". Waypoint records each text, so don't log it. If texting is off, message here and log that instead.
