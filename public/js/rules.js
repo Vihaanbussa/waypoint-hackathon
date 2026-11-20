@@ -265,6 +265,16 @@ export const PACKS = {
   },
 };
 
+// Who the student is, beyond their dates. None of it changes a deadline; it
+// tells the Bots which school office to write to and what news to look for.
+export const DEGREES = ["Bachelor's", "Master's", 'Doctorate', 'Other'];
+export const ABOUT_FIELDS = [
+  { id: 'school', label: 'School', hint: 'The school on your I-20 or DS-2019.', max: 100 },
+  { id: 'degree', label: 'Degree', options: DEGREES },
+  { id: 'major', label: 'Major or field of study', hint: 'As your school lists it.', max: 100 },
+  { id: 'home_country', label: 'Home country', hint: 'Where you applied from, and whose passport you hold.', max: 60 },
+];
+
 export const VISA_TYPES = {
   f1_opt: { label: 'F-1 on OPT', packs: ['base', 'f1_opt'] },
   h1b: { label: 'H-1B', packs: ['base', 'h1b'] },

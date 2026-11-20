@@ -35,8 +35,24 @@ export async function start({ port, host } = {}) {
   const auth = createAuth({ cfg, store: state.store, accounts: state.accounts });
   const texts = createTexts(state);
   const ctx = { cfg, ...state, ...texts, auth };
-  const bot = createBotTools({ ...state, ...texts, botScope: auth.botScope });
-  const { api } = createApi(ctx);
+  const bot = createBotTools({
+    ...state,
+    ...texts,
+    botScope: auth.botScope,
+    // Values a tool answer must never contain, whatever a Bot asked for.
+    secretValues: () => [
+      state.accounts.secret,
+      state.accounts.bot_key,
+      ...state.accounts.users.map((user) => user.bot_key),
+      ...state.store.profiles.flatMap((profile) => (profile?.bot_webhook?.key ? [profile.bot_webhook.key] : [])),
+      process.env.WAYPOINT_SECRET,
+      process.env.WAYPOINT_BOT_KEY,
+      process.env.TWILIO_AUTH_TOKEN,
+      process.env.TWILIO_ACCOUNT_SID,
+      process.env.UPSTASH_REDIS_REST_TOKEN,
+    ],
+  });
+  const { api } = createApi({ ...ctx, sendDemoText: bot.sendDemoText });
   const { servePortalSignIn, serveStatic } = createPages({ cfg, store: state.store });
 
   const server = http.createServer(async (req, res) => {
@@ -74,5 +90,5 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
   console.log(`  Brief          /`);
   console.log(`  Mock portal    /portal/        (change its status at /portal/admin/)`);
   console.log(`  Bot report     /report/`);
-  console.log(`  Bot connector  /mcp            (key for the sample people: data/bot-key.txt)`);
+  console.log(`  Bot connector  /mcp            (sample key is WAYPOINT_BOT_KEY; this machine's locked copy is data/bot-key.txt)`);
 }

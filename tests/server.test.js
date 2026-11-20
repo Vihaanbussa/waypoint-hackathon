@@ -558,11 +558,29 @@ test('Check now wakes a real Bot when a webhook is set, and the key never reache
 test('texts: off until Twilio is set, then sent to your own phone, recorded, and limited', async () => {
   const cookie = await signUp('Gia Rossi', 'gia@example.com');
   const gia = as(cookie);
-  await gia.postJson('/api/profile', { name: 'Gia Rossi', visa_type: 'h1b', h1b_start: '2025-10-01', phone: '(415) 555-0142' });
+  // School, degree, major and home country are optional and checked.
+  assert.equal((await gia.postJson('/api/profile', { name: 'Gia Rossi', visa_type: 'h1b', degree: 'Wizard' })).status, 400);
+  assert.equal((await gia.postJson('/api/profile', { name: 'Gia Rossi', visa_type: 'h1b', school: '<script>' })).status, 400);
+  await gia.postJson('/api/profile', {
+    name: 'Gia Rossi',
+    visa_type: 'h1b',
+    h1b_start: '2025-10-01',
+    phone: '(415) 555-0142',
+    school: '  Northfield   University ',
+    degree: "Master's",
+    major: 'Computer Science',
+    home_country: 'Italy',
+  });
+  const about = (await gia.getJson('/api/store')).profiles[0];
+  assert.deepEqual([about.school, about.degree, about.major, about.home_country], ['Northfield University', "Master's", 'Computer Science', 'Italy']);
   const person = (await gia.getJson('/api/store')).profiles[0].id;
   const key = (await gia.getJson('/api/connect')).bot_key;
   // Equal times mean no quiet window, so this test does not depend on the clock.
   await gia.postJson(`/api/profiles/${person}/settings`, { quiet_hours: { from: '12:00', to: '12:00' } });
+  // The Bots are told who the student is.
+  const told = (await callTool(key, 'list_people', {})).value.people[0];
+  assert.equal(told.school, 'Northfield University');
+  assert.equal(told.home_country, 'Italy');
 
   // Nothing is set: the page is told, the button's route and the Bot's tool both say why.
   assert.equal((await gia.getJson('/api/store')).features.sms, false);
@@ -682,6 +700,28 @@ test('texts: off until Twilio is set, then sent to your own phone, recorded, and
     assert.equal((await callTool(halKey, 'save_case_status', { receipt: 'IOE0912345678', status: 'Request for Evidence Was Sent', response_due: today })).isError, false);
     assert.equal((await callTool(halKey, 'send_text', { text: 'Waypoint: a response is due today.' })).value.sent, true);
     assert.equal(got.length, 8);
+
+    // The demo's buttons: one press sends that kind of text for a sample person,
+    // worded by Waypoint, to the demo's phone. Only the demo can press them.
+    const before = got.length;
+    const pressed = await postJson('/api/demo/text', { person: 'priya', kind: 'act_now' });
+    assert.equal(pressed.status, 200);
+    const shown = await pressed.json();
+    assert.match(shown.text, /^Waypoint: act now\. /);
+    assert.equal(shown.to, 'the number ending 99');
+    assert.equal(got.length, before + 1);
+    assert.equal(got.at(-1).form.get('To'), '+14155550199');
+    assert.equal(got.at(-1).form.get('Body'), shown.text);
+    // Straight after, a second press is held back, and nothing odd gets through.
+    const again = await postJson('/api/demo/text', { person: 'priya', kind: 'reminder' });
+    assert.equal(again.status, 400);
+    assert.match((await again.json()).error, /few seconds/);
+    assert.equal((await postJson('/api/demo/text', { person: 'priya', kind: 'party' })).status, 400);
+    assert.equal((await gia.postJson('/api/demo/text', { person, kind: 'act_now' })).status, 403);
+    assert.equal(got.length, before + 1);
+    const demoRow = (await getJson('/api/store')).notifications.at(-1);
+    assert.equal(demoRow.demo, true);
+    assert.equal(demoRow.kind, 'act_now');
   } finally {
     for (const name of ['TWILIO_ACCOUNT_SID', 'TWILIO_AUTH_TOKEN', 'TWILIO_FROM_NUMBER', 'TWILIO_API_BASE', 'SMS_DEMO_TO']) delete process.env[name];
     await new Promise((resolve) => twilio.close(resolve));

@@ -10,7 +10,7 @@ const CHANNEL = { sms: 'Text message', calendar: 'Google Calendar', gmail: 'Gmai
 const newestFirst = (a, b) => String(b.at).localeCompare(String(a.at));
 
 function tags(row) {
-  return `${row.simulated ? ' (simulated)' : ''}${row.sample ? ' (sample)' : ''}${row.trial_template ? " (Twilio trial: the phone got Twilio's sample text, not this wording)" : ''}`;
+  return `${row.simulated ? ' (simulated)' : ''}${row.sample ? ' (sample)' : ''}${row.demo ? ' (sent with a demo button)' : ''}${row.trial_template ? " (Twilio trial: the phone got Twilio's sample text, not this wording)" : ''}`;
 }
 
 function avatarFor(name, state, small = true) {

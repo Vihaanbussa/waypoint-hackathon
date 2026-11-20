@@ -2,7 +2,7 @@
 
 import { initPage, el, safeUrl, visaLabel, remember, rowsOf, signOut } from './common.js';
 import { rulesFor, packsFor, formatDate, parseDay } from './clocks.js';
-import { PACKS, FIELD_LABELS } from './rules.js';
+import { PACKS, FIELD_LABELS, ABOUT_FIELDS } from './rules.js';
 import { saveSettings, post } from './store.js';
 import { botAvatar, heroBot } from './bots.js';
 import { arriveBands } from './motion.js';
@@ -35,6 +35,7 @@ let drawnFor = null; // rebuild the form only when the profile changes
 function renderProfile(profile, today, me) {
   const facts = [
     ['Name', profile.name],
+    ...ABOUT_FIELDS.filter((f) => profile[f.id]).map((f) => [f.label, String(profile[f.id])]),
     ['Visa type', visaLabel(profile)],
     ['Rules applied', packsFor(profile).map((id) => PACKS[id].label).join(', ')],
   ];
