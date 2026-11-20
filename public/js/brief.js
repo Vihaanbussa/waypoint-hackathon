@@ -885,7 +885,7 @@ function renderDemoTexts(ctx) {
       status.textContent = 'Sending…';
       try {
         // `current` is the page as it is now: the person may have been switched.
-        const sent = await post('/api/demo/text', { person: current.profile.id, kind });
+        const sent = await post('/api/demo/text', { person: current.profile.id, kind, today: current.today });
         // Show the text as it reads. On a Twilio trial the phone itself only
         // shows Twilio's own test wording, so this is where the real line is seen.
         const preview = document.getElementById('demo-text-preview');
