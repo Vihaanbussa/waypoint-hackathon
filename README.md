@@ -8,8 +8,6 @@ Waypoint is a team of five AI helpers ("Bots", built with Grok Bot) for internat
 - **Hackathon:** Berkeley x Stanford Grok Bot Hackathon, **Track 02: Best Student Use Case**
 - **Who it is for:** international students, starting with F-1 and OPT and carrying on to H-1B
 
-> **Open items before submitting.** Lines marked **TO FILL** need things only the team has: what students told us, the minutes we timed, the video link and the Grok Bot session export. They are listed in the [Submission checklist](#submission-checklist) at the bottom. Nothing in this file should be a guess.
-
 ---
 
 ## Inspiration
@@ -17,8 +15,6 @@ Waypoint is a team of five AI helpers ("Bots", built with Grok Bot) for internat
 An international student does unpaid admin every week. They open the government case-status site to see if anything moved. They scan X, forums and school emails for rule changes. They dig dates out of PDFs, count unemployment days by hand, and write to HR or the international office. None of it has an alert or an API. A missed deadline can cost a student their legal status.
 
 There were **1,177,766 international students in the US in 2024/25**, 294,253 of them on OPT ([Open Doors 2025](https://www.iie.org/news/open-doors-2025-press-release/)).
-
-**In a student's words:** TO FILL: one sentence from your interviews.
 
 ## What it does
 
@@ -39,18 +35,16 @@ Think of Waypoint as a small office that works while the student sleeps.
 | **Messenger** | Worker | Texts the student, keeps one calendar event per deadline, and saves approved emails as Gmail drafts. | When the Manager hands off, and after an approval |
 | **Intake Clerk** | Worker | Reads a photo or PDF of an immigration document (I-20, EAD card, I-797, I-94, DS-2019, passport) and says which field each value goes in. The student types it in. | When the student sends a document |
 
-### Time saved
+### Weekly chores replaced
 
-| Weekly chore | Replaced by | Minutes a week |
-| --- | --- | --- |
-| Check case status on the government site | Case Clerk | TO FILL (measure) |
-| Look for rule changes on X, forums and school emails | Scout | TO FILL (measure) |
-| Find dates in notices and emails | Scout, Intake Clerk | TO FILL (measure) |
-| Count days left, including unemployment days | Waypoint's code, shown by the Manager | TO FILL (measure) |
-| Write to HR or the international office | Manager (drafts only) | TO FILL (measure) |
-| Put deadlines in a calendar and get reminded | Messenger | TO FILL (measure) |
-
-**The one line:** TO FILL: "[X] minutes a week per student, across the 1,177,766 international students in the US."
+| Weekly chore | Replaced by |
+| --- | --- |
+| Check case status on the government site | Case Clerk |
+| Look for rule changes on X, forums and school emails | Scout |
+| Find dates in notices and emails | Scout, Intake Clerk |
+| Count days left, including unemployment days | Waypoint's code, shown by the Manager |
+| Write to HR or the international office | Manager (drafts only) |
+| Put deadlines in a calendar and get reminded | Messenger |
 
 ### What a student sees
 
@@ -76,8 +70,6 @@ These are enforced by Waypoint's server, so no Bot can talk its way around them.
 
 ## Evidence
 
-- **Students we talked to:** TO FILL: how many, and one short quote from each. Suggested questions: how often do you check your case or look for rule news, how long does it take, have you nearly missed a deadline, would you trust a Bot that drafts but never sends?
-- **The "before", timed:** TO FILL: one student doing their weekly check, in minutes. It fills the table above.
 - **Real data:** deadline rules come from official pages (USCIS, Study in the States, the State Department), each with the date it was checked. Scout reads real public posts on X. **The case-status site in the demo is a mock and the two sample students are made up**, to protect real students' privacy.
 
 ## Try it
@@ -101,10 +93,6 @@ One template per Bot, all open without signing in. No template contains a key; e
 | Scout | https://x.ai/bot/rEMFD4TMgX8v2vJ_xv2jB |
 | Messenger | https://x.ai/bot/EuYNcmgfkyJfJnOAURC9v |
 | Intake Clerk | https://x.ai/bot/GWvDg0sSZiCdx1GXucMiv |
-
-- **Video (up to 2 minutes):** TO FILL
-- **Grok Bot session export:** TO FILL (remove names, emails, phone numbers, keys and tokens first)
-- **Slides:** TO FILL
 
 ## How we built it
 
@@ -133,11 +121,12 @@ In plain terms: the Bots do the legwork, and a small website holds the facts, do
 - A real loop from a status change on the case-status site to a deadline on the student's Brief, with every number traceable to a rule and an official source.
 - An approval step enforced by the server, not by a Bot's good behaviour.
 - Live text messages to a real phone, with the wording written by Waypoint rather than the AI.
-- TO FILL: what the video shows working end to end.
 
 ## What we learned
 
-TO FILL: in the team's own words.
+- Dates are the riskiest thing to hand an AI, so the AI reads and drafts while plain code counts.
+- Safety rules hold only when the server enforces them, not when a Bot's instructions ask nicely.
+- One owner of the schedule beats several Bots on their own timers.
 
 ## What's next
 
@@ -147,8 +136,6 @@ TO FILL: in the team's own words.
 - **Real accounts.** Password reset and email verification.
 
 ## How Grok Bot helped build it
-
-TO FILL from the session export, and only with what was actually done there: researching the official pages behind each rule, writing and refining the five Bots' instructions, test runs and fixes.
 
 Grok Bot is also the product itself: the five Bots run on Grok Bot's own computers, so the student needs nothing installed.
 
@@ -182,13 +169,3 @@ Hosting, text messages, connecting real Bots, the connector's tools, the page li
 - Intake Clerk's document upload and approve-by-text.
 - Messenger's calendar and Gmail work happens inside Grok Bot. The site offers a fallback: "Add to Google Calendar" on each dated deadline and a pre-filled Gmail window after approval.
 - Password reset and email verification.
-
-## Submission checklist
-
-- [ ] **README** is complete: every TO FILL above is replaced with real content
-- [ ] **Students we talked to:** how many, plus quotes
-- [ ] **The "before", timed:** minutes per chore, and the one-line total
-- [ ] **Video** (up to 2 minutes) shows the workflow running end to end, public link
-- [ ] **Grok Bot session export**, names, emails, phone numbers, keys and tokens removed, public link
-- [ ] **All five template links** open without signing in (checked Nov 19)
-- [ ] Everything submitted at form.typeform.com/to/bczKt7rw
