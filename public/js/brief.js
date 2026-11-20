@@ -5,6 +5,7 @@
 import { initPage, el, safeUrl, formatTime, riskMark, rowsOf, recall, remember, xChecked } from './common.js';
 import { buildClocks, overall, formatDate, addDays, RISK_LABEL } from './clocks.js';
 import { rankSchools, scoreSchool } from './schools.js';
+import { APPLICATION_STATUS_LABEL, applicationDraft } from './applications.js';
 import { updateAction, post } from './store.js';
 import { BOTS, botRelay, playRelay, botAvatar, botByName, botName, setBotState, sendPacket, heroBot } from './bots.js';
 import { arriveOnView, arriveBands } from './motion.js';
@@ -416,6 +417,77 @@ function whyLine(line) {
       ? el('a', { href: url, target: '_blank', rel: 'noopener', text: line.source_label })
       : el('span', { text: line.source_label });
   return el('li', {}, line.text, source ? el('span', { class: 'muted', text: ' · ' }, source) : null);
+}
+
+const FACT_SOURCE = { user: 'you', document: 'a document', email: 'email' };
+
+function renderApplications(ctx) {
+  const band = document.getElementById('applications');
+  const root = document.getElementById('application-review');
+  if (!band || !root) return;
+  const { profile, me } = ctx;
+  const targets = (profile.schools || []).filter((school) => school.status === 'target');
+  band.hidden = profile.stage !== 'applying';
+  if (band.hidden) return;
+  const draft = applicationDraft(profile.bank);
+  const note = el('p', { class: 'form-error', role: 'alert', hidden: true });
+
+  async function run(path, body) {
+    note.hidden = true;
+    try {
+      await post(`/api/profiles/${encodeURIComponent(profile.id)}/${path}`, body);
+      await ctx.refresh();
+    } catch (err) {
+      note.hidden = false;
+      note.textContent = err.message;
+    }
+  }
+
+  const schools = targets.map((school) => {
+    const submitted = school.application === 'submitted';
+    const button = me.demo || submitted ? null : el('button', { class: 'btn', type: 'button', text: 'I already submitted this' });
+    if (button) button.addEventListener('click', () => run('application', { school_id: school.id, status: 'submitted' }));
+    return el(
+      'li',
+      { class: 'school-card' },
+      el('span', { text: APPLICATION_STATUS_LABEL[school.application] || APPLICATION_STATUS_LABEL.not_started }),
+      el('span', {}, school.name),
+      button,
+    );
+  });
+
+  const fields = draft.fields.map((field) => {
+    const source = FACT_SOURCE[field.source] || '';
+    const bits = [el('span', {}, field.label)];
+    if (field.confirmed) bits.push(el('span', { class: 'muted', text: `${field.value} · from ${source}` }));
+    else if (field.pending) bits.push(el('span', { class: 'muted', text: `${field.pending_value} · from ${source}, not confirmed` }));
+    else bits.push(el('span', { class: 'muted', text: field.required ? 'Needed before a draft can be filled.' : 'Optional.' }));
+    if (!me.demo && field.pending) {
+      const confirm = el('button', { class: 'btn', type: 'button', text: 'Confirm' });
+      confirm.addEventListener('click', () => run('bank', { field: field.form, value: field.pending_value }));
+      bits.push(confirm);
+    }
+    if (!me.demo && (field.confirmed || field.pending)) {
+      const reject = el('button', { class: 'btn btn--quiet', type: 'button', text: 'Reject' });
+      reject.addEventListener('click', () => run('bank', { field: field.form, confirmed: false }));
+      bits.push(reject);
+    }
+    if (!me.demo && !field.confirmed) {
+      const input = el('input', { type: 'text', 'aria-label': field.label, maxlength: '300', value: field.pending_value || '' });
+      const save = el('button', { class: 'btn', type: 'button', text: 'Save' });
+      save.addEventListener('click', () => run('bank', { field: field.form, value: input.value }));
+      bits.push(input, save);
+    }
+    return el('li', {}, ...bits);
+  });
+
+  root.replaceChildren(
+    schools.length ? el('ul', { class: 'school-list' }, ...schools) : el('p', { text: 'Add the schools you want to apply to.' }),
+    el('h3', { text: 'Facts a draft can use' }),
+    el('ul', { class: 'rule-list' }, ...fields),
+    me.demo ? el('p', { class: 'muted', text: 'This is a sample person. Create an account to review your own application.' }) : null,
+    note,
+  );
 }
 
 function renderSchools(ctx, actions) {
@@ -861,6 +933,7 @@ initPage((ctx) => {
     guide.focus({ preventScroll: true });
   };
   renderGroups(ctx, clocks, actions);
+  renderApplications(ctx);
   renderSchools(ctx, actions);
   renderBots(ctx);
   renderDemoTexts(ctx);

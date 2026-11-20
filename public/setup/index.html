@@ -41,12 +41,22 @@
           <div class="split-body">
             <form id="setup-form" novalidate>
               <section id="step-1" hidden>
+                <fieldset class="plain field">
+                  <legend>Where are you?</legend>
+                  <label class="check"><input type="radio" name="stage" id="stage-applying" value="applying"><span>Applying to schools</span></label>
+                  <label class="check"><input type="radio" name="stage" id="stage-enrolled" value="enrolled" checked><span>Already studying</span></label>
+                </fieldset>
                 <div class="field">
                   <label for="name">Your name</label>
                   <input type="text" id="name" autocomplete="name" maxlength="80">
                 </div>
                 <div id="about-fields"></div>
-                <fieldset class="plain field">
+                <div class="field" id="apply-schools-field" hidden>
+                  <label for="apply-schools">Schools you want to apply to</label>
+                  <span class="hint" id="apply-schools-hint">One school per line. You pick the one you get into later.</span>
+                  <textarea id="apply-schools" rows="4" maxlength="2000" aria-describedby="apply-schools-hint"></textarea>
+                </div>
+                <fieldset class="plain field" id="visa-field">
                   <legend>Visa type</legend>
                   <p class="hint">Waypoint is built for international students. Start with the visa you are on now; you can change it when you move from F-1 and OPT to H-1B or another status.</p>
                   <div class="visa-list" id="visa-list"></div>

@@ -3,6 +3,7 @@
 import { initPage, el, safeUrl, visaLabel, remember, rowsOf, signOut } from './common.js';
 import { rulesFor, packsFor, formatDate, parseDay } from './clocks.js';
 import { PACKS, FIELD_LABELS, ABOUT_FIELDS } from './rules.js';
+import { APPLICATION_STATUS_LABEL } from './applications.js';
 import { saveSettings, post } from './store.js';
 import { botAvatar, heroBot } from './bots.js';
 import { arriveBands } from './motion.js';
@@ -255,10 +256,28 @@ function renderSchools(profile, me, refresh) {
   const rows = schools.map((school) => {
     const remove = el('button', { class: 'link-button', type: 'button', text: 'Remove', 'aria-label': `Remove ${school.name}` });
     remove.addEventListener('click', () => save(schools.filter((item) => item.id !== school.id), track.checked));
-    return el('li', {}, el('span', {}, `${school.name} · ${SCHOOL_STATUS.find((item) => item[0] === school.status)?.[1] || school.status}`), remove);
+    const progress = school.status === 'target' && school.application ? APPLICATION_STATUS_LABEL[school.application] : '';
+    return el('li', {}, el('span', {}, `${school.name} · ${SCHOOL_STATUS.find((item) => item[0] === school.status)?.[1] || school.status}${progress ? ` · ${progress}` : ''}`), remove);
   });
 
+  const targets = schools.filter((school) => school.status === 'target');
+  let gotIn = null;
+  if (profile.stage === 'applying' && targets.length) {
+    const pick = el('select', { id: 'got-in' }, ...targets.map((school) => el('option', { value: school.id, text: school.name })));
+    const button = el('button', { class: 'btn btn--primary', type: 'button', text: 'I got in here' });
+    button.addEventListener('click', () => saveEnrolled(profile, pick.value, status, refresh));
+    gotIn = el(
+      'div',
+      { class: 'field' },
+      el('label', { for: 'got-in', text: 'The school you got into' }),
+      el('span', { class: 'hint', text: 'This is the only choice after you are admitted. Waypoint then watches that campus.' }),
+      pick,
+      el('div', { class: 'form-actions' }, button),
+    );
+  }
+
   panel.replaceChildren(
+    gotIn,
     el('label', { class: 'check', for: 'track-schools' }, track, el('span', { text: 'Track these schools on the Brief' })),
     el('ul', { class: 'rule-list', id: 'school-edit-list' }, ...rows),
     el('div', { class: 'field' }, el('label', { for: 'school-name', text: 'Add a school' }), name),
@@ -267,6 +286,19 @@ function renderSchools(profile, me, refresh) {
     error,
     el('div', { class: 'form-actions' }, add),
   );
+}
+
+async function saveEnrolled(profile, schoolId, status, refresh) {
+  try {
+    await post(`/api/profiles/${encodeURIComponent(profile.id)}/enroll`, { school_id: schoolId });
+    status.classList.remove('is-error');
+    status.textContent = 'Saved.';
+    schoolsDrawn = '';
+    await refresh?.();
+  } catch (err) {
+    status.classList.add('is-error');
+    status.textContent = err.message;
+  }
 }
 
 function renderRules(profile) {

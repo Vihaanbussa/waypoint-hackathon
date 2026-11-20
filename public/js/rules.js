@@ -271,8 +271,9 @@ export const DEGREES = ["Bachelor's", "Master's", 'Doctorate', 'Other'];
 export const ABOUT_FIELDS = [
   { id: 'school', label: 'School', hint: 'The school on your I-20 or DS-2019.', max: 100 },
   { id: 'degree', label: 'Degree', options: DEGREES },
+  { id: 'term', label: 'Start term', hint: 'Like Fall 2027.', max: 40 },
   { id: 'major', label: 'Major or field of study', hint: 'As your school lists it.', max: 100 },
-  { id: 'home_country', label: 'Home country', hint: 'Where you applied from, and whose passport you hold.', max: 60 },
+  { id: 'home_country', label: 'Country of citizenship', hint: 'The passport you hold.', max: 60 },
 ];
 
 export const VISA_TYPES = {

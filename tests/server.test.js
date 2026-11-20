@@ -808,3 +808,47 @@ test('school signals are scored by Waypoint, and a school alert is on the brief'
   assert.equal(brief.value.schools.alerts[0].title, 'Travel signatures');
   assert.ok(brief.value.deadlines.length > 0);
 });
+
+test('an applicant gives the minimum, and a Bot cannot confirm, overwrite, or submit', async () => {
+  const cookie = await signUp('Ira Shah', 'ira@example.com');
+  const noor = as(cookie);
+  assert.equal((await noor.postJson('/api/profile', { name: 'Ira Shah', stage: 'applying', degree: "Master's" })).status, 400);
+  const saved = await noor.postJson('/api/profile', {
+    name: 'Ira Shah',
+    stage: 'applying',
+    home_country: 'India',
+    degree: "Master's",
+    term: 'Fall 2027',
+    schools: [
+      { name: 'Stanford University', status: 'target', state: 'CA' },
+      { name: 'University of Michigan', status: 'target', state: 'MI' },
+    ],
+  });
+  const savedBody = await saved.json();
+  assert.equal(saved.status, 200, JSON.stringify(savedBody));
+  const profile = (await noor.getJson('/api/store')).profiles[0];
+  assert.equal(profile.stage, 'applying');
+  assert.equal(profile.visa_type, '');
+  assert.equal(profile.bank.citizenship.value, 'India');
+  assert.equal(profile.bank.citizenship.confirmed, true);
+  const key = (await noor.getJson('/api/connect')).bot_key;
+  const bank = await callTool(key, 'get_application_bank', {});
+  assert.deepEqual(bank.value.missing, []);
+  assert.equal(bank.value.fields.find((field) => field.form === 'citizenship').value, 'India');
+  assert.equal((await callTool(key, 'save_bank_fact', { field: 'address', value: '1 Main Street', source: 'user' })).isError, true);
+  assert.equal((await callTool(key, 'save_bank_fact', { field: 'address', value: '1 Main Street', source: 'email' })).isError, false);
+  assert.equal((await callTool(key, 'get_application_bank', {})).value.fields.some((field) => field.form === 'address'), false);
+  assert.match((await callTool(key, 'save_bank_fact', { field: 'citizenship', value: 'France', source: 'email' })).value, /confirmed/);
+  assert.equal((await callTool(key, 'save_application_progress', { school_name: 'Stanford University', status: 'already_started' })).isError, false);
+  assert.match((await callTool(key, 'save_application_progress', { school_name: 'Stanford University', status: 'draft_ready' })).value, /already has progress/);
+  assert.equal((await callTool(key, 'save_application_progress', { school_name: 'University of Michigan', status: 'submitted' })).isError, true);
+  assert.equal((await callTool(key, 'save_application_progress', { school_name: 'University of Michigan', status: 'draft_ready' })).isError, false);
+  assert.equal((await noor.postJson(`/api/profiles/${profile.id}/application`, { school_id: 'university-of-michigan', status: 'submitted' })).status, 200);
+  assert.match((await callTool(key, 'save_application_progress', { school_name: 'University of Michigan', status: 'draft_ready' })).value, /already has progress/);
+  assert.equal((await noor.postJson(`/api/profiles/${profile.id}/enroll`, { school_id: 'stanford-university' })).status, 200);
+  const after = (await noor.getJson('/api/store')).profiles[0];
+  assert.equal(after.stage, 'enrolled');
+  assert.equal(after.school, 'Stanford University');
+  assert.equal(after.schools.find((school) => school.id === 'stanford-university').status, 'enrolled');
+  assert.equal(after.schools.find((school) => school.id === 'university-of-michigan').application, 'submitted');
+});

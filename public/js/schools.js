@@ -230,10 +230,12 @@ export function normalizeSchools(input, { today = '', previous = [] } = {}) {
     const unitid = String(item.unitid || '').trim();
     if (unitid && !/^\d{4,8}$/.test(unitid)) throw new Error('A Unit ID is the school’s IPEDS number, digits only.');
     const before = prior.get(id);
+    const kept = ['not_started', 'already_started', 'draft_ready', 'needs_review', 'submitted'].includes(before?.application) ? before.application : 'not_started';
     out.push({
       id,
       name,
       status,
+      application: kept,
       ...(state ? { state } : {}),
       ...(unitid ? { unitid } : {}),
       ...(String(item.notes || '').trim() ? { notes: String(item.notes).trim().slice(0, 300) } : {}),
@@ -242,4 +244,15 @@ export function normalizeSchools(input, { today = '', previous = [] } = {}) {
   }
   if (out.filter((school) => school.status === 'enrolled').length > 1) throw new Error('Only one school can be enrolled. Mark the others as target or alumni.');
   return out;
+}
+
+// The student got in. One school becomes enrolled. A previous enrolled school goes back to target.
+export function enrollSchool(schools, schoolId) {
+  const id = schoolSlug(schoolId);
+  const list = Array.isArray(schools) ? schools : [];
+  if (!list.some((school) => school && school.id === id)) throw new Error('That school is not on your list.');
+  return list.map((school) => ({
+    ...school,
+    status: school.id === id ? 'enrolled' : school.status === 'enrolled' ? 'target' : school.status,
+  }));
 }

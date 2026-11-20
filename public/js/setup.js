@@ -29,9 +29,13 @@ function fail(message) {
 
 const about = {}; // field id -> what the person typed
 
+const applying = () => $('stage-applying').checked;
+const REQUIRED_WHEN_APPLYING = new Set(['home_country', 'degree', 'term']);
+
 function drawAbout() {
+  const fields = ABOUT_FIELDS.filter((field) => !(applying() && field.id === 'school'));
   $('about-fields').replaceChildren(
-    ...ABOUT_FIELDS.map((field) => {
+    ...fields.map((field) => {
       const id = `about-${field.id}`;
       let input;
       if (field.options) {
@@ -51,7 +55,9 @@ function drawAbout() {
         'div',
         { class: 'field' },
         el('label', { for: id, text: field.label }),
-        field.hint ? el('span', { class: 'hint', id: `${id}-hint`, text: `Optional. ${field.hint}` }) : el('span', { class: 'hint', text: 'Optional.' }),
+        field.hint
+          ? el('span', { class: 'hint', id: `${id}-hint`, text: `${applying() && REQUIRED_WHEN_APPLYING.has(field.id) ? 'Required' : 'Optional'}. ${field.hint}` })
+          : el('span', { class: 'hint', text: applying() && REQUIRED_WHEN_APPLYING.has(field.id) ? 'Required.' : 'Optional.' }),
         input,
       );
     }),
@@ -187,11 +193,16 @@ function show(next, focus = true) {
   $('setup-error').hidden = true;
   for (let i = 0; i < 3; i += 1) $(`step-${i + 1}`).hidden = i !== step;
   [...$('progress').children].forEach((li, i) => li.classList.toggle('is-on', i <= step));
-  $('step-count').textContent = `${editing ? 'Edit your details' : 'Set up'} · Step ${step + 1} of 3`;
-  $('step-title').textContent = STEPS[step].title;
-  $('step-lede').textContent = STEPS[step].lede;
-  $('back').hidden = step === 0;
-  $('next').textContent = step < 2 ? 'Continue' : editing ? 'Save changes' : 'Finish and see my deadlines';
+  const apply = applying();
+  $('visa-field').hidden = apply;
+  $('apply-schools-field').hidden = !apply;
+  $('step-count').textContent = apply ? (editing ? 'Edit your application' : 'Apply') : `${editing ? 'Edit your details' : 'Set up'} · Step ${step + 1} of 3`;
+  $('step-title').textContent = apply ? 'What should Waypoint apply with?' : STEPS[step].title;
+  $('step-lede').textContent = apply
+    ? 'Your name, citizenship, degree, the term, and the schools. Waypoint fills the rest from confirmed facts, and you review it before anything is submitted.'
+    : STEPS[step].lede;
+  $('back').hidden = step === 0 || apply;
+  $('next').textContent = apply ? (editing ? 'Save changes' : 'Finish') : step < 2 ? 'Continue' : editing ? 'Save changes' : 'Finish and see my deadlines';
   if (step === 1) drawFields();
   else drawPreview();
   if (focus) {
@@ -202,8 +213,41 @@ function show(next, focus = true) {
 
 $('back').addEventListener('click', () => show(step - 1));
 
+for (const id of ['stage-applying', 'stage-enrolled']) {
+  $(id).addEventListener('change', () => {
+    drawAbout();
+    show(0, false);
+  });
+}
+
 $('setup-form').addEventListener('submit', async (event) => {
   event.preventDefault();
+  if (applying()) {
+    if (!$('name').value.trim()) return fail('Add your name.');
+    if (!String(about.home_country || '').trim()) return fail('Add your country of citizenship.');
+    if (!String(about.degree || '').trim()) return fail('Choose your degree.');
+    if (!String(about.term || '').trim()) return fail('Add the term you want to start.');
+    const schools = schoolsFromText($('apply-schools').value).map((school) => ({ ...school, status: 'target' }));
+    if (!schools.length) return fail('Add the schools you want to apply to.');
+    const next = $('next');
+    next.disabled = true;
+    try {
+      await post('/api/profile', {
+        ...draftProfile(),
+        visa_type: '',
+        stage: 'applying',
+        schools,
+        track_schools: true,
+        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        channels: { sms: $('ch-sms').checked, calendar: $('ch-calendar').checked, gmail: $('ch-gmail').checked },
+      });
+      location.assign(editing ? '/settings/' : '/');
+    } catch (err) {
+      next.disabled = false;
+      fail(err.message);
+    }
+    return;
+  }
   if (step === 0) {
     if (!$('name').value.trim()) return fail('Add your name.');
     if (!visa) return fail('Choose the visa you are on.');
@@ -221,6 +265,7 @@ $('setup-form').addEventListener('submit', async (event) => {
       // So the server counts days from the person's own today, not the server's.
       timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
       channels: { sms: $('ch-sms').checked, calendar: $('ch-calendar').checked, gmail: $('ch-gmail').checked },
+      stage: 'enrolled',
       schools: schoolsFromText($('schools').value),
       track_schools: $('track-schools').checked,
     });
@@ -244,8 +289,10 @@ try {
   const profile = store.profiles?.[0] ?? null;
   if (profile && !editing) location.replace('/');
   $('name').value = profile?.name ?? store.me?.name ?? '';
+  if (profile?.stage === 'applying') $('stage-applying').checked = true;
   if (profile) {
     for (const field of ABOUT_FIELDS) about[field.id] = profile[field.id] ?? '';
+    $('apply-schools').value = (profile.schools || []).filter((school) => school.status === 'target').map((school) => school.name).join('\n');
     visa = profile.visa_type;
     for (const field of fieldsFor(visa)) {
       const value = profile[field.id];
