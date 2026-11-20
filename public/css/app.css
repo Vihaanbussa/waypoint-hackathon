@@ -743,6 +743,21 @@ main {
   overflow-wrap: anywhere;
 }
 
+/* The by-hand way on the Connect page, tucked under the main one. */
+.by-hand {
+  margin-top: 24px;
+}
+
+.by-hand summary {
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.by-hand > p {
+  margin: 12px 0;
+  color: var(--muted);
+}
+
 /* The demo's "send a text" buttons: plain buttons in a row that wraps. */
 .demo-texts {
   display: flex;

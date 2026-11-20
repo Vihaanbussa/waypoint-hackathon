@@ -494,7 +494,7 @@ function renderConnectPrompt(ctx) {
     .getElementById('connect-prompt-line')
     .replaceChildren(
       botAvatar('case', { state: 'asleep', size: 30, detail: 'not connected' }),
-      'Your Bots are asleep, so nothing is being checked for you yet. Setup takes about five minutes: add Waypoint to Grok Bot, then paste each Bot its first message.',
+      'Your Bots are asleep, so nothing is being checked for you yet. Setup takes about five minutes: install the five Bot templates in Grok Bot and give each one your key.',
     );
   document.getElementById('connect-later').addEventListener('click', () => {
     try {

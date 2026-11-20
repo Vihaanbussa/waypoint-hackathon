@@ -183,8 +183,8 @@ The site runs on Render's free plan at https://waypoint-5o4r.onrender.com, deplo
 Grok Bots are set up in your own Grok Bot app; Waypoint cannot create them for you. What Waypoint gives them is a connector and a key.
 
 1. **Put Waypoint on a public https address.** Grok Bots run on a cloud computer, so `localhost` is out of their reach. Free tunnels do not last (two were tried and both dropped within 20 minutes), so use a host.
-2. **Open `/connect/`** (Settings, then "Set up your Bots"). It shows the connector address, your Bot key, and a message to paste into Grok Bot that adds Waypoint as a custom MCP server.
-3. **Create the five Bots.** The same page has each Bot's first message, ready to copy: its job, where it looks, what it must never do, and when it runs. Only the Manager gets a schedule. No message carries your key, so each Bot can be shared as a template.
+2. **Open `/connect/`** (Settings, then "Set up your Bots") and copy your Bot key.
+3. **Install the five Bots.** The same page has an "Install template" link for each Bot, which opens its published template in Grok Bot. The template's setup asks for your key in a masked field and adds the Waypoint connector. Start with the Manager: it holds the only schedule. To set a Bot up by hand instead, each one's first message is there to copy, along with a message that adds Waypoint as a custom MCP server.
 4. **Optional: wire Check now.** Ask the Manager for a webhook routine and paste its address and key on the page. Check now then wakes the real Bot instead of running the simulated check.
 
 The connector is a small MCP server (`lib/mcp.js`, JSON-RPC over POST at `/mcp`) with thirteen tools: `list_people`, `get_brief`, `report_run`, `workflow_status`, `save_case_status`, `save_policy_alert`, `save_inbox_date`, `set_deadline_note`, `draft_email`, `list_emails`, `mark_email_delivered`, `log_message`, `send_text`. The rules the tools enforce:
