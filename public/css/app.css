@@ -2074,11 +2074,19 @@ code {
   border-top: 1px solid var(--ink);
 }
 
+/* A Bot's row on the Connect page: its face, its name, the button at the far
+   end, and when it runs on a second line under the name. A fixed grid, so
+   nothing depends on how a browser wraps a flex row. */
 .brief-head {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: 40px minmax(0, 1fr) auto;
   align-items: center;
   gap: 8px 14px;
+}
+
+.brief-head .btn {
+  grid-column: 3;
+  grid-row: 1;
 }
 
 .brief-head .bot-avatar {
@@ -2092,12 +2100,15 @@ code {
 }
 
 .brief-head h3 {
-  margin-right: auto;
+  grid-column: 2;
+  grid-row: 1;
+  margin: 0;
 }
 
 .brief-when {
-  flex-basis: 100%;
-  margin-left: 54px;
+  grid-column: 2 / -1;
+  grid-row: 2;
+  margin: 0;
   font-size: 14px;
   color: var(--muted);
 }
@@ -2115,7 +2126,10 @@ code {
 }
 
 @media (max-width: 640px) {
-  .brief-when,
+  .brief-when {
+    grid-column: 1 / -1;
+  }
+
   .brief-item details {
     margin-left: 0;
   }
