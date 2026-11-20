@@ -114,7 +114,7 @@ Each visa type is a **rule pack**: rows of deadlines, limits and official source
 | Piece | What it is |
 |---|---|
 | **The five Bots** | Grok Bots, each set up with one first message stating its job, where it looks, what it must never do, and the team's goal (text in `bots/`) |
-| **The connector** | An MCP server at `/mcp` that gives the Bots 17 tools to read the Brief and save what they find. The safety rules live in the tools (`lib/bot-tools.js`) |
+| **The connector** | An MCP server at `/mcp` that gives the Bots 21 tools to read the Brief and save what they find. The safety rules live in the tools (`lib/bot-tools.js`) |
 | **The rules engine** | One plain function turns a student's dates into deadlines. Every rule is a row: anchor date, offset, thresholds, reason and official source (`public/js/rules.js`, `public/js/clocks.js`) |
 | **School tracking** | Scout collects raw facts about schools (advisor ratio, international office, emergency funds, student sentiment); fixed code turns them into a score (`public/js/schools.js`) |
 | **The website** | One Node 22 program with no dependencies and plain JavaScript pages, hosted on Render. Data is saved to Upstash Redis so it survives the free host's sleeps |
