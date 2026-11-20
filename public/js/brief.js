@@ -744,9 +744,20 @@ function renderDemoTexts(ctx) {
       try {
         // `current` is the page as it is now: the person may have been switched.
         const sent = await post('/api/demo/text', { person: current.profile.id, kind });
-        status.textContent = `Sent to ${sent.to}: "${sent.text}"${sent.trial ? " The Twilio account is on a trial, so the phone shows Twilio's sample wording." : ''}`;
+        // Show the text as it reads. On a Twilio trial the phone itself only
+        // shows Twilio's own test wording, so this is where the real line is seen.
+        const preview = document.getElementById('demo-text-preview');
+        document.getElementById('demo-text-bubble').textContent = sent.text;
+        preview.hidden = false;
+        preview.classList.remove('is-new');
+        void preview.offsetWidth;
+        preview.classList.add('is-new');
+        status.textContent = sent.trial
+          ? `Sent to ${sent.to}. This is the text Waypoint wrote. The Twilio account is on a trial, which swaps in Twilio's own test wording on the phone until the account is upgraded.`
+          : `Sent to ${sent.to}. This is the text on the phone.`;
         await current.refresh();
       } catch (err) {
+        document.getElementById('demo-text-preview').hidden = true;
         status.classList.add('is-error');
         status.textContent = err.message;
       }
