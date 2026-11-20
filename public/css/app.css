@@ -743,11 +743,57 @@ main {
   overflow-wrap: anywhere;
 }
 
+/* The by-hand way on the Connect page, tucked under the main one. */
+.by-hand {
+  margin-top: 24px;
+}
+
+.by-hand summary {
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.by-hand > p {
+  margin: 12px 0;
+  color: var(--muted);
+}
+
 /* The demo's "send a text" buttons: plain buttons in a row that wraps. */
 .demo-texts {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
+}
+
+/* The text as it reads, drawn like a message on a phone: one outlined panel
+   and a grey bubble. Flat, like everything else. */
+.text-preview {
+  max-width: 360px;
+  margin-top: 20px;
+  padding: 14px 16px 18px;
+  background: var(--paper);
+  border: 1.5px solid var(--ink);
+  border-radius: 18px;
+}
+
+.text-preview-from {
+  margin: 0 0 10px;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.text-preview-bubble {
+  margin: 0;
+  padding: 10px 14px;
+  background: var(--wash);
+  border-radius: 16px 16px 16px 4px;
+  overflow-wrap: anywhere;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .text-preview.is-new .text-preview-bubble {
+    animation: rise 320ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
 }
 
 .demo-text-out {
@@ -2028,11 +2074,19 @@ code {
   border-top: 1px solid var(--ink);
 }
 
+/* A Bot's row on the Connect page: its face, its name, the button at the far
+   end, and when it runs on a second line under the name. A fixed grid, so
+   nothing depends on how a browser wraps a flex row. */
 .brief-head {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: 40px minmax(0, 1fr) auto;
   align-items: center;
   gap: 8px 14px;
+}
+
+.brief-head .btn {
+  grid-column: 3;
+  grid-row: 1;
 }
 
 .brief-head .bot-avatar {
@@ -2046,12 +2100,15 @@ code {
 }
 
 .brief-head h3 {
-  margin-right: auto;
+  grid-column: 2;
+  grid-row: 1;
+  margin: 0;
 }
 
 .brief-when {
-  flex-basis: 100%;
-  margin-left: 54px;
+  grid-column: 2 / -1;
+  grid-row: 2;
+  margin: 0;
   font-size: 14px;
   color: var(--muted);
 }
@@ -2069,7 +2126,10 @@ code {
 }
 
 @media (max-width: 640px) {
-  .brief-when,
+  .brief-when {
+    grid-column: 1 / -1;
+  }
+
   .brief-item details {
     margin-left: 0;
   }

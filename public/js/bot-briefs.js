@@ -1,6 +1,7 @@
-// What to tell each Grok Bot in its first message: its job, where it looks, and
-// what it must never do. Written to be pasted as they are, and to be shared as
-// templates: none of them carries a key. {origin} is replaced with this site's
+// The five Bots, two ways to set each one up: install its published template
+// (`template`, a public share link), or paste its first message by hand
+// (`message`: its job, where it looks, and what it must never do). Neither
+// carries a key: a template asks the new owner for theirs when it is installed. {origin} is replaced with this site's
 // address.
 //
 // The team is one Manager and four workers. The Manager holds the only schedule
@@ -24,6 +25,7 @@ Please remember all of this.`;
 export const BOT_BRIEFS = [
   {
     id: 'manager',
+    template: 'https://x.ai/bot/jYDsF_XLTmGDAM1cmxTf-',
     name: 'Manager',
     role: 'Manager',
     when: 'Every night at 2:00 AM, on the team\'s one schedule, and on the webhook',
@@ -44,6 +46,7 @@ ${RULES}`,
   },
   {
     id: 'intake',
+    template: 'https://x.ai/bot/GWvDg0sSZiCdx1GXucMiv',
     name: 'Intake Clerk',
     role: 'Worker',
     when: 'When I send a document',
@@ -59,6 +62,7 @@ ${RULES}`,
   },
   {
     id: 'case',
+    template: 'https://x.ai/bot/TuGI6owtPK-_2rvVhnCqi',
     name: 'Case Clerk',
     role: 'Worker',
     when: 'When the Manager starts the night',
@@ -74,6 +78,7 @@ ${RULES}`,
   },
   {
     id: 'scout',
+    template: 'https://x.ai/bot/rEMFD4TMgX8v2vJ_xv2jB',
     name: 'Scout',
     role: 'Worker',
     when: 'When the Manager starts the night',
@@ -95,6 +100,7 @@ ${RULES}`,
   },
   {
     id: 'messenger',
+    template: 'https://x.ai/bot/EuYNcmgfkyJfJnOAURC9v',
     name: 'Messenger',
     role: 'Worker',
     when: 'When the Manager hands off, and after I approve an email',

@@ -45,7 +45,7 @@
           <div class="hero-text">
             <p class="step-count"><a href="/settings/" id="back-link">Settings</a> · Connect your Bots</p>
             <h1>Connect your Bots</h1>
-            <p class="lede">Waypoint's five Bots, one Manager and four workers, are Grok Bots you set up in your own Grok Bot app. This page has everything to paste: the connector, your key, and each Bot's first message.</p>
+            <p class="lede">Waypoint's five Bots, one Manager and four workers, are Grok Bots that live in your own Grok Bot app. Install each one from its template, give it your key when it asks, and the team starts checking for you.</p>
             <p class="notice" id="connect-notice" hidden></p>
           </div>
           <div class="hero-bot" id="hero-bot"></div>
@@ -54,26 +54,33 @@
       <section class="band" aria-labelledby="c1">
         <div class="band-inner split">
           <div class="split-label">
-            <h2 id="c1">1. Add Waypoint as a connector</h2>
-            <p>In Grok Bot, send this to your first Bot. If your app has a Plugins or Connectors screen with "custom MCP server", the same address and header go there.</p>
+            <h2 id="c1">1. Copy your key</h2>
+            <p>Each Bot asks for this key when you install it, and uses it to reach Waypoint at the address shown. It speaks for you and nobody else, so treat it like a password.</p>
           </div>
           <div class="split-body">
             <dl class="facts" id="connect-facts"></dl>
-            <pre class="paste" id="connect-message"></pre>
             <div class="form-actions">
-              <button class="btn btn--primary" type="button" id="copy-connect">Copy message with key</button>
+              <button class="btn btn--primary" type="button" id="copy-key">Copy key</button>
               <button class="btn" type="button" id="show-key">Show key</button>
               <button class="btn" type="button" id="rotate-key">Make a new key</button>
             </div>
             <p class="save-status" id="connect-status" role="status"></p>
+            <details class="by-hand">
+              <summary>Setting a Bot up by hand instead</summary>
+              <p>If you are not using a template, send this to the Bot first. If your app has a Connectors screen with "custom MCP server", the same address and header go there.</p>
+              <pre class="paste" id="connect-message"></pre>
+              <div class="form-actions">
+                <button class="btn" type="button" id="copy-connect">Copy message with key</button>
+              </div>
+            </details>
           </div>
         </div>
       </section>
       <section class="band band--wash" aria-labelledby="c2">
         <div class="band-inner split">
           <div class="split-label">
-            <h2 id="c2">2. Create the five Bots</h2>
-            <p>Make a new Bot for each, give it the name shown, and paste its message as the first thing you say. Only the Manager gets a schedule: it starts the others. No message has your key in it, so each Bot can be shared as a template.</p>
+            <h2 id="c2">2. Install the five Bots</h2>
+            <p>Open each template and install it in Grok Bot. Its setup asks for your key in a masked field and adds the Waypoint connector for you. Start with the Manager: it holds the team's one schedule and starts the others. No template has a key in it.</p>
           </div>
           <div class="split-body">
             <div id="briefs"></div>

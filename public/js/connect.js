@@ -1,4 +1,5 @@
-// Connect your Bots: the connector address, your key, and each Bot's first message.
+// Connect your Bots: your key, each Bot's published template, and, for setting
+// one up by hand, the connector message and each Bot's first message.
 
 import { initPage, el } from './common.js';
 import { get, post } from './store.js';
@@ -39,7 +40,7 @@ function drawConnector(profile) {
   );
   $('connect-message').textContent = fillBrief(CONNECT_MESSAGE, { ...values, key: shown ? info.bot_key : masked(info.bot_key) });
   $('show-key').textContent = shown ? 'Hide key' : 'Show key';
-  for (const id of ['copy-connect', 'show-key']) $(id).hidden = !info.bot_key;
+  for (const id of ['copy-key', 'copy-connect', 'show-key']) $(id).hidden = !info.bot_key;
   $('rotate-key').hidden = info.demo;
 
   const notes = [];
@@ -61,18 +62,33 @@ function drawBriefs() {
     ...BOT_BRIEFS.map((brief) => {
       const text = fillBrief(brief.message, values);
       const avatar = botAvatar(brief.id, { state: 'idle', size: 24 });
+      // A small thank-you: the Bot you just set up perks up.
+      const perk = (word) => {
+        setBotState(avatar, 'done', word);
+        setTimeout(() => setBotState(avatar, 'idle'), 1500);
+      };
+      // The template opens in Grok Bot; the first message is the by-hand way.
+      const install = brief.template
+        ? el('a', { class: 'btn', href: brief.template, target: '_blank', rel: 'noopener', 'aria-label': `Install the ${brief.name} template in Grok Bot` }, 'Install template')
+        : null;
+      install?.addEventListener('click', () => perk('opened'));
       const button = el('button', { class: 'btn', type: 'button', text: 'Copy first message' });
       button.addEventListener('click', async () => {
         await copy(text, button);
-        // A small thank-you: the Bot you just briefed perks up.
-        setBotState(avatar, 'done', 'briefed');
-        setTimeout(() => setBotState(avatar, 'idle'), 1500);
+        perk('briefed');
       });
       return el(
         'div',
         { class: 'brief-item' },
-        el('div', { class: 'brief-head' }, avatar, el('h3', { text: brief.name }), button, el('p', { class: 'brief-when', text: `${brief.role}. Runs: ${brief.when}` })),
-        el('details', {}, el('summary', { text: 'Read the message' }), el('pre', { class: 'paste', text })),
+        el('div', { class: 'brief-head' }, avatar, el('h3', { text: brief.name }), install, el('p', { class: 'brief-when', text: `${brief.role}. Runs: ${brief.when}` })),
+        el(
+          'details',
+          {},
+          el('summary', { text: 'Set it up by hand instead' }),
+          el('p', { class: 'fine', text: `Make a new Bot named ${brief.name} and paste this as the first thing you say.` }),
+          el('div', { class: 'form-actions' }, button),
+          el('pre', { class: 'paste', text }),
+        ),
       );
     }),
   );
@@ -100,6 +116,7 @@ initPage(async (ctx) => {
       shown = !shown;
       drawConnector(profile);
     };
+    $('copy-key').onclick = () => copy(info.bot_key, $('copy-key'), 'Key copied');
     $('copy-connect').onclick = () =>
       copy(fillBrief(CONNECT_MESSAGE, { origin: info.origin, mcp: info.mcp_url, key: info.bot_key }), $('copy-connect'));
     $('copy-webhook').onclick = () => copy(WEBHOOK_MESSAGE, $('copy-webhook'));
